@@ -12,9 +12,10 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ServerLogic {
-    Map<String, ProtectedRegion> registeredregions;
-    Map<ProtectedRegion, Integer> playercount;
-    public void init()
+    static Map<String, ProtectedRegion> registeredregions;
+    static Map<ProtectedRegion, Integer> playercount;
+
+    public static void init()
     {
         List<World> worlds = Bukkit.getWorlds();
         WorldGuardPlugin worldguard = RegionControl.getWorldGuard();
@@ -29,23 +30,37 @@ public class ServerLogic {
         }
     }
 
-    public void RegisterRegion(String keystring, ProtectedRegion region)
+    /**
+     * Registers a region into the registered regions list.
+     *
+     * The registered regions list is used to calculate
+     * region player counts.
+     *
+     * @param keystring A String associated with the map of this region.
+     * @param region A ProtectedRegion.
+     */
+    public static void RegisterRegion(String keystring, ProtectedRegion region)
     {
         registeredregions.put(keystring, region);
         playercount.put(region, 0);
     }
 
-    public void addPlayer(Player player, ProtectedRegion region)
+    public static void addPlayerToRegion(Player player, ProtectedRegion region)
     {
         int currentplayercount = playercount.get(region);
         currentplayercount = currentplayercount + 1;
         playercount.put(region, currentplayercount);
     }
 
-    public void removePlayer(Player player, ProtectedRegion region)
+    public static void removePlayerFromRegion(Player player, ProtectedRegion region)
     {
         int currentplayercount = playercount.get(region);
         currentplayercount = currentplayercount - 1;
         playercount.put(region, currentplayercount);
+    }
+    
+    public static int getRegionalPlayerCount(ProtectedRegion region)
+    {
+        return playercount.get(region);
     }
 }

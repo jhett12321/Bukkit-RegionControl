@@ -18,9 +18,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event) {
-        ServerLogic serverlogic = new ServerLogic();
-
-        serverlogic.addPlayer(event.getPlayer(), event.getNewRegion());
-        serverlogic.removePlayer(event.getPlayer(), event.getOldRegion());
+        ServerLogic.addPlayerToRegion(event.getPlayer(), event.getNewRegion());
+        ServerLogic.removePlayerFromRegion(event.getPlayer(), event.getOldRegion());
     }
 }

@@ -9,6 +9,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 public final class RegionControl extends JavaPlugin {
 
 private PlayerListener playerlistener;
+private SpoutPlayerListener spoutplayerlistener;
 private static RegionControl plugin;
 
     @Override
@@ -21,11 +22,11 @@ private static RegionControl plugin;
             setEnabled(false);
         }
 //Server Setup
-        ServerLogic serverlogic = new ServerLogic();
-        serverlogic.init();
+        ServerLogic.init();
         if(SpoutAvailable())
         {
-            
+            spoutplayerlistener = new SpoutPlayerListener();
+            pm.registerEvents(spoutplayerlistener, this);
         } else {
             playerlistener = new PlayerListener();
             pm.registerEvents(playerlistener, this);

@@ -4,6 +4,7 @@ import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 import com.sk89q.worldedit.Vector;
@@ -19,6 +20,11 @@ public class ClientLogic {
         addPlayerRegionWatcher(player);
     }
 
+    public void spoutInit(SpoutPlayer player)
+    {
+        addPlayerRegionWatcher(player.getPlayer());
+    }
+    
     public void addPlayerRegionWatcher(Player player)
     {
         WorldGuardPlugin worldGuard = RegionControl.getWorldGuard();
