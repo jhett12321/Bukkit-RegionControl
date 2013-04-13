@@ -5,20 +5,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 
 public class PlayerListener implements Listener {
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        PlayerRegionManager playerregionmanager = new PlayerRegionManager();
-        playerregionmanager.addPlayerRegionWatcher(player);
+        ClientLogic clientlogic = new ClientLogic();
+        clientlogic.init(player);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onEnterRegion(ChangeRegionEvent event) {
-//        Player player = event.getPlayer();
-        
+    public void onChangeRegion(ChangeRegionEvent event) {
+        ServerLogic serverlogic = new ServerLogic();
+
+        serverlogic.addPlayer(event.getPlayer(), event.getNewRegion());
+        serverlogic.removePlayer(event.getPlayer(), event.getOldRegion());
     }
 }

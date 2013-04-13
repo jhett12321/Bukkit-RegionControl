@@ -27,7 +27,7 @@ public class ChangeRegionEvent extends Event {
         return oldregion;
     }
     
-    public ProtectedRegion getRegion() {
+    public ProtectedRegion getNewRegion() {
         return newregion;
     }
 
