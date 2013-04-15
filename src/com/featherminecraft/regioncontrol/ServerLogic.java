@@ -1,14 +1,10 @@
 package com.featherminecraft.regioncontrol;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ServerLogic {
@@ -17,16 +13,13 @@ public class ServerLogic {
 
     public static void init()
     {
-        List<World> worlds = Bukkit.getWorlds();
-        WorldGuardPlugin worldguard = RegionControl.getWorldGuard();
+        Utils.getWorldGuard();
         Map<String, ProtectedRegion> regions = null;
-        for(World world : worlds)
+//            regions = worldguard.getRegionManager(world).getRegions();
+        regions = Config.getRegions();
+        for(Entry<String, ProtectedRegion> region : regions.entrySet())
         {
-            regions = worldguard.getRegionManager(world).getRegions(); //TODO replace with config file for player to state controllable regions instead of loading all regions.
-            for(Entry<String, ProtectedRegion> region : regions.entrySet())
-            {
-                RegisterRegion(region.getKey(), region.getValue());
-            }
+            RegisterRegion(region.getKey(), region.getValue());
         }
     }
 

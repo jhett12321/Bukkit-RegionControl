@@ -27,7 +27,7 @@ public class ClientLogic {
     
     public void addPlayerRegionWatcher(Player player)
     {
-        WorldGuardPlugin worldGuard = RegionControl.getWorldGuard();
+        WorldGuardPlugin worldGuard = Utils.getWorldGuard();
         RegionManager regionmanager;
         Vector currentlocation;
         Vector newlocation;
@@ -53,14 +53,6 @@ public class ClientLogic {
         
         for(;;)
         {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-
-            if(!player.isOnline())
-                break; //Player Disconnected
-
             regionmanager = worldGuard.getRegionManager(player.getWorld());
             currentlocation = toVector(player.getLocation());
             currentregions = regionmanager.getApplicableRegions(currentlocation);

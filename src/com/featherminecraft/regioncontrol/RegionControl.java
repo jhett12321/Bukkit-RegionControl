@@ -1,29 +1,105 @@
+/* Task List
+TODO:
+    TODO 1. Code Testing
+Details:
+File/s: All
+JIRA Link:
+Classification: Improvement
+Priority: Major
+
+    TODO 2. Add configuration options to allow disabling of spout support
+Details:
+File/s: RegionControl.java Line 80, Config.java
+JIRA Link: 
+Classification: Improvement
+Priority: Minor
+
+    TODO 3. Finish Configuration Code
+Details:
+File/s: RegionControl.java Line 10, Config.java, Utils.java
+JIRA Link: 
+Classification: Improvement
+Priority: Major
+
+    TODO 4. Implement Control Points
+Details:
+File/s: ServerLogic.java Line 66
+JIRA Link: 
+Classification: New Feature
+Priority: Major
+
+    TODO 5. Implement onDisable Code
+Details:
+File/s: RegionControl.java Line 91
+JIRA Link: 
+Classification: New Feature
+Priority: Blocker
+
+    TODO 6. Make sure that static, public/private etc is being used properly in functions.
+Details:
+File/s: RegionControl.java
+JIRA Link: 
+Classification: Improvement
+Priority: Major
+
+    TODO 7. Implement Dynmap (Or some similar full screen map) to client that shows current region control, 
+Details:
+File/s: Unknown
+JIRA Link: 
+Classification: New Feature
+Priority: Trivial
+
+    TODO 8. Spawn Points
+    EDIT: Spawn points will be handled in a "re-spawn" room, with signs indicating where a player can spawn. Right Clicking the sign will spawn the player at that location.
+    Valid spawn points will be regions that you own. It is unknown how this will be determined, or updated to the client.
+Details:
+File/s: Unknown
+JIRA Link: 
+Classification: New Feature
+Priority: Minor
+
+    TODO 9. Replace main configuration with individual configuration files
+Details:
+File/s: Config.java All Lines
+JIRA Link: 
+Classification: Improvement
+Priority: Minor
+
+ISSUE/S:
+    ISSUE 1. Regions that are named the same as another region in another world, will be identified as one region.
+Details:
+File: ServerLogic.java Line 23
+JIRA Link:
+Classification: Bug
+Confirmation Status: Unconfirmed
+Priority: Minor
+ */
+
 package com.featherminecraft.regioncontrol;
 
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public final class RegionControl extends JavaPlugin {
 
 private PlayerListener playerlistener;
 private SpoutPlayerListener spoutplayerlistener;
-private static RegionControl plugin;
+public static RegionControl plugin;
 
     @Override
     public void onEnable() {
         RegionControl.plugin = this;
+        this.saveDefaultConfig();
 
         PluginManager pm = getServer().getPluginManager();
-        if(!WorldGuardAvailable())
+        if(!Utils.WorldGuardAvailable())
         {
             setEnabled(false);
+            //Disable plugin due to missing dependency.
         }
 //Server Setup
         ServerLogic.init();
-        if(SpoutAvailable())
+        if(Utils.SpoutAvailable())
         {
             spoutplayerlistener = new SpoutPlayerListener();
             pm.registerEvents(spoutplayerlistener, this);
@@ -35,44 +111,5 @@ private static RegionControl plugin;
 
     @Override
     public void onDisable() {
-    }
-
-    public static boolean WorldGuardAvailable()
-    {
-        Plugin worldguard = RegionControl.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-
-        if (worldguard == null) {
-            //Worldguard is not installed
-            return false;
-        } else if (!worldguard.isEnabled()) {
-            //Worldguard is not enabled
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public static WorldGuardPlugin getWorldGuard() {
-        Plugin plugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-     
-        if(WorldGuardAvailable())
-            return (WorldGuardPlugin) plugin;
-        else
-            return null;
-    }
-
-    public static boolean SpoutAvailable()
-    {
-        Plugin spoutplugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("SpoutPlugin");
-
-        if (spoutplugin == null) {
-            //Spout is not installed
-            return false;
-        } else if (!spoutplugin.isEnabled()) {
-            //Spout is not enabled
-            return false;
-        } else {
-            return true;
-        }
     }
 }

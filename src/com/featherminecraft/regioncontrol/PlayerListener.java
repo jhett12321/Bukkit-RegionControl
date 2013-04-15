@@ -19,6 +19,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event) {
         ServerLogic.addPlayerToRegion(event.getPlayer(), event.getNewRegion());
-        ServerLogic.removePlayerFromRegion(event.getPlayer(), event.getOldRegion());
+        if(event.getOldRegion() != null) //Perhaps the player just joined.
+            ServerLogic.removePlayerFromRegion(event.getPlayer(), event.getOldRegion());
     }
 }
