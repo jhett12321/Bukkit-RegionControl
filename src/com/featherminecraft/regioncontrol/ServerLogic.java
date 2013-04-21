@@ -1,5 +1,6 @@
 package com.featherminecraft.regioncontrol;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -8,8 +9,8 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ServerLogic {
-    static Map<String, ProtectedRegion> registeredregions;
-    static Map<ProtectedRegion, Integer> playercount;
+    static Map<ProtectedRegion, ProtectedRegion> registeredregions;
+    static Map<ProtectedRegion, List<Player>> players;
 
     public static void init()
     {
@@ -19,7 +20,7 @@ public class ServerLogic {
         regions = Config.getRegions();
         for(Entry<String, ProtectedRegion> region : regions.entrySet())
         {
-            RegisterRegion(region.getKey(), region.getValue());
+            RegisterRegion(region.getValue());
         }
     }
 
@@ -27,33 +28,37 @@ public class ServerLogic {
      * Registers a region into the registered regions list.
      *
      * The registered regions list is used to calculate
-     * region player counts.
+     * region player counts, and more.
      *
      * @param keystring A String associated with the map of this region.
      * @param region A ProtectedRegion.
      */
-    public static void RegisterRegion(String keystring, ProtectedRegion region)
+    public static void RegisterRegion(ProtectedRegion region)
     {
-        registeredregions.put(keystring, region);
-        playercount.put(region, 0);
+        registeredregions.put(region, region);
+        players.put(region, null);
     }
 
     public static void addPlayerToRegion(Player player, ProtectedRegion region)
     {
-        int currentplayercount = playercount.get(region);
-        currentplayercount = currentplayercount + 1;
-        playercount.put(region, currentplayercount);
+        List<Player> currentplayers = players.get(region);
+        currentplayers.add(player);
+        players.put(region, currentplayers);
     }
 
     public static void removePlayerFromRegion(Player player, ProtectedRegion region)
     {
-        int currentplayercount = playercount.get(region);
-        currentplayercount = currentplayercount - 1;
-        playercount.put(region, currentplayercount);
+        List<Player> currentplayers = players.get(region);
+        currentplayers.remove(player);
     }
     
-    public static int getRegionalPlayerCount(ProtectedRegion region)
+    public static int getRegionPlayerCount(ProtectedRegion region)
     {
-        return playercount.get(region);
+        return players.get(region).size();
+    }
+    
+    public static List<Player> getRegionPlayerList(ProtectedRegion region)
+    {
+        return players.get(region);
     }
 }

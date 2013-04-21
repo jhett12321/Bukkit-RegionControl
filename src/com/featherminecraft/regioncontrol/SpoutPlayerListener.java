@@ -7,7 +7,9 @@ import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 public class SpoutPlayerListener implements Listener {
     @EventHandler
     public void onSpoutcraftEnable(SpoutCraftEnableEvent event) {
+        SpoutClientLogic spoutclientlogic = new SpoutClientLogic();
         ClientLogic clientlogic = new ClientLogic();
-        clientlogic.spoutInit(event.getPlayer());
+        spoutclientlogic.spoutInit(event.getPlayer());
+        clientlogic.init(event.getPlayer().getPlayer());
     }
 }
