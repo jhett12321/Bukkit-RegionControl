@@ -4,23 +4,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ServerLogic {
-    static Map<ProtectedRegion, ProtectedRegion> registeredregions;
-    static Map<ProtectedRegion, List<Player>> players;
+    static Map<String, ProtectedRegion> registeredregions;
+    static Map<String, List<Player>> players;
 
     public static void init()
     {
         Utils.getWorldGuard();
         Map<String, ProtectedRegion> regions = null;
-//            regions = worldguard.getRegionManager(world).getRegions();
-        regions = Config.getRegions();
-        for(Entry<String, ProtectedRegion> region : regions.entrySet())
+        List<World> worlds = Config.getWorlds();
+        for(World world : worlds)
         {
-            RegisterRegion(region.getValue());
+            regions = Config.getRegionsForWorld(world);
+            for(Entry<String, ProtectedRegion> region : regions.entrySet())
+            {
+                if(region.getValue().getTypeName() != "__global__") {
+                    RegisterRegion(region.getValue(), world);
+                }
+            }
         }
     }
 
@@ -30,35 +36,35 @@ public class ServerLogic {
      * The registered regions list is used to calculate
      * region player counts, and more.
      *
-     * @param keystring A String associated with the map of this region.
      * @param region A ProtectedRegion.
+     * @param world The world which this region is located.
      */
-    public static void RegisterRegion(ProtectedRegion region)
+    public static void RegisterRegion(ProtectedRegion region, World world)
     {
-        registeredregions.put(region, region);
-        players.put(region, null);
+        registeredregions.put(world.getName() + region.getId(), region);
+        players.put(world.getName() + region.getId(), null);
     }
 
-    public static void addPlayerToRegion(Player player, ProtectedRegion region)
+    public static void addPlayerToRegion(Player player, ProtectedRegion region, World world)
     {
-        List<Player> currentplayers = players.get(region);
+        List<Player> currentplayers = players.get(world.getName() + region.getId());
         currentplayers.add(player);
-        players.put(region, currentplayers);
+        players.put(world.getName() + region.getId(), currentplayers);
     }
 
-    public static void removePlayerFromRegion(Player player, ProtectedRegion region)
+    public static void removePlayerFromRegion(Player player, ProtectedRegion region, World world)
     {
-        List<Player> currentplayers = players.get(region);
+        List<Player> currentplayers = players.get(world.getName() + region.getId());
         currentplayers.remove(player);
     }
     
-    public static int getRegionPlayerCount(ProtectedRegion region)
+    public static int getRegionPlayerCount(ProtectedRegion region, World world)
     {
-        return players.get(region).size();
+        return players.get(world.getName() + region.getId()).size();
     }
     
-    public static List<Player> getRegionPlayerList(ProtectedRegion region)
+    public static List<Player> getRegionPlayerList(ProtectedRegion region, World world)
     {
-        return players.get(region);
+        return players.get(world.getName() + region.getId());
     }
 }

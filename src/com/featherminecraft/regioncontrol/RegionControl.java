@@ -65,14 +65,14 @@ JIRA Link:
 Classification: Improvement
 Priority: Minor
 
-ISSUE/S:
-    ISSUE 1. Regions that are named the same as another region in another world, will be identified as one region.
+    TODO 10. Implement Faction Object type.
 Details:
-File: ServerLogic.java Line 23
-JIRA Link:
-Classification: Bug
-Confirmation Status: Unconfirmed
+File/s: Config.java All Lines
+JIRA Link: 
+Classification: Improvement
 Priority: Minor
+
+ISSUE/S:
  */
 
 package com.featherminecraft.regioncontrol;

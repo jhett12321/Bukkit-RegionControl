@@ -4,25 +4,35 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class Config {
     static Map<String, ProtectedRegion> regions;
+    static List<World> worlds;
 
-    public static Map<String, ProtectedRegion> getRegions()
+    public static Map<String, ProtectedRegion> getRegionsForWorld(World world)
     {
-        Utils utils = new Utils();
-        List<String> worlds = utils.getConfigSectionValues("worlds");
-        List<String> regionnames;
-        for(String world : worlds)
+        ConfigUtils configutils = new ConfigUtils();
+        List<String> regionnames = configutils.getConfigValues(world + ".controllableregions");
+        for(String region : regionnames)
         {
-            regionnames = utils.getConfigValues(world + ".controllableregions");
-            for(String region : regionnames)
-            {
-                regions.put(region, Utils.getWorldGuard().getRegionManager(Bukkit.getWorld(world)).getRegion(region));
-            }
+            regions.put(region, Utils.getWorldGuard().getRegionManager(world).getRegion(region));
         }
         return regions;
+    }
+    
+    public static List<World> getWorlds()
+    {
+        ConfigUtils configutils = new ConfigUtils();
+        List<String> worldnames = configutils.getConfigSectionValues("worlds");
+        worlds = null;
+        for(String world : worldnames)
+        {
+            worlds.add(Bukkit.getWorld(world));
+        }
+        return worlds;
     }
 }
