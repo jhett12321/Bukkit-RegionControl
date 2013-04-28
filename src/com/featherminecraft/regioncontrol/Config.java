@@ -5,8 +5,9 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 
+import com.featherminecraft.regioncontrol.utils.ConfigUtils;
+import com.featherminecraft.regioncontrol.utils.Utils;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class Config {

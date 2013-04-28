@@ -1,13 +1,9 @@
-package com.featherminecraft.regioncontrol;
+package com.featherminecraft.regioncontrol.utils;
 
 import java.util.List;
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.featherminecraft.regioncontrol.RegionControl;
 
 public class ConfigUtils {
     private List<String> values;

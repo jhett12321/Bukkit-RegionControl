@@ -35,7 +35,7 @@ JIRA Link:
 Classification: New Feature
 Priority: Blocker
 
-    TODO 6. Make sure that static, public/private etc is being used properly in functions.
+    TODO 6. Make sure that static is being used properly in functions.
 Details:
 File/s: RegionControl.java
 JIRA Link: 
@@ -79,6 +79,10 @@ package com.featherminecraft.regioncontrol;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.featherminecraft.regioncontrol.listeners.PlayerListener;
+import com.featherminecraft.regioncontrol.listeners.SpoutPlayerListener;
+import com.featherminecraft.regioncontrol.utils.Utils;
 
 public final class RegionControl extends JavaPlugin {
 

@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
+import com.featherminecraft.regioncontrol.utils.Utils;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -16,10 +17,11 @@ public class ClientLogic {
 
     public void init(Player player)
     {
+        player.teleport(player.getWorld().getSpawnLocation());
         addPlayerRegionWatcher(player);
     }
     
-    public void addPlayerRegionWatcher(Player player)
+    private void addPlayerRegionWatcher(Player player)
     {
         WorldGuardPlugin worldGuard = Utils.getWorldGuard();
         RegionManager regionmanager;
@@ -42,7 +44,7 @@ public class ClientLogic {
             }
         }
         
-        ChangeRegionEvent changeregionevent = new ChangeRegionEvent(newregion, currentregion, player);
+        ChangeRegionEvent changeregionevent = new ChangeRegionEvent(newregion, currentregion, player, player.getWorld());
         Bukkit.getServer().getPluginManager().callEvent(changeregionevent);
         
         for(;;)

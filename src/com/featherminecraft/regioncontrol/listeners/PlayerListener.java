@@ -1,11 +1,14 @@
-package com.featherminecraft.regioncontrol;
+package com.featherminecraft.regioncontrol.listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import com.featherminecraft.regioncontrol.ClientLogic;
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
+import com.featherminecraft.regioncontrol.utils.ServerUtils;
 
 public class PlayerListener implements Listener {
 
@@ -18,8 +21,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event) {
-        ServerLogic.addPlayerToRegion(event.getPlayer(), event.getNewRegion());
+        ServerUtils.addPlayerToRegion(event.getPlayer(), event.getNewRegion(), event.getWorld());
         if(event.getOldRegion() != null) //Perhaps the player just joined.
-            ServerLogic.removePlayerFromRegion(event.getPlayer(), event.getOldRegion());
+            ServerUtils.removePlayerFromRegion(event.getPlayer(), event.getOldRegion(), event.getWorld());
     }
 }

@@ -1,14 +1,8 @@
-package com.featherminecraft.regioncontrol;
+package com.featherminecraft.regioncontrol.utils;
 
-import java.util.List;
-
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
-import org.getspout.spoutapi.plugin.SpoutPlugin;
-
+import com.featherminecraft.regioncontrol.RegionControl;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class Utils {
     public static boolean WorldGuardAvailable()
@@ -28,7 +22,6 @@ public class Utils {
 
     public static WorldGuardPlugin getWorldGuard() {
         Plugin plugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-     
         if(WorldGuardAvailable())
             return (WorldGuardPlugin) plugin;
         else
@@ -53,12 +46,5 @@ public class Utils {
         }
     }
 
-    public static SpoutPlugin getSpoutPlugin() {
-        Plugin spoutplugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("SpoutPlugin");
-     
-        if(SpoutAvailable())
-            return (SpoutPlugin) spoutplugin;
-        else
-            return null;
-    }
+
 }

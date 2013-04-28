@@ -8,6 +8,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.featherminecraft.regioncontrol.ServerLogic;
+import com.featherminecraft.regioncontrol.utils.ServerUtils;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class RegionCaptureEvent extends Event {
@@ -21,7 +22,7 @@ public class RegionCaptureEvent extends Event {
 
     public RegionCaptureEvent(ProtectedRegion region, World world) {
         this.region = region;
-        List Players = ServerLogic.getRegionPlayerList(region, world);
+        List players = ServerUtils.getRegionPlayerList(region, world);
         this.oldowner = oldowner;
         this.newowner = newowner;
         this.world = world;
