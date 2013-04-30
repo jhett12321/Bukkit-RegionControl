@@ -6,6 +6,7 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 public class SpoutClientLogic {
 
     public static Label regioname;
+    public static Texture factionicon;
     public Widget regionname;
     
     public void spoutInit(SpoutPlayer splayer)
@@ -16,6 +17,7 @@ public class SpoutClientLogic {
         Screen screen = splayer.getMainScreen();
         
         regionname = new GenericLabel().setText(""); //Region Name to be Displayed at all times.
+        factionicon = new GenericTexture().setUrl("defaultfaction.png");
         
         screen.attachWidgets(RegionControl.plugin, regionname, regionname);
     }

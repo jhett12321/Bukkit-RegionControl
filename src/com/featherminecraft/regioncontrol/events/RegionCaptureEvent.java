@@ -20,9 +20,9 @@ public class RegionCaptureEvent extends Event {
     private String newowner;
     private World world;
 
-    public RegionCaptureEvent(ProtectedRegion region, World world) {
+    public RegionCaptureEvent(ProtectedRegion region, World world, String oldowner, String newowner) {
         this.region = region;
-        List players = ServerUtils.getRegionPlayerList(region, world);
+        this.players = ServerUtils.getRegionPlayerList(region, world);
         this.oldowner = oldowner;
         this.newowner = newowner;
         this.world = world;

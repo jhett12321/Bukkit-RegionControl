@@ -25,8 +25,10 @@ public class GenericListener {
             {
                 SpoutPlayer player = SpoutManager.getPlayer(event.getPlayer());
                 SpoutUtils spoututils = new SpoutUtils();
+                Utils utils = new Utils();
                 if(player.isSpoutCraftEnabled())
                     spoututils.UpdateLabelText(SpoutClientLogic.regioname, event.getNewRegion().getId().replace("_", " "));
+                    spoututils.UpdateTexture(SpoutClientLogic.factionicon, utils.getOwner(event.getNewRegion()));
             }
             
             /*else

@@ -67,6 +67,7 @@ public class ClientLogic {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+                //Thread Interrupted during sleep period.
             }
 
             if(!player.isOnline())

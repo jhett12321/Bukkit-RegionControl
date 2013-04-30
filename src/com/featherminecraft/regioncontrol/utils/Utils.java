@@ -1,8 +1,12 @@
 package com.featherminecraft.regioncontrol.utils;
 
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.plugin.Plugin;
 import com.featherminecraft.regioncontrol.RegionControl;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class Utils {
     public static boolean WorldGuardAvailable()
@@ -46,5 +50,19 @@ public class Utils {
         }
     }
 
-
+    public String getOwner(ProtectedRegion region) {
+        ConfigUtils configutils = new ConfigUtils();
+        Set<String> owners = region.getOwners().getPlayers();
+        List<String> factions = configutils.getConfigValues("factions");
+        for( String owner : owners)
+        {
+            for( String faction : factions)
+            {
+                if(owner == faction)
+                    return owner;
+            }
+        }
+        //Shouldn't Get Here.
+        return null;
+    }
 }
