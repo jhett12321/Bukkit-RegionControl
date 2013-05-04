@@ -31,4 +31,14 @@ public class ServerUtils {
     {
         return ServerLogic.players.get(world.getName() + region.getId());
     }
+    
+    public static int getRegionCaptureTimer(ProtectedRegion region, World world)
+    {
+        return ServerLogic.capturetimers.get(world.getName() + region.getId());
+    }
+    
+    public static void setRegionCaptureTimer(ProtectedRegion region, World world, int newvalue)
+    {
+        ServerLogic.capturetimers.put(world.getName() + region.getId(), newvalue);
+    }
 }

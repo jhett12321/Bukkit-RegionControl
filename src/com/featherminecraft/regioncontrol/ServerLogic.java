@@ -7,16 +7,23 @@ import java.util.Map.Entry;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.featherminecraft.regioncontrol.utils.Utils;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ServerLogic {
     static Map<String, ProtectedRegion> registeredregions;
     public static Map<String, List<Player>> players;
+    public static Map<String, Integer> capturetimers;
+    public static Map<String, Faction> factions;
 
     public static void init()
     {
-        Utils.getWorldGuard();
+        //Faction Setup
+        Map<String, String/*Insert Permission Group Data Type*/> factions = Config.getFactions();
+        for(Entry<String, String> faction : factions.entrySet())
+        {
+            RegisterFaction(faction.getKey(), faction.getValue());
+        }
+        //Region Setup
         Map<String, ProtectedRegion> regions = null;
         List<World> worlds = Config.getWorlds();
         for(World world : worlds)
@@ -24,8 +31,9 @@ public class ServerLogic {
             regions = Config.getRegionsForWorld(world);
             for(Entry<String, ProtectedRegion> region : regions.entrySet())
             {
-                if(region.getValue().getTypeName() != "__global__") {
+                if(region.getValue().getId() != "__global__") {
                     RegisterRegion(region.getValue(), world);
+                    //TODO register control points for each region.
                 }
             }
         }
@@ -44,5 +52,18 @@ public class ServerLogic {
     {
         registeredregions.put(world.getName() + region.getId(), region);
         players.put(world.getName() + region.getId(), null);
+        capturetimers.put(world.getName() + region.getId(), 0);
+    }
+    
+    private static void RegisterFaction(String factionname,String permissiongroup)
+    {
+        Faction faction = new Faction(factionname,permissiongroup);
+        factions.put(factionname,faction);
+    }
+    
+    private static void RegisterControlPoint(String controlpointname, ProtectedRegion region, World world)
+    {
+        //TODO Get config values of control point location.
+        ControlPoint controlpoint = new ControlPoint(controlpointname, region, world, 0, 0, 0);
     }
 }

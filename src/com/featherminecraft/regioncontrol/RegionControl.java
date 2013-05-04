@@ -42,7 +42,7 @@ JIRA Link:
 Classification: Improvement
 Priority: Major
 
-    TODO 7. Implement Dynmap (Or some similar full screen map) to client that shows current region control, 
+    TODO 7. Implement Dynmap (Or some similar full screen map) to client that shows current region control.
 Details:
 File/s: Unknown
 JIRA Link: 
@@ -65,17 +65,27 @@ JIRA Link:
 Classification: Improvement
 Priority: Minor
 
-    TODO 10. Implement Faction Object type.
+    TODO 10. Map Filters
 Details:
-File/s: Config.java All Lines
+Pre-req: Dynmap Implementation
 JIRA Link: 
 Classification: Improvement
-Priority: Minor
+Priority: Trivial
+
+    TODO 11. World Saving - Remember who owned each region after server restart/shutdown.
+Details:
+File/s: ServerLogic.java
+JIRA Link: 
+Classification: New Feature
+Priority: Critical
 
 ISSUE/S:
  */
 
 package com.featherminecraft.regioncontrol;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -83,6 +93,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.featherminecraft.regioncontrol.listeners.PlayerListener;
 import com.featherminecraft.regioncontrol.listeners.SpoutPlayerListener;
 import com.featherminecraft.regioncontrol.utils.Utils;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public final class RegionControl extends JavaPlugin {
 
@@ -115,5 +126,10 @@ public static RegionControl plugin;
 
     @Override
     public void onDisable() {
+        Map<String, ProtectedRegion> registered_regions = ServerLogic.registeredregions;
+        for(Entry<String, ProtectedRegion> region : registered_regions.entrySet())
+        {
+            region.getValue();
+        }
     }
 }

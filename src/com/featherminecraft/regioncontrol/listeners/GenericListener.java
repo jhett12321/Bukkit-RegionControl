@@ -8,6 +8,8 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.regioncontrol.SpoutClientLogic;
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
+import com.featherminecraft.regioncontrol.events.ControlPointCaptureEvent;
+import com.featherminecraft.regioncontrol.events.RegionCaptureEvent;
 import com.featherminecraft.regioncontrol.utils.ServerUtils;
 import com.featherminecraft.regioncontrol.utils.SpoutUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
@@ -34,6 +36,18 @@ public class GenericListener {
             /*else
              * tabapi
             */
+        }
+        
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onRegionCapture(RegionCaptureEvent event)
+        {
+            
+        }
+        
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onControlPointCapture(ControlPointCaptureEvent event)
+        {
+            
         }
     }
 }
