@@ -79,14 +79,19 @@ JIRA Link:
 Classification: New Feature
 Priority: Critical
 
+    TODO 12. Capture Timers
+Details:
+File/s: CaptureTimer.java
+JIRA Link: 
+Classification: N/A
+Priority: Critical - In-Progress
+
 ISSUE/S:
  */
 
 package com.featherminecraft.regioncontrol;
 
 import java.util.Map;
-import java.util.Map.Entry;
-
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -100,11 +105,16 @@ public final class RegionControl extends JavaPlugin {
 private PlayerListener playerlistener;
 private SpoutPlayerListener spoutplayerlistener;
 public static RegionControl plugin;
+public static boolean isfirstrun;
 
     @Override
     public void onEnable() {
         RegionControl.plugin = this;
-        this.saveDefaultConfig();
+        if(this.getConfig() == null)
+        {
+            this.saveDefaultConfig();
+            RegionControl.isfirstrun = true;
+        }
 
         PluginManager pm = getServer().getPluginManager();
         if(!Utils.WorldGuardAvailable())
@@ -127,9 +137,7 @@ public static RegionControl plugin;
     @Override
     public void onDisable() {
         Map<String, ProtectedRegion> registered_regions = ServerLogic.registeredregions;
-        for(Entry<String, ProtectedRegion> region : registered_regions.entrySet())
-        {
-            region.getValue();
-        }
+        Map<String, Integer> capture_timers = ServerLogic.capturetimers;
+
     }
 }

@@ -9,7 +9,7 @@ public class SpoutClientLogic {
     public static Texture factionicon;
     public Widget regionname;
     
-    public void spoutInit(SpoutPlayer splayer)
+    public SpoutClientLogic(SpoutPlayer splayer)
     {
         //Test Implementation of Spout Widget.
         Color back = new Color(0.0F, 0.0F, 0.0F, 0.75F);

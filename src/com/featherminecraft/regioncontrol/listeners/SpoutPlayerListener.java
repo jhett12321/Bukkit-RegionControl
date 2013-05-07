@@ -10,9 +10,7 @@ import com.featherminecraft.regioncontrol.SpoutClientLogic;
 public class SpoutPlayerListener implements Listener {
     @EventHandler
     public void onSpoutcraftEnable(SpoutCraftEnableEvent event) {
-        SpoutClientLogic spoutclientlogic = new SpoutClientLogic();
-        ClientRunnables clientlogic = new ClientRunnables();
-        spoutclientlogic.spoutInit(event.getPlayer());
-        clientlogic.init(event.getPlayer().getPlayer());
+        new SpoutClientLogic(event.getPlayer());
+        new ClientRunnables(event.getPlayer().getPlayer());
     }
 }

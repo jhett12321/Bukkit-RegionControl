@@ -58,4 +58,9 @@ public class Config {
         }
         return (Map<String, String>) factions;
     }
+
+    public static Faction getDefaultFaction() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

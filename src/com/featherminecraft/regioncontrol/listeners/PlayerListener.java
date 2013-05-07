@@ -1,9 +1,15 @@
 package com.featherminecraft.regioncontrol.listeners;
 
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -16,6 +22,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import com.featherminecraft.regioncontrol.ClientRunnables;
+import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.RegionControl;
 import com.featherminecraft.regioncontrol.utils.ServerUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
@@ -44,6 +51,45 @@ public class PlayerListener implements Listener {
             {
                 if(region.contains(location))
                     ServerUtils.removePlayerFromRegion(event.getPlayer(), region, event.getPlayer().getWorld());
+            }
+        }
+    }
+    
+    public void onEntityDamage(EntityDamageByEntityEvent event)
+    {
+        Player playerdamager = null;
+        Player damagedplayer = null;
+        
+        Entity damager = event.getDamager();
+        Entity damagedentity = event.getEntity();
+        
+        if((damagedentity instanceof Player))
+        {
+            damagedplayer = (Player) damagedentity;
+        }
+        
+        if(damager instanceof Player)
+        {
+            playerdamager = (Player) damager;
+        }
+        
+        else if(damager instanceof Projectile)
+        {
+            Projectile projectile = (Projectile) damager;
+            Entity entitydamager = projectile.getShooter();
+            if(entitydamager instanceof Player && entitydamager != null)
+            {
+                playerdamager = (Player) entitydamager;
+            }
+        }
+        
+        if(playerdamager != null && damagedplayer != null)
+        {
+            Faction damagerfaction = Faction.getPlayerFaction(playerdamager);
+            Faction damagedentityfaction = Faction.getPlayerFaction(damagedplayer);
+            if(damagerfaction == damagedentityfaction)
+            {
+                event.setCancelled(true);
             }
         }
     }

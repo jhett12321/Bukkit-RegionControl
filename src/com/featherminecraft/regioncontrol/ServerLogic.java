@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -14,6 +15,8 @@ public class ServerLogic {
     public static Map<String, List<Player>> players;
     public static Map<String, Integer> capturetimers;
     public static Map<String, Faction> factions;
+    public static Map<String, Faction> regionowners;
+    public static Map<String, ControlPoint> controlpoints;
 
     public static void init()
     {
@@ -50,9 +53,11 @@ public class ServerLogic {
      */
     private static void RegisterRegion(ProtectedRegion region, World world)
     {
+        Faction defaultfaction = Config.getDefaultFaction();
         registeredregions.put(world.getName() + region.getId(), region);
         players.put(world.getName() + region.getId(), null);
         capturetimers.put(world.getName() + region.getId(), 0);
+        regionowners.put(world.getName() + region.getId(), defaultfaction);
     }
     
     private static void RegisterFaction(String factionname,String permissiongroup)
@@ -61,9 +66,18 @@ public class ServerLogic {
         factions.put(factionname,faction);
     }
     
-    private static void RegisterControlPoint(String controlpointname, ProtectedRegion region, World world)
+    /**
+     * Registers a control point.
+     * @param controlpointid A string, consisting of either "a", "b", "c" or "d"
+     * @param location A Location where the control point is located.
+     * @param region The region which this control point is located.
+     * @param world The world which this control point is located.
+     */
+    @SuppressWarnings("unused")
+    private static void RegisterControlPoint(String controlpointid, Location location, ProtectedRegion region, World world)
     {
-        //TODO Get config values of control point location.
-        ControlPoint controlpoint = new ControlPoint(controlpointname, region, world, 0, 0, 0);
+        String controlpointname = world.getName() + "_" + region.getId() + "_" + controlpointid;
+        ControlPoint controlpoint = new ControlPoint(controlpointname, region, world, location);
+        controlpoints.put(controlpointname, controlpoint);
     }
 }

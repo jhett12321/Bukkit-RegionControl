@@ -7,48 +7,76 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ControlPoint {
 
-    private Location coordinates;
+    private String controlpointname;
+    private Location location;
     private Integer radius; //TODO
     private Boolean capturing;
-    private String controlpointname;
+    private Faction owner;
+    private ProtectedRegion region;
+    private World world;
     
-    public ControlPoint(String controlpointname, ProtectedRegion region, World world, double x, double y, double z)
+    public ControlPoint(String controlpointname, ProtectedRegion region, World world, Location location)
     {
-        coordinates = new Location(world, x, y, z);
-        world.getBlockAt(coordinates).setTypeId(76, false);
+        this.controlpointname = controlpointname;
+        this.location = location;
+        this.region = region;
+        this.world = world;
+        
         for(;;)
         {
-            if(capturing && world.getBlockAt(coordinates).getTypeId() == 76)
+            if (world.getBlockAt(this.location).getTypeId() == 0)
             {
-                world.getBlockAt(coordinates).setTypeId(75, false);
-                continue;
+                world.getBlockAt(this.location).setTypeId(76, false);
             }
-            else if(!capturing && world.getBlockAt(coordinates).getTypeId() == 75)
+            else if(this.capturing && world.getBlockAt(this.location).getTypeId() == 76)
             {
-                world.getBlockAt(coordinates).setTypeId(76, false);
-                continue;
+                world.getBlockAt(this.location).setTypeId(75, false);
+            }
+            else if(!capturing && world.getBlockAt(this.location).getTypeId() == 75)
+            {
+                world.getBlockAt(this.location).setTypeId(76, false);
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                
             }
         }
     }
-    
-    public String getName()
-    {
+
+    public String getControlpointname() {
         return controlpointname;
     }
-    
-    public Location getLocation()
-    {
-        return coordinates;
+
+    public Location getLocation() {
+        return location;
     }
 
-    public void setStatus(boolean isbeingcaptured)
-    {
-        if(isbeingcaptured)
-            capturing = true;
-        else
-            capturing = false;
+    public void setLocation(Location location) {
+        this.location = location;
     }
-    
-    
-    
+
+    public ProtectedRegion getRegion() {
+        return region;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public Integer getRadius() {
+        return radius;
+    }
+
+    public void setRadius(Integer radius) {
+        this.radius = radius;
+    }
+
+    public Faction getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Faction owner) {
+        this.owner = owner;
+    }
 }
