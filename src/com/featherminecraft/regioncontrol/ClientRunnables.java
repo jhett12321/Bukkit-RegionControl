@@ -17,7 +17,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class ClientRunnables extends BukkitRunnable {
 
     private Player player;
-    private ProtectedRegion currentregion;
+    private CapturableRegion currentregion;
 
     public ClientRunnables(Player player)
     {
@@ -31,7 +31,7 @@ public class ClientRunnables extends BukkitRunnable {
     @Override
     public void run()
     {
-        ProtectedRegion newregion = null;
+        CapturableRegion newregion = null;
         
         WorldGuardPlugin worldguard = Utils.getWorldGuard();
         RegionManager regionmanager = worldguard.getRegionManager(player.getWorld());
@@ -41,8 +41,9 @@ public class ClientRunnables extends BukkitRunnable {
         if(newregions != null && newregions.size() == 1) {
             for(ProtectedRegion region : newregions)
             {
-                if(region.contains(newlocation))
-                    newregion = region;
+                CapturableRegion capturableregion = new Utils().getCapturableRegionFromRegion(region, player.getWorld());
+                if(capturableregion.getRegion().contains(newlocation))
+                    newregion = capturableregion;
             }
         }
         

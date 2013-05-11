@@ -1,7 +1,5 @@
 package com.featherminecraft.regioncontrol;
 
-import org.bukkit.entity.Player;
-
 //W.I.P.
 public class Faction {
 
@@ -22,13 +20,6 @@ public class Faction {
             //Name Can't be null
         }
         Faction faction = ServerLogic.factions.get(name);
-        return faction;
-    }
-
-    public static Faction getPlayerFaction(Player player) {
-        //Get Player Permission Group
-        String group = null;
-        Faction faction = ServerLogic.factions.get(group);
         return faction;
     }
 }

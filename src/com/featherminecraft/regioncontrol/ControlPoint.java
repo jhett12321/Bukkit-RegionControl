@@ -1,50 +1,59 @@
 package com.featherminecraft.regioncontrol;
 
 import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.featherminecraft.regioncontrol.utils.PlayerUtils;
 
-public class ControlPoint {
+public class ControlPoint extends BukkitRunnable {
 
     private String controlpointname;
     private Location location;
     private Integer radius; //TODO
     private Boolean capturing;
     private Faction owner;
-    private ProtectedRegion region;
-    private World world;
+    private CapturableRegion region;
     
-    public ControlPoint(String controlpointname, ProtectedRegion region, World world, Location location)
+    public ControlPoint(String controlpointname, CapturableRegion region, Location location)
     {
         this.controlpointname = controlpointname;
         this.location = location;
         this.region = region;
-        this.world = world;
-        
-        for(;;)
+        if (region.getWorld().getBlockAt(this.location).getTypeId() == 0)
         {
-            if (world.getBlockAt(this.location).getTypeId() == 0)
+            region.getWorld().getBlockAt(this.location).setTypeId(76, false);
+        }
+    }
+    
+    @Override
+    public void run() {
+        Player[] players = RegionControl.plugin.getServer().getOnlinePlayers();
+        
+        double radiusSquared = radius*radius;
+     
+        for (Player player : players) {
+            if(player.getLocation().distanceSquared(location) <= radiusSquared)
             {
-                world.getBlockAt(this.location).setTypeId(76, false);
+                if(new PlayerUtils().getPlayerFaction(player) != this.owner)
+                {
+                    this.capturing = true;
+                }
             }
-            else if(this.capturing && world.getBlockAt(this.location).getTypeId() == 76)
-            {
-                world.getBlockAt(this.location).setTypeId(75, false);
-            }
-            else if(!capturing && world.getBlockAt(this.location).getTypeId() == 75)
-            {
-                world.getBlockAt(this.location).setTypeId(76, false);
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                
-            }
+         
+        }
+        
+        if(this.capturing && region.getWorld().getBlockAt(this.location).getTypeId() == 76)
+        {
+            region.getWorld().getBlockAt(this.location).setTypeId(75, false);
+        }
+        else if(!capturing && region.getWorld().getBlockAt(this.location).getTypeId() == 75)
+        {
+            region.getWorld().getBlockAt(this.location).setTypeId(76, false);
         }
     }
 
-    public String getControlpointname() {
+    public String getControlPointName() {
         return controlpointname;
     }
 
@@ -52,24 +61,12 @@ public class ControlPoint {
         return location;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public ProtectedRegion getRegion() {
+    public CapturableRegion getCapturableRegion() {
         return region;
-    }
-
-    public World getWorld() {
-        return world;
     }
 
     public Integer getRadius() {
         return radius;
-    }
-
-    public void setRadius(Integer radius) {
-        this.radius = radius;
     }
 
     public Faction getOwner() {
@@ -78,5 +75,10 @@ public class ControlPoint {
 
     public void setOwner(Faction owner) {
         this.owner = owner;
+    }
+    
+    public Boolean isCapturing()
+    {
+        return capturing;
     }
 }

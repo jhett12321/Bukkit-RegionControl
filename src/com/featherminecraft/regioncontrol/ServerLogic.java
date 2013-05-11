@@ -11,11 +11,11 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ServerLogic {
-    static Map<String, ProtectedRegion> registeredregions;
-    public static Map<String, List<Player>> players;
-    public static Map<String, Integer> capturetimers;
+    public static Map<String, CapturableRegion> registeredregions;
+    public static Map<CapturableRegion, List<Player>> players;
+    public static Map<CapturableRegion, Integer> capturetimers;
     public static Map<String, Faction> factions;
-    public static Map<String, Faction> regionowners;
+    public static Map<CapturableRegion, Faction> regionowners;
     public static Map<String, ControlPoint> controlpoints;
 
     public static void init()
@@ -36,7 +36,6 @@ public class ServerLogic {
             {
                 if(region.getValue().getId() != "__global__") {
                     RegisterRegion(region.getValue(), world);
-                    //TODO register control points for each region.
                 }
             }
         }
@@ -54,10 +53,18 @@ public class ServerLogic {
     private static void RegisterRegion(ProtectedRegion region, World world)
     {
         Faction defaultfaction = Config.getDefaultFaction();
-        registeredregions.put(world.getName() + region.getId(), region);
-        players.put(world.getName() + region.getId(), null);
-        capturetimers.put(world.getName() + region.getId(), 0);
-        regionowners.put(world.getName() + region.getId(), defaultfaction);
+        CapturableRegion capturableregion = new CapturableRegion(region,world, Config.getDefaultFaction());
+        
+        Map<String, Location> controlpoints = new Config().getControlPointsForRegion(capturableregion);
+        for(Entry<String, Location> controlpoint : controlpoints.entrySet())
+        {
+            RegisterControlPoint(controlpoint.getKey(), controlpoint.getValue(), capturableregion);
+        }
+        
+        registeredregions.put(capturableregion.getWorld() + "_" + capturableregion.getRegion(), capturableregion);
+        players.put(capturableregion, null);
+        capturetimers.put(capturableregion, 0);
+        regionowners.put(capturableregion, defaultfaction);
     }
     
     private static void RegisterFaction(String factionname,String permissiongroup)
@@ -73,11 +80,9 @@ public class ServerLogic {
      * @param region The region which this control point is located.
      * @param world The world which this control point is located.
      */
-    @SuppressWarnings("unused")
-    private static void RegisterControlPoint(String controlpointid, Location location, ProtectedRegion region, World world)
+    private static void RegisterControlPoint(String controlpointname, Location location, CapturableRegion region)
     {
-        String controlpointname = world.getName() + "_" + region.getId() + "_" + controlpointid;
-        ControlPoint controlpoint = new ControlPoint(controlpointname, region, world, location);
-        controlpoints.put(controlpointname, controlpoint);
+        ControlPoint controlpoint = new ControlPoint(controlpointname, region, location);
+        controlpoints.put(region.getWorld().getName() + region.getRegion().getId() + controlpointname, controlpoint);
     }
 }

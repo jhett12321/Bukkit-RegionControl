@@ -5,40 +5,46 @@ import java.util.List;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.ServerLogic;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ServerUtils {
-    public static void addPlayerToRegion(Player player, ProtectedRegion region, World world)
+    public static void addPlayerToRegion(Player player, CapturableRegion region)
     {
-        List<Player> currentplayers = ServerLogic.players.get(world.getName() + region.getId());
+        List<Player> currentplayers = ServerLogic.players.get(region);
         currentplayers.add(player);
-        ServerLogic.players.put(world.getName() + region.getId(), currentplayers);
+        ServerLogic.players.put(region, currentplayers);
     }
 
-    public static void removePlayerFromRegion(Player player, ProtectedRegion region, World world)
+    public static void removePlayerFromRegion(Player player, CapturableRegion region)
     {
-        List<Player> currentplayers = ServerLogic.players.get(world.getName() + region.getId());
+        List<Player> currentplayers = ServerLogic.players.get(region);
         currentplayers.remove(player);
     }
     
-    public static int getRegionPlayerCount(ProtectedRegion region, World world)
+    public static int getRegionPlayerCount(CapturableRegion region)
     {
-        return ServerLogic.players.get(world.getName() + region.getId()).size();
+        return ServerLogic.players.get(region).size();
     }
     
-    public static List<Player> getRegionPlayerList(ProtectedRegion region, World world)
+    public static List<Player> getRegionPlayerList(CapturableRegion region)
     {
-        return ServerLogic.players.get(world.getName() + region.getId());
+        return ServerLogic.players.get(region);
     }
     
-    public static int getRegionCaptureTimer(ProtectedRegion region, World world)
+    public static int getRegionCaptureTimer(CapturableRegion region)
     {
-        return ServerLogic.capturetimers.get(world.getName() + region.getId());
+        return ServerLogic.capturetimers.get(region);
     }
     
-    public static void setRegionCaptureTimer(ProtectedRegion region, World world, int newvalue)
+    public static void setRegionCaptureTimer(CapturableRegion region, int newvalue)
     {
-        ServerLogic.capturetimers.put(world.getName() + region.getId(), newvalue);
+        ServerLogic.capturetimers.put(region, newvalue);
+    }
+    
+    public CapturableRegion getCapturableRegion(ProtectedRegion region, World world)
+    {
+        return ServerLogic.registeredregions.get(world.getName() + "_" + region.getId());
     }
 }

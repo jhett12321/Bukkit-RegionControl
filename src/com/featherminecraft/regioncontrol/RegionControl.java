@@ -98,7 +98,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.featherminecraft.regioncontrol.listeners.PlayerListener;
 import com.featherminecraft.regioncontrol.listeners.SpoutPlayerListener;
 import com.featherminecraft.regioncontrol.utils.Utils;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public final class RegionControl extends JavaPlugin {
 
@@ -136,8 +135,8 @@ public static boolean isfirstrun;
 
     @Override
     public void onDisable() {
-        Map<String, ProtectedRegion> registered_regions = ServerLogic.registeredregions;
-        Map<String, Integer> capture_timers = ServerLogic.capturetimers;
+        Map<String, CapturableRegion> registered_regions = ServerLogic.registeredregions;
+        Map<CapturableRegion, Integer> capture_timers = ServerLogic.capturetimers;
 
     }
 }

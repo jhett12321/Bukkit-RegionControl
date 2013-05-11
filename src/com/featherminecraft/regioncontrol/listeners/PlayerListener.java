@@ -1,6 +1,5 @@
 package com.featherminecraft.regioncontrol.listeners;
 
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -8,8 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -21,9 +18,11 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.ClientRunnables;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.RegionControl;
+import com.featherminecraft.regioncontrol.utils.PlayerUtils;
 import com.featherminecraft.regioncontrol.utils.ServerUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
 
@@ -45,12 +44,16 @@ public class PlayerListener implements Listener {
         WorldGuardPlugin worldguard = Utils.getWorldGuard();
         RegionManager regionmanager = worldguard.getRegionManager(event.getPlayer().getWorld());
         ApplicableRegionSet applicableregions = regionmanager.getApplicableRegions(location);
+        Utils utils = new Utils();
         
         if(applicableregions != null && applicableregions.size() == 1) {
             for(ProtectedRegion region : applicableregions)
             {
-                if(region.contains(location))
-                    ServerUtils.removePlayerFromRegion(event.getPlayer(), region, event.getPlayer().getWorld());
+                CapturableRegion capturableregion = utils.getCapturableRegionFromRegion(region, event.getPlayer().getWorld());
+                    if(capturableregion.getRegion().contains(location))
+                    {
+                        ServerUtils.removePlayerFromRegion(event.getPlayer(), capturableregion);
+                }
             }
         }
     }
@@ -85,8 +88,9 @@ public class PlayerListener implements Listener {
         
         if(playerdamager != null && damagedplayer != null)
         {
-            Faction damagerfaction = Faction.getPlayerFaction(playerdamager);
-            Faction damagedentityfaction = Faction.getPlayerFaction(damagedplayer);
+            PlayerUtils playerutils = new PlayerUtils();
+            Faction damagerfaction = playerutils.getPlayerFaction(playerdamager);
+            Faction damagedentityfaction = playerutils.getPlayerFaction(damagedplayer);
             if(damagerfaction == damagedentityfaction)
             {
                 event.setCancelled(true);

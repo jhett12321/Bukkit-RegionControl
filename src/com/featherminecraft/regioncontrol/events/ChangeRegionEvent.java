@@ -5,17 +5,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.featherminecraft.regioncontrol.CapturableRegion;
 
 public class ChangeRegionEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
-    private ProtectedRegion oldregion;
-    private ProtectedRegion newregion;
+    private CapturableRegion oldregion;
+    private CapturableRegion newregion;
     private Player player;
     private World world;
 
-    public ChangeRegionEvent(ProtectedRegion newregion, ProtectedRegion oldregion,  Player player, World world) {
+    public ChangeRegionEvent(CapturableRegion newregion, CapturableRegion oldregion,  Player player, World world) {
         this.oldregion = oldregion;
         this.newregion = newregion;
         this.player = player;
@@ -26,11 +26,11 @@ public class ChangeRegionEvent extends Event {
         return handlers;
     }
 
-    public ProtectedRegion getOldRegion() {
+    public CapturableRegion getOldRegion() {
         return oldregion;
     }
     
-    public ProtectedRegion getNewRegion() {
+    public CapturableRegion getNewRegion() {
         return newregion;
     }
 

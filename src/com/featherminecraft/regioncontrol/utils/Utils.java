@@ -3,8 +3,13 @@ package com.featherminecraft.regioncontrol.utils;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
+
+import com.featherminecraft.regioncontrol.CapturableRegion;
+import com.featherminecraft.regioncontrol.ControlPoint;
 import com.featherminecraft.regioncontrol.RegionControl;
+import com.featherminecraft.regioncontrol.ServerLogic;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -64,5 +69,22 @@ public class Utils {
         }
         //Shouldn't Get Here.
         return null;
+    }
+    
+    public String getRegionUId(ProtectedRegion region, World world)
+    {
+        return world.getName() + "_" + region.getId();
+    }
+    
+    public CapturableRegion getCapturableRegionFromRegion(ProtectedRegion region,World world)
+    {
+        CapturableRegion capturableregion = ServerLogic.registeredregions.get(getRegionUId(region,world));
+        return capturableregion;
+        
+    }
+    
+    public String createUniqueId(CapturableRegion region, ControlPoint controlpoint)
+    {
+        return region.getWorld().getName() + region.getRegion().getId() + controlpoint.getControlPointName();
     }
 }

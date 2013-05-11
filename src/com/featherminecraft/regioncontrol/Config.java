@@ -6,6 +6,7 @@ import java.util.Map;
 import java.io.File;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -28,8 +29,7 @@ public class Config {
 
     public static Map<String, ProtectedRegion> getRegionsForWorld(World world)
     {
-        ConfigUtils configutils = new ConfigUtils();
-        List<String> regionnames = configutils.getConfigValues(world + ".controllableregions");
+        List<String> regionnames = new ConfigUtils().getConfigValues(world + ".controllableregions");
         for(String region : regionnames)
         {
             regions.put(region, Utils.getWorldGuard().getRegionManager(world).getRegion(region));
@@ -39,8 +39,7 @@ public class Config {
     
     public static List<World> getWorlds()
     {
-        ConfigUtils configutils = new ConfigUtils();
-        List<String> worldnames = configutils.getConfigSectionValues("worlds");
+        List<String> worldnames = new ConfigUtils().getConfigSectionValues("worlds");
         worlds = null;
         for(String world : worldnames)
         {
@@ -51,8 +50,7 @@ public class Config {
 
     public static Map<String, String> getFactions() {
         //WIP
-        ConfigUtils configutils = new ConfigUtils();
-        List<String> factions = configutils.getConfigValues("factionnames");
+        List<String> factions = new ConfigUtils().getConfigValues("factionnames");
         for(String faction : factions)
         {
         }
@@ -60,6 +58,11 @@ public class Config {
     }
 
     public static Faction getDefaultFaction() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Map<String, Location> getControlPointsForRegion(CapturableRegion capturableregion) {
         // TODO Auto-generated method stub
         return null;
     }
