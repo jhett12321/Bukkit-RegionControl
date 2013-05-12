@@ -66,4 +66,9 @@ public class Config {
         // TODO Auto-generated method stub
         return null;
     }
+
+    public Location getSpawnPointForRegion(CapturableRegion capturableregion) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

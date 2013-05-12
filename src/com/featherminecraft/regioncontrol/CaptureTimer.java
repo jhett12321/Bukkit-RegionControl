@@ -1,5 +1,6 @@
 package com.featherminecraft.regioncontrol;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,7 +13,7 @@ import com.featherminecraft.regioncontrol.events.RegionDefendEvent;
 public class CaptureTimer extends BukkitRunnable {
     
     //Constructor Vars:
-    private Map<String, ControlPoint> controlpoints;
+    private List<ControlPoint> controlpoints;
     private CapturableRegion region;
     private Integer baseinfluenceamount;
 
@@ -46,10 +47,10 @@ public class CaptureTimer extends BukkitRunnable {
             }
         }
         
-        for(Entry<String,ControlPoint> controlpoint : this.controlpoints.entrySet())
+        for(ControlPoint controlpoint : this.controlpoints)
         {
-            if(!controlpoint.getValue().isCapturing())
-            ownedcontrolpoints.put(controlpoint.getValue().getOwner(), ownedcontrolpoints.get(controlpoint.getValue().getOwner()) + 1);
+            if(!controlpoint.isCapturing())
+            ownedcontrolpoints.put(controlpoint.getOwner(), ownedcontrolpoints.get(controlpoint.getOwner()) + 1);
         }
         
         int totalcontrolpoints = 0;

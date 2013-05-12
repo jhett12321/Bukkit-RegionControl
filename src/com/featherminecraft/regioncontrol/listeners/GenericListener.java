@@ -1,5 +1,6 @@
 package com.featherminecraft.regioncontrol.listeners;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -49,10 +50,10 @@ public class GenericListener {
         public void onRegionCapture(RegionCaptureEvent event)
         {
             event.getCapturableRegion().setOwner(event.getNewOwner());
-            Map<String, ControlPoint> controlpoints = event.getCapturableRegion().getControlpoints();
-            for(Entry<String, ControlPoint> controlpoint  : controlpoints.entrySet())
+            List<ControlPoint> controlpoints = event.getCapturableRegion().getControlpoints();
+            for(ControlPoint controlpoint  : controlpoints)
             {
-                controlpoint.getValue().setOwner(event.getNewOwner());
+                controlpoint.setOwner(event.getNewOwner());
             }
         }
         

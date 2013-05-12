@@ -1,5 +1,6 @@
 package com.featherminecraft.regioncontrol;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,6 +16,7 @@ public class ServerLogic {
     public static Map<CapturableRegion, CaptureTimer> capturetimers;
     public static Map<String, Faction> factions;
     public static Map<CapturableRegion, Faction> regionowners;
+    public static Map<CapturableRegion, SpawnPoint> spawnpoints;
     public static Map<String, ControlPoint> controlpoints;
 
     public static void init()
@@ -60,12 +62,24 @@ public class ServerLogic {
             RegisterControlPoint(controlpoint.getKey(), controlpoint.getValue(), capturableregion);
         }
         
-        capturableregion.setControlPoints(controlpoints);
+        List<ControlPoint> regionalcontrolpoints = new ArrayList<ControlPoint>();
+        for(Entry<String, ControlPoint> controlpoint : controlpoints.entrySet())
+        {
+            if(controlpoint.getKey().contains(capturableregion.getWorld().getName() + capturableregion.getRegion().getId()))
+            {
+                regionalcontrolpoints.add(controlpoint.getValue());
+            }
+        }
+        capturableregion.setControlPoints(regionalcontrolpoints);
+        
+        Location spawnpoint = new Config().getSpawnPointForRegion(capturableregion);
+        RegisterSpawnPoint(spawnpoint, capturableregion);
+        capturableregion.setSpawnPoint(spawnpoints.get(region));
         
         CaptureTimer capturetimer = new CaptureTimer(capturableregion, 0);
         capturetimer.runTaskTimer(RegionControl.plugin, 20, 20);
         
-        registeredregions.put(capturableregion.getWorld() + "_" + capturableregion.getRegion(), capturableregion);
+        registeredregions.put(capturableregion.getWorld().getName() + "_" + capturableregion.getRegion().getId(), capturableregion);
         players.put(capturableregion, null);
         capturetimers.put(capturableregion, capturetimer);
         regionowners.put(capturableregion, defaultfaction);
@@ -88,5 +102,11 @@ public class ServerLogic {
     {
         ControlPoint controlpoint = new ControlPoint(controlpointname, region, location);
         controlpoints.put(region.getWorld().getName() + region.getRegion().getId() + controlpointname, controlpoint);
+    }
+    
+    private static void RegisterSpawnPoint(Location location, CapturableRegion region)
+    {
+        SpawnPoint spawnpoint = new SpawnPoint(region, location);
+        spawnpoints.put(region, spawnpoint);
     }
 }

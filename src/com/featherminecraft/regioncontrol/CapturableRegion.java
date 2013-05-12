@@ -1,5 +1,6 @@
 package com.featherminecraft.regioncontrol;
 
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.World;
@@ -11,7 +12,7 @@ public class CapturableRegion {
     private ProtectedRegion region;
     private World world;
     private Faction owner;
-    private Map<String, ControlPoint> controlpoints;
+    private List<ControlPoint> controlpoints;
     private SpawnPoint spawnpoint;
     
     public CapturableRegion(ProtectedRegion region, World world, Faction owner)
@@ -38,19 +39,19 @@ public class CapturableRegion {
         return world;
     }
 
-    public Map<String, ControlPoint> getControlpoints() {
+    public List<ControlPoint> getControlpoints() {
         return controlpoints;
     }
     
-    public void setControlPoints(Map<String, ControlPoint> controlpoints) {
-        this.controlpoints = controlpoints;
+    public void setControlPoints(List<ControlPoint> regionalcontrolpoints) {
+        this.controlpoints = regionalcontrolpoints;
     }
 
-    public SpawnPoint getSpawnpoint() {
+    public SpawnPoint getSpawnPoint() {
         return spawnpoint;
     }
 
-    public void setSpawnpoint(SpawnPoint spawnpoint) {
+    public void setSpawnPoint(SpawnPoint spawnpoint) {
         this.spawnpoint = spawnpoint;
     }
 }

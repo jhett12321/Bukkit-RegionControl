@@ -43,8 +43,8 @@ Classification: New Feature
 Priority: Trivial
 
     TODO 7. Spawn Points
-    EDIT: Spawn points will be handled in a "re-spawn" room, with signs indicating where a player can spawn. Right Clicking the sign will spawn the player at that location.
-    Valid spawn points will be regions that you own. It is unknown how this will be determined, or updated to the client.
+    EDIT: Spawn points will be handled in a "re-spawn" room (When Spout is unavailable), with signs indicating where a player can spawn. Right Clicking the sign will spawn the player at that location.
+    Valid spawn points will be regions that you own.
 Details:
 File/s: Unknown
 JIRA Link: 
