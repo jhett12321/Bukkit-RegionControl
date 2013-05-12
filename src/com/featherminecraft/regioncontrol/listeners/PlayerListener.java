@@ -58,6 +58,7 @@ public class PlayerListener implements Listener {
         }
     }
     
+    @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event)
     {
         Player playerdamager = null;

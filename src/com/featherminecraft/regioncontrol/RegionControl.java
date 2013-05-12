@@ -19,37 +19,30 @@ Details:
 File/s: RegionControl.java Line 10, Config.java, Utils.java
 JIRA Link: 
 Classification: Improvement
-Priority: Major
+Priority: Critical
 
-    TODO 4. Implement Control Points
-Details:
-File/s: ServerLogic.java Line 66
-JIRA Link: 
-Classification: New Feature
-Priority: Major
-
-    TODO 5. Implement onDisable Code
+    TODO 4. Implement onDisable Code
 Details:
 File/s: RegionControl.java Line 91
 JIRA Link: 
 Classification: New Feature
 Priority: Blocker
 
-    TODO 6. Make sure that static is being used properly in functions.
+    TODO 5. Make sure that static is being used properly in functions.
 Details:
 File/s: RegionControl.java
 JIRA Link: 
 Classification: Improvement
 Priority: Major
 
-    TODO 7. Implement Dynmap (Or some similar full screen map) to client that shows current region control.
+    TODO 6. Implement Dynmap (Or some similar full screen map) to client that shows current region control.
 Details:
 File/s: Unknown
 JIRA Link: 
 Classification: New Feature
 Priority: Trivial
 
-    TODO 8. Spawn Points
+    TODO 7. Spawn Points
     EDIT: Spawn points will be handled in a "re-spawn" room, with signs indicating where a player can spawn. Right Clicking the sign will spawn the player at that location.
     Valid spawn points will be regions that you own. It is unknown how this will be determined, or updated to the client.
 Details:
@@ -58,33 +51,26 @@ JIRA Link:
 Classification: New Feature
 Priority: Minor
 
-    TODO 9. Replace main configuration with individual configuration files
+    TODO 8. Replace main configuration with individual configuration files
 Details:
 File/s: Config.java All Lines
 JIRA Link: 
 Classification: Improvement
 Priority: Minor
 
-    TODO 10. Map Filters
+    TODO 9. Map Filters
 Details:
 Pre-req: Dynmap Implementation
 JIRA Link: 
 Classification: Improvement
 Priority: Trivial
 
-    TODO 11. World Saving - Remember who owned each region after server restart/shutdown.
+    TODO 10. World Saving - Remember who owned each region after server restart/shutdown.
 Details:
 File/s: ServerLogic.java
 JIRA Link: 
 Classification: New Feature
 Priority: Critical
-
-    TODO 12. Capture Timers
-Details:
-File/s: CaptureTimer.java
-JIRA Link: 
-Classification: N/A
-Priority: Critical - In-Progress
 
 ISSUE/S:
  */
@@ -136,7 +122,7 @@ public static boolean isfirstrun;
     @Override
     public void onDisable() {
         Map<String, CapturableRegion> registered_regions = ServerLogic.registeredregions;
-        Map<CapturableRegion, Integer> capture_timers = ServerLogic.capturetimers;
+        Map<CapturableRegion, CaptureTimer> capture_timers = ServerLogic.capturetimers;
 
     }
 }

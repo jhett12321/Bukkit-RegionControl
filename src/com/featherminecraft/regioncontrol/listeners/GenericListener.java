@@ -1,5 +1,8 @@
 package com.featherminecraft.regioncontrol.listeners;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -9,6 +12,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
 //
 
+import com.featherminecraft.regioncontrol.ControlPoint;
 import com.featherminecraft.regioncontrol.SpoutClientLogic;
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 import com.featherminecraft.regioncontrol.events.ControlPointCaptureEvent;
@@ -45,6 +49,11 @@ public class GenericListener {
         public void onRegionCapture(RegionCaptureEvent event)
         {
             event.getCapturableRegion().setOwner(event.getNewOwner());
+            Map<String, ControlPoint> controlpoints = event.getCapturableRegion().getControlpoints();
+            for(Entry<String, ControlPoint> controlpoint  : controlpoints.entrySet())
+            {
+                controlpoint.getValue().setOwner(event.getNewOwner());
+            }
         }
         
         @EventHandler(priority = EventPriority.MONITOR)

@@ -7,13 +7,12 @@ import java.util.Map.Entry;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ServerLogic {
     public static Map<String, CapturableRegion> registeredregions;
     public static Map<CapturableRegion, List<Player>> players;
-    public static Map<CapturableRegion, Integer> capturetimers;
+    public static Map<CapturableRegion, CaptureTimer> capturetimers;
     public static Map<String, Faction> factions;
     public static Map<CapturableRegion, Faction> regionowners;
     public static Map<String, ControlPoint> controlpoints;
@@ -55,15 +54,20 @@ public class ServerLogic {
         Faction defaultfaction = Config.getDefaultFaction();
         CapturableRegion capturableregion = new CapturableRegion(region,world, Config.getDefaultFaction());
         
-        Map<String, Location> controlpoints = new Config().getControlPointsForRegion(capturableregion);
-        for(Entry<String, Location> controlpoint : controlpoints.entrySet())
+        Map<String, Location> controllablepoints = new Config().getControlPointsForRegion(capturableregion);
+        for(Entry<String, Location> controlpoint : controllablepoints.entrySet())
         {
             RegisterControlPoint(controlpoint.getKey(), controlpoint.getValue(), capturableregion);
         }
         
+        capturableregion.setControlPoints(controlpoints);
+        
+        CaptureTimer capturetimer = new CaptureTimer(capturableregion, 0);
+        capturetimer.runTaskTimer(RegionControl.plugin, 20, 20);
+        
         registeredregions.put(capturableregion.getWorld() + "_" + capturableregion.getRegion(), capturableregion);
         players.put(capturableregion, null);
-        capturetimers.put(capturableregion, 0);
+        capturetimers.put(capturableregion, capturetimer);
         regionowners.put(capturableregion, defaultfaction);
     }
     
