@@ -1,5 +1,7 @@
 package com.featherminecraft.regioncontrol;
 
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,10 +12,11 @@ public class ControlPoint extends BukkitRunnable {
 
     private String controlpointname;
     private Location location;
-    private Integer radius; //TODO
+    private Integer radius;
     private Boolean capturing;
     private Faction owner;
     private CapturableRegion region;
+    private Map<Faction,Integer> capturetime;
     
     public ControlPoint(String controlpointname, CapturableRegion region, Location location)
     {
@@ -28,6 +31,8 @@ public class ControlPoint extends BukkitRunnable {
     
     @Override
     public void run() {
+        this.capturing = null;
+        
         Player[] players = RegionControl.plugin.getServer().getOnlinePlayers();
         
         double radiusSquared = radius*radius;
@@ -43,11 +48,22 @@ public class ControlPoint extends BukkitRunnable {
          
         }
         
-        if(this.capturing && region.getWorld().getBlockAt(this.location).getTypeId() == 76)
+        if(this.capturing = null)
         {
-            region.getWorld().getBlockAt(this.location).setTypeId(75, false);
+            this.capturing = false;
         }
-        else if(!capturing && region.getWorld().getBlockAt(this.location).getTypeId() == 75)
+        
+        if(this.capturing)
+        {
+            
+            
+            if(region.getWorld().getBlockAt(this.location).getTypeId() == 76)
+            {
+                region.getWorld().getBlockAt(this.location).setTypeId(75, false);
+            }
+        }
+
+        if(!capturing && region.getWorld().getBlockAt(this.location).getTypeId() == 75)
         {
             region.getWorld().getBlockAt(this.location).setTypeId(76, false);
         }

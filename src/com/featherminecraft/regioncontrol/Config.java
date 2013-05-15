@@ -1,5 +1,6 @@
 package com.featherminecraft.regioncontrol;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import com.featherminecraft.regioncontrol.utils.ConfigUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+
+//TODO: Incomplete.
 public class Config {
     static Map<String, ProtectedRegion> regions;
     static List<World> worlds;
@@ -27,7 +30,7 @@ public class Config {
         data = new File(RegionControl.plugin.getDataFolder(), "data.yml");
     }
 
-    public static Map<String, ProtectedRegion> getRegionsForWorld(World world)
+    public Map<String, ProtectedRegion> getRegionsForWorld(World world)
     {
         List<String> regionnames = new ConfigUtils().getConfigValues(world + ".controllableregions");
         for(String region : regionnames)
@@ -37,7 +40,7 @@ public class Config {
         return regions;
     }
     
-    public static List<World> getWorlds()
+    public List<World> getWorlds()
     {
         List<String> worldnames = new ConfigUtils().getConfigSectionValues("worlds");
         worlds = null;
@@ -48,13 +51,15 @@ public class Config {
         return worlds;
     }
 
-    public static Map<String, String> getFactions() {
-        //WIP
-        List<String> factions = new ConfigUtils().getConfigValues("factionnames");
-        for(String faction : factions)
+    public Map<String, Faction> getFactions() {
+        List<String> factionnamelist = new ConfigUtils().getConfigValues("factionnames");
+        Map<String, Faction> factions = new HashMap<String, Faction>();
+        for(String factionname : factionnamelist)
         {
+            Faction faction = new Faction(factionname,null/*Replace with permissions group type*/);
+            factions.put(factionname, faction);
         }
-        return (Map<String, String>) factions;
+        return factions;
     }
 
     public static Faction getDefaultFaction() {

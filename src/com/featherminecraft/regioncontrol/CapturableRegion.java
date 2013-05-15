@@ -1,8 +1,6 @@
 package com.featherminecraft.regioncontrol;
 
 import java.util.List;
-import java.util.Map;
-
 import org.bukkit.World;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -14,6 +12,7 @@ public class CapturableRegion {
     private Faction owner;
     private List<ControlPoint> controlpoints;
     private SpawnPoint spawnpoint;
+    private Long expectedcapturetime;
     
     public CapturableRegion(ProtectedRegion region, World world, Faction owner)
     {
@@ -53,5 +52,13 @@ public class CapturableRegion {
 
     public void setSpawnPoint(SpawnPoint spawnpoint) {
         this.spawnpoint = spawnpoint;
+    }
+
+    public Long getExpectedCaptureTime() {
+        return expectedcapturetime;
+    }
+
+    public void setExpectedCaptureTime(Long expectedcapturetime) {
+        this.expectedcapturetime = expectedcapturetime;
     }
 }

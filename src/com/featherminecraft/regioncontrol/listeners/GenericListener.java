@@ -1,9 +1,6 @@
 package com.featherminecraft.regioncontrol.listeners;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,12 +52,14 @@ public class GenericListener {
             {
                 controlpoint.setOwner(event.getNewOwner());
             }
+            
+            event.getCapturableRegion().setExpectedCaptureTime(null);
         }
         
         @EventHandler(priority = EventPriority.MONITOR)
         public void onRegionDefend(RegionDefendEvent event)
         {
-            
+            event.getCapturableRegion().setExpectedCaptureTime(null);
         }
         
         @EventHandler(priority = EventPriority.MONITOR)

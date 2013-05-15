@@ -2,7 +2,6 @@ package com.featherminecraft.regioncontrol.events;
 
 import java.util.List;
 
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -18,14 +17,12 @@ public class RegionCaptureEvent extends Event {
     private List<Player> players;
     private Faction oldowner;
     private Faction newowner;
-    private World world;
 
-    public RegionCaptureEvent(CapturableRegion region, World world, Faction oldowner, Faction newowner) {
+    public RegionCaptureEvent(CapturableRegion region, Faction oldowner, Faction newowner) {
         this.region = region;
         this.players = ServerUtils.getRegionPlayerList(region);
         this.oldowner = oldowner;
         this.newowner = newowner;
-        this.world = world;
     }
 
     public static HandlerList getHandlerList() {
@@ -39,10 +36,7 @@ public class RegionCaptureEvent extends Event {
     public CapturableRegion getCapturableRegion() {
         return region;
     }
-    
-    public World getWorld() {
-        return world;
-    }
+
     public Faction getOldOwner() {
         return oldowner;
     }

@@ -28,22 +28,18 @@ public class CaptureTimer extends BukkitRunnable {
     {
         this.controlpoints = region.getControlpoints();
         this.region = region;
-        this.baseinfluenceamount = baseinfluenceamount; //Capture Time, in seconds from neutral to ownership. Maybe divide this by 2 to get capture time from owner to owner?
+        this.baseinfluenceamount = baseinfluenceamount; //Capture Time, from neutral to ownership, in seconds with 50 - 75% ownership.. Maybe times this by 2 to get capture time from owner to owner?
     }
     
     @Override
     public void run()
     {
-        int currentinfluence = influence.get(region.getOwner());
-        
-        if(currentinfluence == 0)
+        if(influence == null)
         {
-            for(Entry<Faction,Integer> attackerinfluence : influence.entrySet())
+            Map<String, Faction> factions = new Config().getFactions();
+            for(Entry<String, Faction> faction : factions.entrySet())
             {
-                if(attackerinfluence.getValue() > 0)
-                {
-                    currentinfluence = attackerinfluence.getValue();
-                }
+                influence.put(faction.getValue(), 0);
             }
         }
         
@@ -53,11 +49,7 @@ public class CaptureTimer extends BukkitRunnable {
             ownedcontrolpoints.put(controlpoint.getOwner(), ownedcontrolpoints.get(controlpoint.getOwner()) + 1);
         }
         
-        int totalcontrolpoints = 0;
-        for(@SuppressWarnings("unused") Entry<Faction,Integer> total : this.ownedcontrolpoints.entrySet())
-        {
-            totalcontrolpoints = totalcontrolpoints + 1;
-        }
+        int totalcontrolpoints = this.ownedcontrolpoints.values().size();
         
         for(Entry<Faction,Integer> faction : this.ownedcontrolpoints.entrySet())
         {
@@ -84,7 +76,7 @@ public class CaptureTimer extends BukkitRunnable {
         
         for(Entry<Faction,Integer> influence : this.influence.entrySet())
         {
-            if(influence.getValue() != 0)
+            if(influence.getValue() > 0)
             {
                 factionwithinfluence = influence.getKey();
                 break;
@@ -95,8 +87,11 @@ public class CaptureTimer extends BukkitRunnable {
         {
             for(Entry<Faction,Float> percentage : this.percentageowned.entrySet())
             {
-                if(influence.get(percentage.getKey()) != baseinfluenceamount)
+               //Take influence away from the current Faction with Influence.
+                if(factionwithinfluence != percentage.getKey())
                 {
+                    int remaininginfluence = this.influence.get(factionwithinfluence);
+                    
                     Float percentageagainst = (float) 0;
                     for(Entry<Faction,Float> factionpercentage : this.percentageowned.entrySet())
                     {
@@ -105,85 +100,134 @@ public class CaptureTimer extends BukkitRunnable {
                             percentageagainst = percentageagainst + factionpercentage.getValue();
                         }
                     }
-                    //Take influence away from the current Faction with Influence.
-                    if(percentageagainst == 1 && factionwithinfluence != percentage.getKey())
+                    
+                    if(percentageagainst == 1)
                     {
-                        this.influence.put(factionwithinfluence, this.influence.get(factionwithinfluence) - 3);
-                        this.influencerate = 3;
-                        continue;
+                        //Sets influence to 0 even if the influence somehow gets into the negatives
+                        if(remaininginfluence < 3)
+                        {
+                            this.influence.put(factionwithinfluence, 0);
+                            this.influencerate = 3;
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + (baseinfluenceamount / 3 * 1000));
+                        }
+                        else
+                        {
+                            this.influence.put(factionwithinfluence, this.influence.get(factionwithinfluence) - 3);
+                            this.influencerate = 3;
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((this.influence.get(factionwithinfluence) + baseinfluenceamount) / 3) * 1000));
+                        }
                     }
                     
-                    if(percentageagainst >= 0.75 && percentage.getValue() < 1 && factionwithinfluence != percentage.getKey())
+                    else if(percentageagainst >= 0.75 && percentage.getValue() < 1)
                     {
-                        this.influence.put(factionwithinfluence, this.influence.get(factionwithinfluence) - 2);
-                        this.influencerate = 2;
-                        continue;
+                        if(remaininginfluence < 2)
+                        {
+                            this.influence.put(factionwithinfluence, 0);
+                            this.influencerate = 2;
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + (baseinfluenceamount / 2 * 1000));
+                        }
+                        else
+                        {
+                            this.influence.put(factionwithinfluence, this.influence.get(factionwithinfluence) - 2);
+                            this.influencerate = 2;
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((this.influence.get(factionwithinfluence) + baseinfluenceamount) / 2) * 1000));
+                        }
                     }
                     
-                    if(percentageagainst > 0.5 && percentage.getValue() < 0.75 && factionwithinfluence != percentage.getKey())
+                    else if(percentageagainst > 0.5 && percentage.getValue() < 0.75 && remaininginfluence >= 1)
                     {
                         this.influence.put(factionwithinfluence, this.influence.get(factionwithinfluence) - 1);
                         this.influencerate = 1;
-                        continue;
+                        region.setExpectedCaptureTime(System.currentTimeMillis() + ((this.influence.get(factionwithinfluence) + baseinfluenceamount) * 1000));
+                    }
+                    continue;
+                }
+
+                //Add influence to the current capturers, if the current captures are the one with influence.
+                else if(factionwithinfluence == percentage.getKey())
+                {
+                    int currentinfluence = influence.get(factionwithinfluence);
+                    
+                    int remaininginfluence = baseinfluenceamount - this.influence.get(factionwithinfluence);
+                    
+                    if (percentage.getValue() == 1)
+                    {
+                        if(remaininginfluence < 3)
+                        {
+                            this.influence.put(factionwithinfluence, baseinfluenceamount);
+                            this.influencerate = 3;
+                            region.setExpectedCaptureTime(System.currentTimeMillis());
+                        }
+                        else
+                        {
+                            this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 3);
+                            this.influencerate = 3;
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((baseinfluenceamount - this.influence.get(factionwithinfluence)) / 3) * 1000));
+                        }
                     }
                     
-                    //Add influence to the current capturers.
-                    if (percentage.getValue() == 1 && factionwithinfluence == percentage.getKey())
+                    else if (percentage.getValue() >= 0.75 && percentage.getValue() < 1)
                     {
-                        this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 3);
-                        this.influencerate = 3;
-                        continue;
+                        if(remaininginfluence < 2)
+                        {
+                            this.influence.put(factionwithinfluence, baseinfluenceamount);
+                            this.influencerate = 2;
+                            region.setExpectedCaptureTime(System.currentTimeMillis());
+                        }
+                        else
+                        {
+                            this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 2);
+                            this.influencerate = 2;
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((baseinfluenceamount - this.influence.get(factionwithinfluence)) / 2) * 1000));
+                        }
                     }
                     
-                    if (percentage.getValue() >= 0.75 && percentage.getValue() < 1 && factionwithinfluence == percentage.getKey())
+                    else if (percentage.getValue() > 0.5 && percentage.getValue() < 0.75 && remaininginfluence >= 1)
                     {
-                        this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 2);
-                        this.influencerate = 2;
-                        continue;
-                    }
-                    
-                    if (percentage.getValue() > 0.5 && percentage.getValue() < 0.75 && factionwithinfluence == percentage.getKey())
-                    {
-                        this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 2);
+                        this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 1);
                         this.influencerate = 1;
-                        continue;
+                        region.setExpectedCaptureTime(System.currentTimeMillis() + ((baseinfluenceamount - this.influence.get(factionwithinfluence)) * 1000));
                     }
                     
-                    //If No-one has influence, add influence to the current capturers.
-                    if (percentage.getValue() == 1 && factionwithinfluence == null)
+                    if(percentage.getValue() > 0.5 && influence.get(factionwithinfluence) >= baseinfluenceamount && currentinfluence != influence.get(factionwithinfluence))
+                    {
+                        if(factionwithinfluence != region.getOwner())
+                        {
+                            Bukkit.getServer().getPluginManager().callEvent( new RegionCaptureEvent(region, region.getOwner(), factionwithinfluence) );
+                        }
+                        
+                        else if(factionwithinfluence == region.getOwner())
+                        {
+                            Bukkit.getServer().getPluginManager().callEvent( new RegionDefendEvent(region, region.getOwner()) );
+                        }
+                    }
+                    continue;
+                }
+                
+               //If No-one has influence, add influence to the current capturers.
+                else if(factionwithinfluence == null)
+                {
+                    if (percentage.getValue() == 1)
                     {
                         this.influence.put(percentage.getKey(), this.influence.get(percentage.getKey()) + 3);
                         this.influencerate = 3;
-                        continue;
                     }
                     
-                    if (percentage.getValue() >= 0.75 && percentage.getValue() < 1 && factionwithinfluence == null)
+                    else if (percentage.getValue() >= 0.75 && percentage.getValue() < 1)
                     {
                         this.influence.put(percentage.getKey(), this.influence.get(percentage.getKey()) + 2);
                         this.influencerate = 2;
-                        continue;
                     }
                     
-                    if (percentage.getValue() > 0.5 && percentage.getValue() < 0.75 && factionwithinfluence == null)
+                    else if (percentage.getValue() > 0.5 && percentage.getValue() < 0.75)
                     {
                         this.influence.put(percentage.getKey(), this.influence.get(percentage.getKey()) + 2);
                         this.influencerate = 1;
-                        continue;
                     }
+                    
+                    continue;
                 }
             }
-        }
-        
-        if(factionwithinfluence == region.getOwner() && influence.get(factionwithinfluence) != currentinfluence && influence.get(factionwithinfluence) == baseinfluenceamount)
-        {
-            RegionDefendEvent regiondefendevent = new RegionDefendEvent(region, null);
-            Bukkit.getServer().getPluginManager().callEvent(regiondefendevent);
-        }
-        
-        else if(factionwithinfluence != region.getOwner() && influence.get(factionwithinfluence) != currentinfluence && influence.get(factionwithinfluence) == baseinfluenceamount)
-        {
-            RegionCaptureEvent regioncaptureevent = new RegionCaptureEvent(region,null, null, null);
-            Bukkit.getServer().getPluginManager().callEvent(regioncaptureevent);
         }
     }
     
