@@ -1,0 +1,44 @@
+factions:
+  neutralfaction:
+    displayname:
+    permissionsgroup:
+    default: true
+    defaultspawn:
+      x:
+      y:
+      z:
+    
+  faction1:
+    displayname:
+    permissionsgroup:
+    default: false
+    defaultspawn:
+      x:
+      y:
+      z:
+
+regions:
+  exampleregion_worldguard_id:
+    world: world
+    displayname: 'Example Region Name'
+    influence: 300
+    adjacentregions:
+      - exampleregion2
+      - exampleregion3
+    controlpoints:
+      a:
+        x:
+        y:
+        z:
+      b:
+        x:
+        y:
+        z:
+      c:
+        x:
+        y:
+        z:
+    spawnpoint:
+      x:
+      y:
+      z:

@@ -12,14 +12,4 @@ public class Faction {
     public String getName() {
         return name;
     }
-    
-    public Faction getFaction(String name)
-    {
-        if(name == null)
-        {
-            //Name Can't be null
-        }
-        Faction faction = ServerLogic.factions.get(name);
-        return faction;
-    }
 }

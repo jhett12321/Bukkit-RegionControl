@@ -13,9 +13,12 @@ public class CapturableRegion {
     private List<ControlPoint> controlpoints;
     private SpawnPoint spawnpoint;
     private Long expectedcapturetime;
+    private String displayname;
+    private List<CapturableRegion> adjacentregions;
     
-    public CapturableRegion(ProtectedRegion region, World world, Faction owner)
+    public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner)
     {
+        this.displayname = displayname;
         this.region = region;
         this.world = world;
         this.owner = owner;
@@ -60,5 +63,17 @@ public class CapturableRegion {
 
     public void setExpectedCaptureTime(Long expectedcapturetime) {
         this.expectedcapturetime = expectedcapturetime;
+    }
+
+    public String getDisplayname() {
+        return displayname;
+    }
+
+    public void setAdjacentRegions(List<CapturableRegion> capturableregions) {
+        this.adjacentregions = capturableregions;
+    }
+
+    public List<CapturableRegion> getAdjacentregions() {
+        return adjacentregions;
     }
 }

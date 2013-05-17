@@ -34,6 +34,7 @@ public class CaptureTimer extends BukkitRunnable {
     @Override
     public void run()
     {
+        Integer currentinfluencerate = influencerate;
         if(influence == null)
         {
             Map<String, Faction> factions = new Config().getFactions();
@@ -108,13 +109,19 @@ public class CaptureTimer extends BukkitRunnable {
                         {
                             this.influence.put(factionwithinfluence, 0);
                             this.influencerate = 3;
-                            region.setExpectedCaptureTime(System.currentTimeMillis() + (baseinfluenceamount / 3 * 1000));
+                            if(influencerate != currentinfluencerate);
+                            {
+                                region.setExpectedCaptureTime(System.currentTimeMillis() + (baseinfluenceamount / 3 * 1000));
+                            }
                         }
                         else
                         {
                             this.influence.put(factionwithinfluence, this.influence.get(factionwithinfluence) - 3);
                             this.influencerate = 3;
-                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((this.influence.get(factionwithinfluence) + baseinfluenceamount) / 3) * 1000));
+                            if(influencerate != currentinfluencerate);
+                            {
+                                region.setExpectedCaptureTime(System.currentTimeMillis() + (((this.influence.get(factionwithinfluence) + baseinfluenceamount) / 3) * 1000));
+                            }
                         }
                     }
                     
@@ -124,13 +131,19 @@ public class CaptureTimer extends BukkitRunnable {
                         {
                             this.influence.put(factionwithinfluence, 0);
                             this.influencerate = 2;
-                            region.setExpectedCaptureTime(System.currentTimeMillis() + (baseinfluenceamount / 2 * 1000));
+                            if(influencerate != currentinfluencerate);
+                            {
+                                region.setExpectedCaptureTime(System.currentTimeMillis() + (baseinfluenceamount / 2 * 1000));
+                            }
                         }
                         else
                         {
                             this.influence.put(factionwithinfluence, this.influence.get(factionwithinfluence) - 2);
                             this.influencerate = 2;
-                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((this.influence.get(factionwithinfluence) + baseinfluenceamount) / 2) * 1000));
+                            if(influencerate != currentinfluencerate);
+                            {
+                                region.setExpectedCaptureTime(System.currentTimeMillis() + (((this.influence.get(factionwithinfluence) + baseinfluenceamount) / 2) * 1000));
+                            }
                         }
                     }
                     
@@ -138,7 +151,10 @@ public class CaptureTimer extends BukkitRunnable {
                     {
                         this.influence.put(factionwithinfluence, this.influence.get(factionwithinfluence) - 1);
                         this.influencerate = 1;
-                        region.setExpectedCaptureTime(System.currentTimeMillis() + ((this.influence.get(factionwithinfluence) + baseinfluenceamount) * 1000));
+                        if(influencerate != currentinfluencerate);
+                        {
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + ((this.influence.get(factionwithinfluence) + baseinfluenceamount) * 1000));
+                        }
                     }
                     continue;
                 }
@@ -156,7 +172,10 @@ public class CaptureTimer extends BukkitRunnable {
                         {
                             this.influence.put(factionwithinfluence, baseinfluenceamount);
                             this.influencerate = 3;
-                            region.setExpectedCaptureTime(System.currentTimeMillis());
+                            if(influencerate != currentinfluencerate);
+                            {
+                                region.setExpectedCaptureTime(System.currentTimeMillis());
+                            }
                         }
                         else
                         {
