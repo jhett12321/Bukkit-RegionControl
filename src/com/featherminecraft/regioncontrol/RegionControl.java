@@ -78,7 +78,12 @@ ISSUE/S:
 package com.featherminecraft.regioncontrol;
 
 import java.util.Map;
+import java.util.Map.Entry;
+
+import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.featherminecraft.regioncontrol.listeners.PlayerListener;
@@ -89,17 +94,13 @@ public final class RegionControl extends JavaPlugin {
 
 private PlayerListener playerlistener;
 private SpoutPlayerListener spoutplayerlistener;
+public static Permission permission;
 public static RegionControl plugin;
 public static boolean isfirstrun;
 
     @Override
     public void onEnable() {
         RegionControl.plugin = this;
-        if(this.getConfig() == null)
-        {
-            this.saveDefaultConfig();
-            RegionControl.isfirstrun = true;
-        }
 
         PluginManager pm = getServer().getPluginManager();
         if(!Utils.WorldGuardAvailable())
@@ -107,8 +108,19 @@ public static boolean isfirstrun;
             setEnabled(false);
             //Disable plugin due to missing dependency.
         }
-//Server Setup
+        
+        if(!Utils.VaultAvailable())
+        {
+            setEnabled(false);
+        }
+
+        //Server Setup
+        Config config = new Config();
+        config.reloadMainConfig();
+        config.reloadDataFile();
+        setupPermissions();
         ServerLogic.init();
+
         if(Utils.SpoutAvailable())
         {
             spoutplayerlistener = new SpoutPlayerListener();
@@ -119,10 +131,22 @@ public static boolean isfirstrun;
         }
     }
 
+    private boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        permission = rsp.getProvider();
+        return permission != null;
+    }
+
     @Override
     public void onDisable() {
+        //TODO Finish save code.
         Map<String, CapturableRegion> registered_regions = ServerLogic.registeredregions;
-        Map<CapturableRegion, CaptureTimer> capture_timers = ServerLogic.capturetimers;
+        for(Entry<String, CapturableRegion> region : registered_regions.entrySet())
+        {
+            Integer influence = region.getValue().getInfluence();
+            String influenceowner = region.getValue().getInfluenceOwner().getName();
+            String regionowner = region.getValue().getOwner().getName();
+        }
 
     }
 }

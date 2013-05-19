@@ -23,7 +23,7 @@ import com.featherminecraft.regioncontrol.ClientRunnables;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.RegionControl;
 import com.featherminecraft.regioncontrol.utils.PlayerUtils;
-import com.featherminecraft.regioncontrol.utils.ServerUtils;
+import com.featherminecraft.regioncontrol.utils.RegionUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
 
 public class PlayerListener implements Listener {
@@ -44,15 +44,14 @@ public class PlayerListener implements Listener {
         WorldGuardPlugin worldguard = Utils.getWorldGuard();
         RegionManager regionmanager = worldguard.getRegionManager(event.getPlayer().getWorld());
         ApplicableRegionSet applicableregions = regionmanager.getApplicableRegions(location);
-        Utils utils = new Utils();
         
         if(applicableregions != null && applicableregions.size() == 1) {
             for(ProtectedRegion region : applicableregions)
             {
-                CapturableRegion capturableregion = utils.getCapturableRegionFromRegion(region, event.getPlayer().getWorld());
+                CapturableRegion capturableregion = new RegionUtils().getCapturableRegion(region, event.getPlayer().getWorld());
                     if(capturableregion.getRegion().contains(location))
                     {
-                        ServerUtils.removePlayerFromRegion(event.getPlayer(), capturableregion);
+                        RegionUtils.removePlayerFromRegion(event.getPlayer(), capturableregion);
                 }
             }
         }

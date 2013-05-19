@@ -29,20 +29,23 @@ public class CaptureTimer extends BukkitRunnable {
         this.controlpoints = region.getControlpoints();
         this.region = region;
         this.baseinfluenceamount = baseinfluenceamount; //Capture Time, from neutral to ownership, in seconds with 50 - 75% ownership.. Maybe times this by 2 to get capture time from owner to owner?
+        
+        Map<String, Faction> factions = ServerLogic.registeredfactions;
+        for(Entry<String, Faction> faction : factions.entrySet())
+        {
+            influence.put(faction.getValue(), 0);
+        }
+        
+        if(region.getInfluence() != null)
+        {
+            this.influence.put(region.getInfluenceOwner(), region.getInfluence());
+        }
     }
     
     @Override
     public void run()
     {
         Integer currentinfluencerate = influencerate;
-        if(influence == null)
-        {
-            Map<String, Faction> factions = new Config().getFactions();
-            for(Entry<String, Faction> faction : factions.entrySet())
-            {
-                influence.put(faction.getValue(), 0);
-            }
-        }
         
         for(ControlPoint controlpoint : this.controlpoints)
         {
@@ -181,7 +184,10 @@ public class CaptureTimer extends BukkitRunnable {
                         {
                             this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 3);
                             this.influencerate = 3;
-                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((baseinfluenceamount - this.influence.get(factionwithinfluence)) / 3) * 1000));
+                            if(influencerate != currentinfluencerate);
+                            {
+                                region.setExpectedCaptureTime(System.currentTimeMillis() + (((baseinfluenceamount - this.influence.get(factionwithinfluence)) / 3) * 1000));
+                            }
                         }
                     }
                     
@@ -191,13 +197,19 @@ public class CaptureTimer extends BukkitRunnable {
                         {
                             this.influence.put(factionwithinfluence, baseinfluenceamount);
                             this.influencerate = 2;
-                            region.setExpectedCaptureTime(System.currentTimeMillis());
+                            if(influencerate != currentinfluencerate);
+                            {
+                                region.setExpectedCaptureTime(System.currentTimeMillis());
+                            }
                         }
                         else
                         {
                             this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 2);
                             this.influencerate = 2;
-                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((baseinfluenceamount - this.influence.get(factionwithinfluence)) / 2) * 1000));
+                            if(influencerate != currentinfluencerate);
+                            {
+                                region.setExpectedCaptureTime(System.currentTimeMillis() + (((baseinfluenceamount - this.influence.get(factionwithinfluence)) / 2) * 1000));
+                            }
                         }
                     }
                     
@@ -205,7 +217,10 @@ public class CaptureTimer extends BukkitRunnable {
                     {
                         this.influence.put(factionwithinfluence, this.influence.get(percentage.getKey()) + 1);
                         this.influencerate = 1;
-                        region.setExpectedCaptureTime(System.currentTimeMillis() + ((baseinfluenceamount - this.influence.get(factionwithinfluence)) * 1000));
+                        if(influencerate != currentinfluencerate);
+                        {
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + ((baseinfluenceamount - this.influence.get(factionwithinfluence)) * 1000));
+                        }
                     }
                     
                     if(percentage.getValue() > 0.5 && influence.get(factionwithinfluence) >= baseinfluenceamount && currentinfluence != influence.get(factionwithinfluence))
@@ -230,20 +245,31 @@ public class CaptureTimer extends BukkitRunnable {
                     {
                         this.influence.put(percentage.getKey(), this.influence.get(percentage.getKey()) + 3);
                         this.influencerate = 3;
+                        if(influencerate != currentinfluencerate);
+                        {
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((baseinfluenceamount - this.influence.get(factionwithinfluence)) / 3) * 1000));
+                        }
                     }
                     
                     else if (percentage.getValue() >= 0.75 && percentage.getValue() < 1)
                     {
                         this.influence.put(percentage.getKey(), this.influence.get(percentage.getKey()) + 2);
                         this.influencerate = 2;
+                        if(influencerate != currentinfluencerate);
+                        {
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + (((baseinfluenceamount - this.influence.get(factionwithinfluence)) / 2) * 1000));
+                        }
                     }
                     
                     else if (percentage.getValue() > 0.5 && percentage.getValue() < 0.75)
                     {
                         this.influence.put(percentage.getKey(), this.influence.get(percentage.getKey()) + 2);
                         this.influencerate = 1;
+                        if(influencerate != currentinfluencerate);
+                        {
+                            region.setExpectedCaptureTime(System.currentTimeMillis() + ((baseinfluenceamount - this.influence.get(factionwithinfluence)) * 1000));
+                        }
                     }
-                    
                     continue;
                 }
             }

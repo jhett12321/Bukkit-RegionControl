@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 
 import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.Faction;
-import com.featherminecraft.regioncontrol.utils.ServerUtils;
+import com.featherminecraft.regioncontrol.utils.RegionUtils;
 
 public class RegionCaptureEvent extends Event {
 
@@ -20,7 +20,7 @@ public class RegionCaptureEvent extends Event {
 
     public RegionCaptureEvent(CapturableRegion region, Faction oldowner, Faction newowner) {
         this.region = region;
-        this.players = ServerUtils.getRegionPlayerList(region);
+        this.players = new RegionUtils().getRegionPlayerList(region);
         this.oldowner = oldowner;
         this.newowner = newowner;
     }

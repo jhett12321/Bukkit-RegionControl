@@ -16,7 +16,7 @@ import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 import com.featherminecraft.regioncontrol.events.ControlPointCaptureEvent;
 import com.featherminecraft.regioncontrol.events.RegionCaptureEvent;
 import com.featherminecraft.regioncontrol.events.RegionDefendEvent;
-import com.featherminecraft.regioncontrol.utils.ServerUtils;
+import com.featherminecraft.regioncontrol.utils.RegionUtils;
 import com.featherminecraft.regioncontrol.utils.SpoutUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
 
@@ -25,9 +25,9 @@ public class GenericListener {
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onChangeRegion(ChangeRegionEvent event) {
-            ServerUtils.addPlayerToRegion(event.getPlayer(), event.getNewRegion());
+            RegionUtils.addPlayerToRegion(event.getPlayer(), event.getNewRegion());
             if(event.getOldRegion() != null) //Perhaps the player just joined.
-                ServerUtils.removePlayerFromRegion(event.getPlayer(), event.getOldRegion());
+                RegionUtils.removePlayerFromRegion(event.getPlayer(), event.getOldRegion());
             
             if(Utils.SpoutAvailable())
             {

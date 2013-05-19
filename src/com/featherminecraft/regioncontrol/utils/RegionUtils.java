@@ -10,7 +10,7 @@ import com.featherminecraft.regioncontrol.CaptureTimer;
 import com.featherminecraft.regioncontrol.ServerLogic;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-public class ServerUtils {
+public class RegionUtils {
     public static void addPlayerToRegion(Player player, CapturableRegion region)
     {
         List<Player> currentplayers = ServerLogic.players.get(region);
@@ -24,17 +24,17 @@ public class ServerUtils {
         currentplayers.remove(player);
     }
     
-    public static int getRegionPlayerCount(CapturableRegion region)
+    public int getRegionPlayerCount(CapturableRegion region)
     {
         return ServerLogic.players.get(region).size();
     }
     
-    public static List<Player> getRegionPlayerList(CapturableRegion region)
+    public List<Player> getRegionPlayerList(CapturableRegion region)
     {
         return ServerLogic.players.get(region);
     }
     
-    public static CaptureTimer getRegionCaptureTimer(CapturableRegion region)
+    public CaptureTimer getRegionCaptureTimer(CapturableRegion region)
     {
         return ServerLogic.capturetimers.get(region);
     }

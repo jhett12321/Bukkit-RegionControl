@@ -15,13 +15,18 @@ public class CapturableRegion {
     private Long expectedcapturetime;
     private String displayname;
     private List<CapturableRegion> adjacentregions;
+    private CaptureTimer timer;
+    private Integer influence;
+    private Faction influenceowner;
     
-    public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner)
+    public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner, Integer influence, Faction influenceowner)
     {
         this.displayname = displayname;
         this.region = region;
         this.world = world;
         this.owner = owner;
+        this.influence = influence;
+        this.influenceowner = influenceowner;
     }
 
     public Faction getOwner() {
@@ -75,5 +80,34 @@ public class CapturableRegion {
 
     public List<CapturableRegion> getAdjacentregions() {
         return adjacentregions;
+    }
+
+    public CaptureTimer getTimer() {
+        return timer;
+    }
+
+    public void setTimer(CaptureTimer timer) {
+        this.timer = timer;
+    }
+
+    public Integer getInfluence() {
+        return influence;
+    }
+
+    public void setInfluence(Integer influence) {
+        this.influence = influence;
+    }
+
+    public Faction getInfluenceOwner() {
+        return influenceowner;
+    }
+
+    public void setInfluenceOwner(Faction influenceowner) {
+        this.influenceowner = influenceowner;
+    }
+
+    public int getBaseInfluence() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }

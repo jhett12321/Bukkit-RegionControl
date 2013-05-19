@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 
 import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.Faction;
-import com.featherminecraft.regioncontrol.utils.ServerUtils;
+import com.featherminecraft.regioncontrol.utils.RegionUtils;
 
 public class RegionDefendEvent extends Event {
 
@@ -19,7 +19,7 @@ public class RegionDefendEvent extends Event {
 
     public RegionDefendEvent(CapturableRegion region, Faction defender) {
         this.region = region;
-        this.players = ServerUtils.getRegionPlayerList(region);
+        this.players = new RegionUtils().getRegionPlayerList(region);
         this.defender = defender;
     }
 

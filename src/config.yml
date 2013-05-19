@@ -3,10 +3,6 @@ factions:
     displayname:
     permissionsgroup:
     default: true
-    defaultspawn:
-      x:
-      y:
-      z:
     
   faction1:
     displayname:

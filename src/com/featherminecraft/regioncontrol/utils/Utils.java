@@ -1,17 +1,10 @@
 package com.featherminecraft.regioncontrol.utils;
 
-import java.util.List;
-import java.util.Set;
-
-import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
-import com.featherminecraft.regioncontrol.ControlPoint;
+import com.featherminecraft.regioncontrol.Config;
 import com.featherminecraft.regioncontrol.RegionControl;
-import com.featherminecraft.regioncontrol.ServerLogic;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class Utils {
     public static boolean WorldGuardAvailable()
@@ -22,6 +15,20 @@ public class Utils {
             //Worldguard is not installed
             return false;
         } else if (!worldguard.isEnabled()) {
+            //Worldguard is not enabled
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean VaultAvailable() {
+        Plugin vault = RegionControl.plugin.getServer().getPluginManager().getPlugin("Vault");
+
+        if (vault == null) {
+            //Worldguard is not installed
+            return false;
+        } else if (!vault.isEnabled()) {
             //Worldguard is not enabled
             return false;
         } else {
@@ -40,8 +47,7 @@ public class Utils {
     public static boolean SpoutAvailable()
     {
         Plugin spoutplugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("SpoutPlugin");
-        ConfigUtils configutils = new ConfigUtils();
-        if(!configutils.getConfigBoolean("useSpout")) {
+        if(!new Config().getConfigBoolean("useSpout")) {
         	//Spout is not enabled in the config
         	return false;
         } else if (spoutplugin == null) {
@@ -53,38 +59,5 @@ public class Utils {
         } else {
             return true;
         }
-    }
-
-    public String getOwner(ProtectedRegion region) {
-        ConfigUtils configutils = new ConfigUtils();
-        Set<String> owners = region.getOwners().getPlayers();
-        List<String> factions = configutils.getConfigValues("factions");
-        for( String owner : owners)
-        {
-            for( String faction : factions)
-            {
-                if(owner == faction)
-                    return owner;
-            }
-        }
-        //Shouldn't Get Here.
-        return null;
-    }
-    
-    public String getRegionUId(ProtectedRegion region, World world)
-    {
-        return world.getName() + "_" + region.getId();
-    }
-    
-    public CapturableRegion getCapturableRegionFromRegion(ProtectedRegion region,World world)
-    {
-        CapturableRegion capturableregion = ServerLogic.registeredregions.get(getRegionUId(region,world));
-        return capturableregion;
-        
-    }
-    
-    public String createUniqueId(CapturableRegion region, ControlPoint controlpoint)
-    {
-        return region.getWorld().getName() + region.getRegion().getId() + controlpoint.getControlPointName();
     }
 }
