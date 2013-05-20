@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.bukkit.entity.Player;
 
 import com.featherminecraft.regioncontrol.CapturableRegion;
+import com.featherminecraft.regioncontrol.ControlPoint;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.RegionControl;
 import com.featherminecraft.regioncontrol.ServerLogic;
@@ -34,5 +35,29 @@ public class PlayerUtils {
         }
         
         return availablespawnpoints;
+    }
+    
+    /**
+     * Checks whether a player can capture the selected ControlPoint.
+     * @param controlpoint - A ControlPoint.
+     * @param player - The Player to be checked
+     * @return Boolean whether a player can capture the ControlPoint
+     */
+    public Boolean canCapture(ControlPoint controlpoint, Player player)
+    {
+        if(controlpoint.getCapturableRegion().getOwner() == getPlayerFaction(player))
+        {
+            return true;
+        }
+        
+        for(CapturableRegion adjacentregion : controlpoint.getCapturableRegion().getAdjacentregions())
+        {
+            if(adjacentregion.getOwner() == getPlayerFaction(player))
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

@@ -12,6 +12,7 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.regioncontrol.ControlPoint;
 import com.featherminecraft.regioncontrol.SpoutClientLogic;
+//import com.featherminecraft.regioncontrol.dynmap.DynmapImpl; TODO
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 import com.featherminecraft.regioncontrol.events.ControlPointCaptureEvent;
 import com.featherminecraft.regioncontrol.events.RegionCaptureEvent;
@@ -19,6 +20,7 @@ import com.featherminecraft.regioncontrol.events.RegionDefendEvent;
 import com.featherminecraft.regioncontrol.utils.RegionUtils;
 import com.featherminecraft.regioncontrol.utils.SpoutUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
+
 
 public class GenericListener {
     public class PlayerListener implements Listener {
@@ -54,6 +56,7 @@ public class GenericListener {
             }
             
             event.getCapturableRegion().setExpectedCaptureTime(null);
+            //DynmapImpl.WorldGuardUpdate().run(); TODO
         }
         
         @EventHandler(priority = EventPriority.MONITOR)

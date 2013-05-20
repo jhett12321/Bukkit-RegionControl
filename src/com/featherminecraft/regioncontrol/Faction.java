@@ -7,14 +7,12 @@ public class Faction {
 
     private String name;
     private SpawnPoint spawnpoint;
-    private Location spawnlocation;
     private String permissiongroup;
     
     public Faction(String name, String permissiongroup, Location spawnlocation)
     {
         this.name = name;
         this.permissiongroup = permissiongroup;
-        this.spawnlocation = spawnlocation;
     }
     
     public String getName() {
@@ -28,4 +26,9 @@ public class Faction {
     public String getPermissionGroup() {
         return permissiongroup;
     }
+    
+//    public Color getFactionColor()
+//    {
+//        
+//    }
 }
