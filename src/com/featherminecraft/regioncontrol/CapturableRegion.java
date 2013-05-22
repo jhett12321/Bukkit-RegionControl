@@ -1,6 +1,7 @@
 package com.featherminecraft.regioncontrol;
 
 import java.util.List;
+
 import org.bukkit.World;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -67,6 +68,10 @@ public class CapturableRegion {
     }
 
     public void setExpectedCaptureTime(Long expectedcapturetime) {
+        if(expectedcapturetime == null)
+        {
+            //TODO
+        }
         this.expectedcapturetime = expectedcapturetime;
     }
 

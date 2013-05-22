@@ -1,10 +1,14 @@
-package com.featherminecraft.regioncontrol;
+package com.featherminecraft.regioncontrol.spout;
 
 import java.util.Map;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.getspout.spoutapi.gui.*;
 import org.getspout.spoutapi.player.SpoutPlayer;
+
+import com.featherminecraft.regioncontrol.CapturableRegion;
+import com.featherminecraft.regioncontrol.RegionControl;
+import com.featherminecraft.regioncontrol.SpawnPoint;
 
 public class SpoutClientLogic extends BukkitRunnable {
 
@@ -41,7 +45,7 @@ public class SpoutClientLogic extends BukkitRunnable {
     public void run() {
         long currenttime = System.currentTimeMillis();
         
-        long millisecondsremaining = currenttime - expectedcapture;
+        long millisecondsremaining = region.getExpectedCaptureTime() - currenttime;
         
         int seconds = (int) ((millisecondsremaining / 1000) % 60) ;
         int minutes = (int) ((millisecondsremaining / (1000*60)) % 60);

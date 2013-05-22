@@ -23,7 +23,7 @@ import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.ClientRunnables;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.SpawnPoint;
-import com.featherminecraft.regioncontrol.SpoutClientLogic;
+import com.featherminecraft.regioncontrol.spout.SpoutClientLogic;
 import com.featherminecraft.regioncontrol.utils.PlayerUtils;
 import com.featherminecraft.regioncontrol.utils.RegionUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
@@ -116,7 +116,7 @@ public class SpoutPlayerListener implements Listener {
         
         else
         {
-            event.setRespawnLocation(respawnlocation); //TODO: Replace with config default value for per-faction spawn.
+            event.setRespawnLocation(new PlayerUtils().getPlayerFaction(event.getPlayer()).getFactionSpawnPoint().getLocation()); //TODO: Replace with config default value for per-faction spawn.
         }
     }
     
