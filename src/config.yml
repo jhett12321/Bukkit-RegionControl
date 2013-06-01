@@ -5,13 +5,17 @@ factions:
     default: true
     
   faction1:
-    displayname:
+    displayname: 'The Elder Tyrants'
     permissionsgroup:
     default: false
     defaultspawn:
       x:
       y:
       z:
+    color:
+      red:
+      green:
+      blue:
 
 regions:
   exampleregion_worldguard_id:
@@ -38,3 +42,7 @@ regions:
       x:
       y:
       z:
+
+spout:
+  enabled: true
+  maxspawnpoints: 10

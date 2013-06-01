@@ -28,7 +28,7 @@ public class CaptureTimer extends BukkitRunnable {
     {
         this.controlpoints = region.getControlpoints();
         this.region = region;
-        this.baseinfluenceamount = baseinfluenceamount; //Capture Time, from neutral to ownership, in seconds with 50 - 75% ownership.. Maybe times this by 2 to get capture time from owner to owner?
+        this.baseinfluenceamount = baseinfluenceamount;
         
         Map<String, Faction> factions = ServerLogic.registeredfactions;
         for(Entry<String, Faction> faction : factions.entrySet())

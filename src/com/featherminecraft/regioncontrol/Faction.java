@@ -1,5 +1,7 @@
 package com.featherminecraft.regioncontrol;
 
+import java.awt.Color;
+
 import org.bukkit.Location;
 
 //W.I.P.
@@ -9,7 +11,7 @@ public class Faction {
     private SpawnPoint spawnpoint;
     private String permissiongroup;
     
-    public Faction(String name, String permissiongroup, Location spawnlocation)
+    public Faction(String name, String permissiongroup, Color factioncolor, Location spawnlocation)
     {
         this.name = name;
         this.permissiongroup = permissiongroup;

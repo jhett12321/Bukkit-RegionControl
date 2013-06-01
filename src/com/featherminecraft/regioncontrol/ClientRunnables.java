@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
+import com.featherminecraft.regioncontrol.utils.PlayerUtils;
 import com.featherminecraft.regioncontrol.utils.RegionUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
 import com.sk89q.worldedit.Vector;
@@ -23,16 +24,23 @@ public class ClientRunnables extends BukkitRunnable {
     public ClientRunnables(Player player)
     {
         this.player = player;
-        //TODO Replace with Faction Spawn points
-        if(player.getBedSpawnLocation() != null)
-            player.teleport(player.getBedSpawnLocation());
-        else
+        
+        SpawnPoint spawnPoint = new PlayerUtils().getPlayerFaction(player).getFactionSpawnPoint();
+        
+        if(spawnPoint.getLocation() == null)
+        {
             player.teleport(player.getWorld().getSpawnLocation());
+        }
+        else
+        {
+            player.teleport(spawnPoint.getLocation());
+        }
     }
     
     @Override
     public void run()
     {
+        //Player Region Watcher
         CapturableRegion newregion = null;
         
         WorldGuardPlugin worldguard = Utils.getWorldGuard();

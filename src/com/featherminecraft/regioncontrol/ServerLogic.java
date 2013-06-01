@@ -1,5 +1,6 @@
 package com.featherminecraft.regioncontrol;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,10 +55,16 @@ public class ServerLogic {
             int spawny = mainconfig.getInt("factions." + faction + ".defaultspawn" + ".y");
             int spawnz = mainconfig.getInt("factions." + faction + ".defaultspawn" + ".z");
             
-            Location spawnlocation = new Location (Bukkit.getWorld(spawnworld), spawnx, spawnz, spawnz);
+            Location spawnlocation = new Location (Bukkit.getWorld(spawnworld), spawnx, spawny, spawnz);
+            
+            int red = mainconfig.getInt("factions." + faction + ".color" + ".red");
+            int green = mainconfig.getInt("factions." + faction + ".color" + ".green");
+            int blue = mainconfig.getInt("factions." + faction + ".color" + ".blue");
+            
+            Color factioncolor = new Color(red, green, blue);
             
             //TODO Determine faction 'spawn' region. Not sure how this will work for multi-world.
-            factions.put(faction, new Faction(faction, permissionGroup, spawnlocation));
+            factions.put(faction, new Faction(faction, permissionGroup,factioncolor, spawnlocation));
         }
         return factions;
     }
@@ -122,7 +129,7 @@ public class ServerLogic {
                 int y = mainconfig.getInt("regions." + capturableregion.getValue().getRegion().getId() + ".controlpoints." + controlpointentry + ".y");
                 int z = mainconfig.getInt("regions." + capturableregion.getValue().getRegion().getId() + ".controlpoints." + controlpointentry + ".z");
                 Location controlpointlocation = new Location(capturableregion.getValue().getWorld(), x, y, z);
-                ControlPoint controlpoint = new ControlPoint(controlpointentry, capturableregion.getValue(), controlpointlocation);
+                ControlPoint controlpoint = new ControlPoint(controlpointentry, capturableregion.getValue(), controlpointlocation, null/*TODO*/);
                 controlpoints.add(controlpoint);
             }
             capturableregion.getValue().setControlPoints(controlpoints);
@@ -166,45 +173,5 @@ public class ServerLogic {
     public static Map<CapturableRegion, SpawnPoint> setupSpawnPoints() {
         // TODO Auto-generated method stub
         return null;
-    }
-    
-    /**
-     * Registers a region into the registered regions list.
-     *
-     * The registered regions list is used to calculate
-     * region player counts, and more.
-     *
-     * @param region A ProtectedRegion.
-     * @param world The world which this region is located.
-     */
-    @Deprecated
-    private static void RegisterRegion(ProtectedRegion region, World world)
-    {
-/*        Faction defaultfaction = new Config().getDefaultFaction();
-        CapturableRegion capturableregion = new CapturableRegion(region,world, Config.getDefaultFaction());
-        
-        Map<String, Location> controllablepoints = new Config().getControlPointsForRegion(capturableregion);
-        for(Entry<String, Location> controlpointentry : controllablepoints.entrySet())
-        {
-            ControlPoint controlpoint = new ControlPoint(null, capturableregion, null);
-            List<ControlPoint> controlpointlist = controlpoints.get(capturableregion);
-            controlpointlist.add(controlpoint);
-            controlpoints.put(capturableregion, controlpointlist);
-        }
-        
-        capturableregion.setControlPoints(controlpoints.get(capturableregion));
-        
-        Location location = new Config().getSpawnPointForRegion(capturableregion);
-        SpawnPoint spawnpoint = new SpawnPoint(capturableregion, location);
-        spawnpoints.put(capturableregion, spawnpoint);
-        capturableregion.setSpawnPoint(spawnpoints.get(region));
-        
-        CaptureTimer capturetimer = new CaptureTimer(capturableregion, 0);
-        capturetimer.runTaskTimer(RegionControl.plugin, 20, 20);
-        
-        registeredregions.put(capturableregion.getWorld().getName() + "_" + capturableregion.getRegion().getId(), capturableregion);
-        players.put(capturableregion, null);
-        capturetimers.put(capturableregion, capturetimer);
-        regionowners.put(capturableregion, defaultfaction);*/
     }
 }

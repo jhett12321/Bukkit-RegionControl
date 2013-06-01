@@ -1,19 +1,27 @@
 package com.featherminecraft.regioncontrol.utils;
 
+import org.getspout.spoutapi.gui.Button;
 import org.getspout.spoutapi.gui.Label;
 import org.getspout.spoutapi.gui.Texture;
 import org.getspout.spoutapi.gui.Widget;
 
+import com.featherminecraft.regioncontrol.Config;
+
 public class SpoutUtils {
-    public Widget UpdateLabelText (Label widget, String text)
+    public Widget updateLabelText (Label widget, String text)
     {
         widget = widget.setText(text);
         return widget;
     }
     
-    public Widget UpdateTexture (Texture widget, String newtexture)
+    public Widget updateTexture (Texture widget, String newtexture)
     {
         widget = widget.setUrl(newtexture);
         return widget;
+    }
+    
+    public int getMaxSpawnButtons()
+    {
+        return new Config().getMainConfig().getInt("spout.maxspawnbuttons");
     }
 }

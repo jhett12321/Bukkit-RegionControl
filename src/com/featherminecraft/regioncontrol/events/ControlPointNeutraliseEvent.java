@@ -1,6 +1,5 @@
 package com.featherminecraft.regioncontrol.events;
 
-import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -8,18 +7,17 @@ import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.ControlPoint;
 import com.featherminecraft.regioncontrol.Faction;
 
-public class ControlPointCaptureEvent extends Event {
+public class ControlPointNeutraliseEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     private CapturableRegion region;
-    private World world;
-    private Faction owner;
-    private ControlPoint controlpoint;
+    private Faction oldOwner;
+    private ControlPoint controlPoint;
 
-    public ControlPointCaptureEvent(CapturableRegion region, Faction owner, ControlPoint controlpoint) {
+    public ControlPointNeutraliseEvent(CapturableRegion region, Faction oldowner, ControlPoint controlpoint) {
         this.region = region;
-        this.owner = owner;
-        this.controlpoint = controlpoint;
+        this.oldOwner = oldowner;
+        this.controlPoint = controlpoint;
     }
 
     public static HandlerList getHandlerList() {
@@ -35,15 +33,11 @@ public class ControlPointCaptureEvent extends Event {
         return region;
     }
 
-    public World getWorld() {
-        return world;
+    public Faction getOldOwner() {
+        return oldOwner;
     }
 
-    public Faction getOwner() {
-        return owner;
-    }
-
-    public ControlPoint getControlpoint() {
-        return controlpoint;
+    public ControlPoint getControlPoint() {
+        return controlPoint;
     }
 }

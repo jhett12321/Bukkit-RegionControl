@@ -15,17 +15,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
+import org.getspout.spoutapi.event.screen.ScreenOpenEvent;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
 import org.getspout.spoutapi.gui.Button;
+import org.getspout.spoutapi.gui.ScreenType;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.ClientRunnables;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.SpawnPoint;
+import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 import com.featherminecraft.regioncontrol.spout.SpoutClientLogic;
 import com.featherminecraft.regioncontrol.utils.PlayerUtils;
 import com.featherminecraft.regioncontrol.utils.RegionUtils;
+import com.featherminecraft.regioncontrol.utils.SpoutUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -43,6 +49,15 @@ public class SpoutPlayerListener implements Listener {
     public void onSpoutcraftEnable(SpoutCraftEnableEvent event) {
         spoutclientlogic = new SpoutClientLogic(event.getPlayer());
         clientrunnables = new ClientRunnables(event.getPlayer().getPlayer());
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onChangeRegion(ChangeRegionEvent event) {
+        SpoutPlayer player = SpoutManager.getPlayer(event.getPlayer());
+        SpoutUtils spoututils = new SpoutUtils();
+        if(player.isSpoutCraftEnabled())
+            spoututils.updateLabelText(SpoutClientLogic.regioname, event.getNewRegion().getDisplayname());
+            spoututils.updateTexture(SpoutClientLogic.factionicon, event.getNewRegion().getOwner().getName());
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -103,6 +118,23 @@ public class SpoutPlayerListener implements Listener {
             if(damagerfaction == damagedentityfaction)
             {
                 event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onScreenOpen(ScreenOpenEvent event)
+    {
+        ScreenType screentype = event.getScreenType();
+        //Respawn Screen
+        if(screentype == ScreenType.GAME_OVER_SCREEN)
+        {
+            Map<SpawnPoint,Button> respawnbuttons = spoutclientlogic.getBestSpawnPointsForPlayer(event.getPlayer());
+            int positiony = 0;
+            for(Entry<SpawnPoint, Button> button : respawnbuttons.entrySet())
+            {
+                positiony = positiony + 10;
+                button.getValue().setVisible(true);
             }
         }
     }

@@ -101,6 +101,14 @@ public static boolean isfirstrun;
     @Override
     public void onEnable() {
         RegionControl.plugin = this;
+        
+        //TODO: Migrate from spout to client mod.
+        /*
+        // This informs Bukkit that you will send messages through that channel
+        Bukkit.getMessenger().registerOutgoingPluginChannel( this, "regioncontrol");
+        // TODO: Will this be needed to determine if the client has the mod installed?
+        Bukkit.getMessenger().registerIncomingPluginChannel( this, "regioncontrol", new ClientLogic() );
+        */
 
         PluginManager pm = getServer().getPluginManager();
         if(!Utils.WorldGuardAvailable())
@@ -146,6 +154,11 @@ public static boolean isfirstrun;
             Integer influence = region.getValue().getInfluence();
             String influenceowner = region.getValue().getInfluenceOwner().getName();
             String regionowner = region.getValue().getOwner().getName();
+            
+            for(ControlPoint controlPoint : region.getValue().getControlpoints())
+            {
+                String controlPointOwner = controlPoint.getOwner().getName();
+            }
         }
 
     }

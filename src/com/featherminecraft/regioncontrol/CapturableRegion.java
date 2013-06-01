@@ -68,11 +68,17 @@ public class CapturableRegion {
     }
 
     public void setExpectedCaptureTime(Long expectedcapturetime) {
-        if(expectedcapturetime == null)
-        {
-            //TODO
-        }
-        this.expectedcapturetime = expectedcapturetime;
+//        if(this.expectedcapturetime != expectedcapturetime)
+//        {
+//            if(expectedcapturetime == null)
+//            {
+//                CaptureTimeChangeEvent captureTimeChangeEvent = new CaptureTimeChangeEvent(this, expectedcapturetime);
+//                Bukkit.getServer().getPluginManager().callEvent(captureTimeChangeEvent);
+//                return;
+//            }
+            this.expectedcapturetime = expectedcapturetime;
+//        }
+
     }
 
     public String getDisplayname() {
@@ -112,7 +118,21 @@ public class CapturableRegion {
     }
 
     public int getBaseInfluence() {
-        // TODO Auto-generated method stub
-        return 0;
+        return new Config().getMainConfig().getInt("regions." + this.region.getId() + ".influence");
+    }
+    
+    public Boolean isCapturable(Faction faction)
+    {
+        List<CapturableRegion> regions = adjacentregions;
+        regions.add(this);
+        
+        for(CapturableRegion region : regions)
+        {
+            if(region.getOwner() == faction)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
