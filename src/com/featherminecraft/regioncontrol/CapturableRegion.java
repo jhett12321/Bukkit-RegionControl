@@ -19,9 +19,9 @@ public class CapturableRegion {
     private CaptureTimer timer;
     private Integer influence;
     private Faction influenceowner;
+    private Boolean beingcaptured = false;
     
-    public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner, Integer influence, Faction influenceowner)
-    {
+    public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner, Integer influence, Faction influenceowner) {
         this.displayname = displayname;
         this.region = region;
         this.world = world;
@@ -134,5 +134,14 @@ public class CapturableRegion {
             }
         }
         return false;
+    }
+    
+    public Boolean isBeingCaptured()
+    {
+        return beingcaptured;
+    }
+
+    public void setIsBeingCaptured(Boolean capturing) {
+        beingcaptured = capturing;
     }
 }

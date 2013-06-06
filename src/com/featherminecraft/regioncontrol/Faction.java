@@ -10,11 +10,13 @@ public class Faction {
     private String name;
     private SpawnPoint spawnpoint;
     private String permissiongroup;
+    private Color factioncolor;
     
     public Faction(String name, String permissiongroup, Color factioncolor, Location spawnlocation)
     {
         this.name = name;
         this.permissiongroup = permissiongroup;
+        this.factioncolor = factioncolor;
     }
     
     public String getName() {
@@ -29,8 +31,8 @@ public class Faction {
         return permissiongroup;
     }
     
-//    public Color getFactionColor()
-//    {
-//        
-//    }
+    public Color getFactionColor()
+    {
+        return factioncolor;
+    }
 }

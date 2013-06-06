@@ -1,18 +1,14 @@
 package com.featherminecraft.regioncontrol;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-
-//TODO: Incomplete.
 public class Config {
     private static FileConfiguration mainconfig;
     private static FileConfiguration data;
@@ -90,20 +86,5 @@ public class Config {
             }
         }
         return null;
-    }
-
-    public Map<String, Location> getControlPointsForRegion(CapturableRegion capturableregion) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Location getSpawnPointForRegion(CapturableRegion capturableregion) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean getConfigBoolean(String string) {
-        // TODO Auto-generated method stub
-        return false;
     }
 }

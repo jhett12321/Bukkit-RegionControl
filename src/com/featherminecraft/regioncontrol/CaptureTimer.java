@@ -269,6 +269,7 @@ public class CaptureTimer extends BukkitRunnable {
                         {
                             region.setExpectedCaptureTime(System.currentTimeMillis() + ((baseinfluenceamount - this.influence.get(factionwithinfluence)) * 1000));
                         }
+                        region.setIsBeingCaptured(true);
                     }
                     continue;
                 }

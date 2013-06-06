@@ -169,9 +169,4 @@ public class ServerLogic {
         }
         return capturableRegions;
     }
-    
-    public static Map<CapturableRegion, SpawnPoint> setupSpawnPoints() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

@@ -7,65 +7,42 @@ JIRA Link:
 Classification: Improvement
 Priority: Major
 
-    TODO 2. Add configuration options to allow disabling of spout support
-Details:
-File/s: RegionControl.java Line 80, Config.java
-JIRA Link: 
-Classification: Improvement
-Priority: Minor
-
-    TODO 3. Finish Configuration Code
-Details:
-File/s: RegionControl.java Line 10, Config.java, Utils.java
-JIRA Link: 
-Classification: Improvement
-Priority: Critical
-
-    TODO 4. Implement onDisable Code
+    TODO 2. Implement onDisable Code
 Details:
 File/s: RegionControl.java Line 91
 JIRA Link: 
 Classification: New Feature
 Priority: Blocker
 
-    TODO 5. Make sure that static is being used properly in functions.
+    TODO 3. Make sure that static is being used properly in functions.
 Details:
 File/s: RegionControl.java
 JIRA Link: 
 Classification: Improvement
 Priority: Major
 
-    TODO 6. Implement Dynmap (Or some similar full screen map) to client that shows current region control.
+    TODO 4. Implement Dynmap (Or some similar full screen map) to client that shows current region control.
 Details:
 File/s: Unknown
 JIRA Link: 
 Classification: New Feature
 Priority: Trivial
 
-    TODO 7. Spawn Points
-    EDIT: Spawn points will be handled in a "re-spawn" room (When Spout is unavailable), with signs indicating where a player can spawn. Right Clicking the sign will spawn the player at that location.
-    Valid spawn points will be regions that you own.
-Details:
-File/s: Unknown
-JIRA Link: 
-Classification: New Feature
-Priority: Minor
-
-    TODO 8. Replace main configuration with individual configuration files
+    TODO 5. Replace main configuration with individual configuration files
 Details:
 File/s: Config.java All Lines
 JIRA Link: 
 Classification: Improvement
 Priority: Minor
 
-    TODO 9. Map Filters
+    TODO 6. Map Filters
 Details:
 Pre-req: Dynmap Implementation
 JIRA Link: 
 Classification: Improvement
 Priority: Trivial
 
-    TODO 10. World Saving - Remember who owned each region after server restart/shutdown.
+    TODO 7. World Saving - Remember who owned each region after server restart/shutdown.
 Details:
 File/s: ServerLogic.java
 JIRA Link: 
@@ -106,7 +83,6 @@ public static boolean isfirstrun;
         /*
         // This informs Bukkit that you will send messages through that channel
         Bukkit.getMessenger().registerOutgoingPluginChannel( this, "regioncontrol");
-        // TODO: Will this be needed to determine if the client has the mod installed?
         Bukkit.getMessenger().registerIncomingPluginChannel( this, "regioncontrol", new ClientLogic() );
         */
 

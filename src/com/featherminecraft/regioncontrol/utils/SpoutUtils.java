@@ -1,6 +1,5 @@
 package com.featherminecraft.regioncontrol.utils;
 
-import org.getspout.spoutapi.gui.Button;
 import org.getspout.spoutapi.gui.Label;
 import org.getspout.spoutapi.gui.Texture;
 import org.getspout.spoutapi.gui.Widget;

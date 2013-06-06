@@ -31,7 +31,6 @@ import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 import com.featherminecraft.regioncontrol.spout.SpoutClientLogic;
 import com.featherminecraft.regioncontrol.utils.PlayerUtils;
 import com.featherminecraft.regioncontrol.utils.RegionUtils;
-import com.featherminecraft.regioncontrol.utils.SpoutUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -54,10 +53,7 @@ public class SpoutPlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event) {
         SpoutPlayer player = SpoutManager.getPlayer(event.getPlayer());
-        SpoutUtils spoututils = new SpoutUtils();
-        if(player.isSpoutCraftEnabled())
-            spoututils.updateLabelText(SpoutClientLogic.regioname, event.getNewRegion().getDisplayname());
-            spoututils.updateTexture(SpoutClientLogic.factionicon, event.getNewRegion().getOwner().getName());
+        spoutclientlogic.updateCurrentRegion(player, event.getNewRegion());
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
