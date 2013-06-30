@@ -59,12 +59,14 @@ import java.util.Map.Entry;
 
 import net.milkbowl.vault.permission.Permission;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.featherminecraft.regioncontrol.listeners.PlayerListener;
 import com.featherminecraft.regioncontrol.listeners.SpoutPlayerListener;
+import com.featherminecraft.regioncontrol.spout.SpoutClientLogic;
 import com.featherminecraft.regioncontrol.utils.Utils;
 
 public final class RegionControl extends JavaPlugin {
@@ -107,6 +109,7 @@ public static boolean isfirstrun;
 
         if(Utils.SpoutAvailable())
         {
+            SpoutClientLogic.init();
             spoutplayerlistener = new SpoutPlayerListener();
             pm.registerEvents(spoutplayerlistener, this);
         } else {
@@ -125,11 +128,16 @@ public static boolean isfirstrun;
     public void onDisable() {
         //TODO Finish save code.
         Map<String, CapturableRegion> registered_regions = ServerLogic.registeredregions;
+        FileConfiguration datafile = new Config().getDataFile();
+        
         for(Entry<String, CapturableRegion> region : registered_regions.entrySet())
         {
             Integer influence = region.getValue().getInfluence();
             String influenceowner = region.getValue().getInfluenceOwner().getName();
             String regionowner = region.getValue().getOwner().getName();
+            
+            //TODO Worlds need to be handled differently. Perhaps worlds.world.regions.region.x. This will require a major refactor.
+            datafile.set("regions" + region.getValue().getRegion().getId() + "." , regionowner);
             
             for(ControlPoint controlPoint : region.getValue().getControlpoints())
             {

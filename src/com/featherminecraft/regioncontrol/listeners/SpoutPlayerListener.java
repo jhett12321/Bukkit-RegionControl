@@ -42,18 +42,21 @@ public class SpoutPlayerListener implements Listener {
     private SpoutClientLogic spoutclientlogic;
     private Location respawnlocation;
     private ClientRunnables clientrunnables;
-    
+    private SpoutPlayer splayer;
 
     @EventHandler
     public void onSpoutcraftEnable(SpoutCraftEnableEvent event) {
-        spoutclientlogic = new SpoutClientLogic(event.getPlayer());
+        spoutclientlogic = new SpoutClientLogic();
+        spoutclientlogic.setupClientElements(splayer);
         clientrunnables = new ClientRunnables(event.getPlayer().getPlayer());
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event) {
-        SpoutPlayer player = SpoutManager.getPlayer(event.getPlayer());
-        spoutclientlogic.updateCurrentRegion(player, event.getNewRegion());
+        if(splayer == SpoutManager.getPlayer(event.getPlayer()))
+        {
+            spoutclientlogic.updateRegion(event.getNewRegion());
+        }
     }
     
     @EventHandler(priority = EventPriority.MONITOR)

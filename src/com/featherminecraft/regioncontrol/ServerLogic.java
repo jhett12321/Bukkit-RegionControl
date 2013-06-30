@@ -22,6 +22,7 @@ public class ServerLogic {
 
     //private variables
     private static FileConfiguration mainconfig;
+    private static FileConfiguration datafile;
     
     //Temp Variable. Can be removed on plugin disable.
     public static Map<CapturableRegion, List<Player>> players;
@@ -36,6 +37,7 @@ public class ServerLogic {
     public static void init()
     {
         mainconfig = new Config().getMainConfig();
+        datafile = new Config().getDataFile();
         //Faction Setup
         registeredfactions = setupFactions();
 
@@ -82,9 +84,9 @@ public class ServerLogic {
             String region_world = mainconfig.getString("regions." + regionid + ".world");
             String region_displayname = mainconfig.getString("regions." + regionid + ".displayname");
             
-            String region_owner = new Config().getDataFile().getString("regions." + regionid + ".owner");
-            Integer influence = new Config().getDataFile().getInt("regions." + regionid + ".influence");
-            String region_influenceowner = new Config().getDataFile().getString("regions." + regionid + ".influenceowner");
+            String region_owner = datafile.getString("regions." + regionid + ".owner");
+            Integer influence = datafile.getInt("regions." + regionid + ".influence");
+            String region_influenceowner = datafile.getString("regions." + regionid + ".influenceowner");
             
             if(region_owner == null)
             {
@@ -129,7 +131,10 @@ public class ServerLogic {
                 int y = mainconfig.getInt("regions." + capturableregion.getValue().getRegion().getId() + ".controlpoints." + controlpointentry + ".y");
                 int z = mainconfig.getInt("regions." + capturableregion.getValue().getRegion().getId() + ".controlpoints." + controlpointentry + ".z");
                 Location controlpointlocation = new Location(capturableregion.getValue().getWorld(), x, y, z);
-                ControlPoint controlpoint = new ControlPoint(controlpointentry, capturableregion.getValue(), controlpointlocation, null/*TODO*/);
+                
+                Faction controlpointowner = registeredfactions.get(datafile.get("regions." + capturableregion.getValue().getRegion().getId() + ".controlpoints." + controlpointentry + ".owner"));
+                
+                ControlPoint controlpoint = new ControlPoint(controlpointentry, capturableregion.getValue(), controlpointlocation, controlpointowner);
                 controlpoints.add(controlpoint);
             }
             capturableregion.getValue().setControlPoints(controlpoints);

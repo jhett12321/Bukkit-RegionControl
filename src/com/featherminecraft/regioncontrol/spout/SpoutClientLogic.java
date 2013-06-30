@@ -1,187 +1,251 @@
 package com.featherminecraft.regioncontrol.spout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.File;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.gui.*;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.regioncontrol.CapturableRegion;
-import com.featherminecraft.regioncontrol.Config;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.RegionControl;
-import com.featherminecraft.regioncontrol.ServerLogic;
-import com.featherminecraft.regioncontrol.SpawnPoint;
-import com.featherminecraft.regioncontrol.utils.PlayerUtils;
 
-public class SpoutClientLogic extends BukkitRunnable {
+public class SpoutClientLogic {
 
-    private Label regionname;
-    private Texture ownericon;
-    private Map<SpawnPoint,Button> spawnbuttons;
-    private CapturableRegion region;
-    private Map<Faction,Color> spoutcolor;
-    private Label capturetimer;
-    private Texture influenceownericon;
-    private Gradient capturebar;
+    //Needs to be initalised before main setup begins.
     private SpoutPlayer splayer;
-    private Gradient capturebaranim;
-    private Container regionInfo;
-    private Container captureInfo;
+    private Map<Faction,String> factionIcons;
+    private Map<Faction,Color> factionColors;
     
-    public SpoutClientLogic(SpoutPlayer splayer)
+    //Variables created from setup
+    private Label regionname;
+    private Label capturetimer;
+    private Gradient captureBar;
+    private Texture captureBarAnim;
+    private Gradient captureBarSpace;
+    private Gradient captureBarBackground;
+    private Texture ownericon;
+    private Texture influenceownericon;
+    
+    //Definable Variables
+    private Faction influenceOwner;
+    private Faction owner;
+    private Long millisecondsremaining;
+    private Short barAnimRate;
+    
+    //Misc
+    private BukkitTask runnable;
+    protected Faction majorityController;
+    private CapturableRegion region;
+
+    public static void init()
     {
+        //TODO check inside config what files have been defined for the faction icons.
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Losing.png"));
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Capturing.png"));
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/faction.png"));
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/faction2.png"));
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/music.wav"));
+    }
+    /**
+ * RegionControl UI Test - InDev 0.5 - Remarks and recommendations for implementation.
+ * Ensure that before animating a texture that it has been defined.
+ * Use Bukkit Runnables, not the scheduler
+ * Pre-Cache textures.
+    */
+
+    public void setupClientElements(SpoutPlayer splayer) {
+        millisecondsremaining = null;
         this.splayer = splayer;
+
         Screen screen = splayer.getMainScreen();
         
-        Config config = new Config();
-        for(Entry<String, Faction> faction : ServerLogic.registeredfactions.entrySet())
-        {
-            int red = config.getMainConfig().getInt("factions." + faction + ".color" + ".red");
-            int green = config.getMainConfig().getInt("factions." + faction + ".color" + ".green");
-            int blue = config.getMainConfig().getInt("factions." + faction + ".color" + ".blue");
-            
-            Color factioncolor = new Color(red/255F, green/255F, blue/255F);
-            spoutcolor.put(faction.getValue(), factioncolor);
-        }
+        //Always Visible
+        Container regionInfo = (Container) new GenericContainer()
+                .setLayout(ContainerType.HORIZONTAL)
+                .setAlign(WidgetAnchor.CENTER_LEFT)
+                .setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427)
+                .setHeight(10).setX(10).setY(1);
         
-        regionInfo = new GenericContainer().setLayout(ContainerType.HORIZONTAL);
-        captureInfo = new GenericContainer().setLayout(ContainerType.OVERLAY);
+        ownericon = (Texture) new GenericTexture().setMargin(0, 0, 0, 3)
+                .setHeight(16).setWidth(16).setFixed(true);
         
-        //Always Displayed
-        ownericon = (Texture) new GenericTexture("defaultfaction.png").setMarginRight(5);
-        regionname = (Label) new GenericLabel("DEBUG: REGION NAME NOT FOUND");
-
-        regionInfo.addChildren(ownericon, regionname).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).shiftXPos(15);
+        regionname = (Label) new GenericLabel().setResize(true)
+        .setMargin(0, 3).setFixed(true);
         
-        //Displayed when region is being captured
-        influenceownericon = (Texture) new GenericTexture("defaultfaction.png").setMarginRight(5);
-        capturebar = (Gradient) new GenericGradient().shiftXPos(15);
-        capturebaranim = (Gradient) new GenericGradient().setColor(new Color(1F, 1F, 1F, 0.25F)).shiftXPos(15).setPriority(RenderPriority.Low);
-        capturetimer = (Label) new GenericLabel().setText("0:00").shiftXPos(15).setPriority(RenderPriority.Lowest);
-
-        captureInfo.addChildren(influenceownericon,capturebar,capturebaranim,capturetimer);
+        regionInfo.addChildren(ownericon, regionname);
         
-        screen.attachWidgets(RegionControl.plugin, regionname, ownericon,capturetimer,capturebar,capturebaranim,influenceownericon);
-    }
-
-    public Map<SpawnPoint,Button> getSpawnButtons() {
-        return spawnbuttons;
+        //Not Visible unless Capturing
+        Container influenceOwnerIconContainer = (Container) new GenericContainer()
+        .setLayout(ContainerType.OVERLAY)
+        .setAlign(WidgetAnchor.CENTER_LEFT)
+        .setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427)
+        .setHeight(10).setX(5).setY(20);
+        
+        influenceownericon = (Texture) new GenericTexture()
+        .setMargin(0, 0, 0, 3).setHeight(8).setWidth(8).setFixed(true);
+        
+        influenceOwnerIconContainer.addChild(influenceownericon);
+        influenceownericon.setVisible(false);
+        
+        //Capture Bar
+        Container captureBarContainer = (Container) new GenericContainer()
+        .setLayout(ContainerType.OVERLAY)
+        .setAlign(WidgetAnchor.CENTER_LEFT)
+        .setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427)
+        .setHeight(10).setX(20).setY(20); //Changed X to 20. (+10)
+        
+        captureBar = (Gradient) new GenericGradient().setHeight(10).setMargin(0, 3)
+                .setFixed(true).setPriority(RenderPriority.High);
+        
+        captureBarContainer.addChild(captureBar);
+        captureBar.setVisible(false);
+        
+        //Empty Capture Bar Overlay
+        Container captureBarSpaceContainer = (Container) new GenericContainer()
+        .setLayout(ContainerType.OVERLAY)
+        .setAlign(WidgetAnchor.CENTER_RIGHT)
+        .setAnchor(WidgetAnchor.CENTER_LEFT)
+        .setHeight(10).setX(73).setY(20);
+        
+        captureBarSpace = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(0) //Same here.
+                .setHeight(10).setFixed(true).setPriority(RenderPriority.Low);
+        
+        captureBarSpaceContainer.addChild(captureBarSpace);
+        captureBarSpace.setVisible(false);
+        
+        //Capture Bar Background
+        Container captureBarBackgroundContainer = (Container) new GenericContainer()
+        .setLayout(ContainerType.OVERLAY)
+        .setAlign(WidgetAnchor.CENTER_LEFT)
+        .setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427)
+        .setHeight(12).setX(21).setY(19);
+        
+        captureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(103)
+                .setHeight(12).setFixed(true).setPriority(RenderPriority.Highest);
+        
+        captureBarBackgroundContainer.addChild(captureBarBackground);
+        
+        //Timer
+        Container timerContainer = (Container) new GenericContainer()
+        .setLayout(ContainerType.OVERLAY)
+        .setAlign(WidgetAnchor.CENTER_LEFT)
+        .setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427)
+        .setHeight(10).setX(60).setY(21);
+        
+        capturetimer = (Label) new GenericLabel().setText("").setResize(true).setFixed(true).setPriority(RenderPriority.Lowest);
+        
+        timerContainer.addChild(capturetimer);
+        
+        //Capture Bar Animation
+        //Add an if statement here to determine if bar should originate from the end of the bar, or the start of it. For promotional purposes, the anim will be
+        //going down.
+        Container barAnimContainer = (Container) new GenericContainer()
+        .setLayout(ContainerType.OVERLAY)
+        .setAlign(WidgetAnchor.CENTER_LEFT)
+        .setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427)
+        .setHeight(10).setMarginLeft(100).setY(20);
+        
+        captureBarAnim = (Texture) new GenericTexture().setDrawAlphaChannel(true)
+                .setHeight(10).setFixed(true).setPriority(RenderPriority.Normal);
+        
+        barAnimContainer.addChild(captureBarAnim);
+        
+        screen.attachWidgets(RegionControl.plugin, regionInfo, influenceOwnerIconContainer, captureBarContainer, captureBarSpaceContainer, captureBarBackgroundContainer, timerContainer, barAnimContainer);
+        screen.attachWidgets(RegionControl.plugin, ownericon, regionname, influenceownericon , captureBarBackground,captureBar, captureBarSpace, capturetimer,captureBarAnim);
     }
     
-    public Map<SpawnPoint,Button> getBestSpawnPointsForPlayer(Player player)
+    public void updateRegion(CapturableRegion newregion)
     {
-        CapturableRegion currentregion = new PlayerUtils().getCurrentRegion(player);
-        List<CapturableRegion> regions = currentregion.getAdjacentregions();
-        regions.add(currentregion);
+        this.region = newregion;
+        this.owner = newregion.getOwner();
+        ownericon.setUrl(factionIcons.get(owner));
+        regionname.setText(newregion.getDisplayname());
         
-        List<CapturableRegion> spawnableregions = new ArrayList<CapturableRegion>();
-        
-        int maxspawnpoints = new Config().getMainConfig().getInt("spout.maxspawnpoints");
-        int currentspawnpoints = 0;
-        
-        for(CapturableRegion region : regions)
+        if(newregion.isBeingCaptured())
         {
-            currentspawnpoints = currentspawnpoints + 1;
-            if(currentspawnpoints == maxspawnpoints)
+            //Set all "capture" elements visible.
+            
+            millisecondsremaining = newregion.getExpectedCaptureTime() - System.currentTimeMillis();
+            int influencerate = newregion.getTimer().getInfluenceRate();
+            
+            if(influencerate == 1)
             {
-                break;
-            }
-            if(region.getOwner() == new PlayerUtils().getPlayerFaction(player))
-            {
-                spawnableregions.add(region);
-            }
-        }
-        
-        Map<SpawnPoint,Button> bestspawnpoints = new HashMap<SpawnPoint,Button>();
-        
-        for(CapturableRegion region : spawnableregions)
-        {
-            bestspawnpoints.put(region.getSpawnPoint(), spawnbuttons.get(region.getSpawnPoint()));
-        }
-        
-        return bestspawnpoints;
-    }
-
-    public void setSpawnButtons(Map<SpawnPoint,Button> spawnbuttons) {
-        this.spawnbuttons = spawnbuttons;
-    }
-
-    @Override
-    public void run() {
-        if(region.isBeingCaptured())
-        {
-            captureInfo.setVisible(true);
-            long currenttime = System.currentTimeMillis();
-            if(region.getExpectedCaptureTime() == null || region.getExpectedCaptureTime() - currenttime == 0)
-            {
-                capturetimer.setVisible(false);
+                barAnimRate = 5;
             }
             
-            long millisecondsremaining = region.getExpectedCaptureTime() - currenttime;
-            
-            Integer seconds = (int) ((millisecondsremaining / 1000) % 60) ;
-            Integer minutes = (int) ((millisecondsremaining / (1000*60)));
-            
-            capturetimer.setText(minutes.toString() + ":" + seconds.toString());
-            capturebar.setWidth(region.getInfluence() / region.getBaseInfluence() * 100);
-            capturebar.setColor(spoutcolor.get(region.getInfluenceOwner()));
-            influenceownericon.setUrl(region.getInfluenceOwner().getName()); //TODO
-
-            int animrate = 0;
-            if(region.getTimer().getInfluenceRate() == 1)
+            else if(influencerate == 2)
             {
-                animrate = 20;
+                barAnimRate = 3;
             }
             
-            else if(region.getTimer().getInfluenceRate() == 2)
+            else if(influencerate == 3)
             {
-                animrate = 15;
+                barAnimRate = 1;
             }
             
-            else if (region.getTimer().getInfluenceRate() == 3)
+            if(influencerate == 1 || influencerate == 2 || influencerate == 3)
             {
-                animrate = 5;
-            }
-            
-            if(animrate != 0)
-            {
-                if(region.getInfluenceOwner() != region.getOwner())
+                captureBarAnim.animateStop(true);
+                majorityController = newregion.getMajorityController();
+                if(owner == influenceOwner)
                 {
-                    capturebaranim.animate(WidgetAnim.OFFSET_LEFT, -capturebar.getWidth(), (short) 10, (short)animrate, false, true);
+                    if(majorityController == owner)
+                    {
+                        captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
+                        captureBarAnim.animate(WidgetAnim.POS_X, 2.3F, (short) 40, barAnimRate, true, true).animateStart();
+                    }
+                    else if (majorityController != owner)
+                    {
+                        captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
+                        captureBarAnim.animate(WidgetAnim.POS_X, -2.3F, (short) 40, barAnimRate, true, true).animateStart();
+                    }
                 }
                 
-                else if (region.getInfluenceOwner() == region.getOwner())
+                else if (owner != influenceOwner)
                 {
-                    capturebaranim.animate(WidgetAnim.OFFSET_LEFT, capturebar.getWidth(), (short) 10, (short)animrate, false, true);
+                    if(majorityController == owner)
+                    {
+                        captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
+                        captureBarAnim.animate(WidgetAnim.POS_X, -2.3F, (short) 40, barAnimRate, true, true).animateStart();
+                    }
+                    else if (majorityController != owner)
+                    {
+                        captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
+                        captureBarAnim.animate(WidgetAnim.POS_X, 2.3F, (short) 40, barAnimRate, true, true).animateStart();
+                    }
                 }
             }
-        }
-        else
-        {
-            capturetimer.setVisible(false);
-            capturebar.setVisible(false);
-            influenceownericon.setVisible(false);
-        }
-    }
-
-    public void updateCurrentRegion(Player player, CapturableRegion region) {
-        this.region = region;
-        
-        if(splayer.isSpoutCraftEnabled())
-            regionname.setText(region.getDisplayname());
-            ownericon.setUrl(region.getOwner().getName()); //TODO
             
-            if(region.isBeingCaptured())
-            {
-                captureInfo.setVisible(true);
-                capturebar.setColor(spoutcolor.get(region.getInfluenceOwner())).setVisible(true);
-                influenceownericon.setUrl(region.getInfluenceOwner().getName()).setVisible(true);//TODO
-            }
+            runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Integer seconds = (int) ((millisecondsremaining / 1000) % 60);
+                    Integer minutes = (int) ((millisecondsremaining / (1000*60)));
+                    
+                    String secondsString = seconds.toString();
+                    if(seconds < 10)
+                    {
+                        secondsString = "0" + secondsString;
+                    }
+                    capturetimer.setText(minutes.toString() + ":" + secondsString);
+                    
+                    int barwidth = (int) (region.getInfluence() / region.getBaseInfluence() * 100);
+                    captureBar.setWidth(barwidth);
+                    captureBarSpace.setWidth(100 - barwidth);
+                    captureBar.setColor(factionColors.get(influenceOwner));
+                }
+                
+            }.runTaskTimer(RegionControl.plugin, 20, 20);
+        }
+        
+        else if(!newregion.isBeingCaptured() && runnable != null)
+        {
+            runnable.cancel();
+            captureBarAnim.animateStop(false);
+            
+        }
     }
 }

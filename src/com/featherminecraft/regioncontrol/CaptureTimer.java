@@ -68,11 +68,13 @@ public class CaptureTimer extends BukkitRunnable {
             {
                 this.majoritycontroller = percentage.getKey();
                 mostcontrolpercentage = percentage.getValue();
+                region.setMajorityController(this.majoritycontroller);
             }
             
             else if(percentage.getValue() != 0 && percentage.getValue() == mostcontrolpercentage)
             {
                 this.majoritycontroller = null;
+                region.setMajorityController(this.majoritycontroller);
             }
         }
         

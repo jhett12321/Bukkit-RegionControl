@@ -20,6 +20,7 @@ public class CapturableRegion {
     private Integer influence;
     private Faction influenceowner;
     private Boolean beingcaptured = false;
+    private Faction majorityController;
     
     public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner, Integer influence, Faction influenceowner) {
         this.displayname = displayname;
@@ -143,5 +144,13 @@ public class CapturableRegion {
 
     public void setIsBeingCaptured(Boolean capturing) {
         beingcaptured = capturing;
+    }
+
+    public Faction getMajorityController() {
+        return majorityController;
+    }
+
+    public void setMajorityController(Faction majorityController) {
+        this.majorityController = majorityController;
     }
 }
