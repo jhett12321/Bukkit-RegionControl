@@ -23,4 +23,5 @@ public class SpoutUtils {
     {
         return new Config().getMainConfig().getInt("spout.maxspawnbuttons");
     }
+    
 }

@@ -25,24 +25,21 @@ public class ServerLogic {
     private static FileConfiguration datafile;
     
     //Temp Variable. Can be removed on plugin disable.
-    public static Map<CapturableRegion, List<Player>> players;
+    public static Map<CapturableRegion, List<Player>> players = new HashMap<CapturableRegion, List<Player>>();
     
     //Registered Variables; to be saved on plugin disable
-    public static Map<String, Faction> registeredfactions;
-    public static Map<String, CapturableRegion> registeredregions;
-    public static Map<CapturableRegion, CaptureTimer> capturetimers;
-    public static Map<CapturableRegion, Faction> regionowners;
-    public static Map<CapturableRegion, SpawnPoint> registeredspawnpoints;
+    public static Map<String, Faction> factions = new HashMap<String, Faction>();
+    public static Map<String, CapturableRegion> regions;
 
     public static void init()
     {
         mainconfig = new Config().getMainConfig();
         datafile = new Config().getDataFile();
         //Faction Setup
-        registeredfactions = setupFactions();
+        factions = setupFactions();
 
         //Region Setup
-        registeredregions = setupRegions();
+        regions = setupRegions();
     }
 
     public static Map<String, Faction> setupFactions() {
@@ -86,19 +83,20 @@ public class ServerLogic {
             
             String region_owner = datafile.getString("regions." + regionid + ".owner");
             Integer influence = datafile.getInt("regions." + regionid + ".influence");
+            Float finfluence = influence.floatValue();
             String region_influenceowner = datafile.getString("regions." + regionid + ".influenceowner");
             
             if(region_owner == null)
             {
                 region_owner = new Config().getDefaultFaction();
             }
-            Faction owner = registeredfactions.get(region_owner);
-            Faction influenceowner = registeredfactions.get(region_influenceowner);
+            Faction owner = factions.get(region_owner);
+            Faction influenceowner = factions.get(region_influenceowner);
             
             World world = Bukkit.getWorld(region_world);
             ProtectedRegion region = Utils.getWorldGuard().getRegionManager(world).getRegion(regionid);
             
-            CapturableRegion capturableregion = new CapturableRegion(region_displayname, region, world, owner, influence, influenceowner);
+            CapturableRegion capturableregion = new CapturableRegion(region_displayname, region, world, owner, finfluence, influenceowner);
             capturableRegions.put(region_world + "_" + regionid, capturableregion);
         }
 
@@ -132,7 +130,7 @@ public class ServerLogic {
                 int z = mainconfig.getInt("regions." + capturableregion.getValue().getRegion().getId() + ".controlpoints." + controlpointentry + ".z");
                 Location controlpointlocation = new Location(capturableregion.getValue().getWorld(), x, y, z);
                 
-                Faction controlpointowner = registeredfactions.get(datafile.get("regions." + capturableregion.getValue().getRegion().getId() + ".controlpoints." + controlpointentry + ".owner"));
+                Faction controlpointowner = factions.get(datafile.get("regions." + capturableregion.getValue().getRegion().getId() + ".controlpoints." + controlpointentry + ".owner"));
                 
                 ControlPoint controlpoint = new ControlPoint(controlpointentry, capturableregion.getValue(), controlpointlocation, controlpointowner);
                 controlpoints.add(controlpoint);
@@ -156,22 +154,6 @@ public class ServerLogic {
             registeredspawnpoints.put(capturableregion.getValue(), spawnpoint);
         }
         
-        //Timer Setup
-        for(Entry<String, CapturableRegion> capturableregion : capturableRegions.entrySet())
-        {
-            CaptureTimer capturetimer = new CaptureTimer(capturableregion.getValue(), capturableregion.getValue().getBaseInfluence());
-            capturetimer.runTaskTimer(RegionControl.plugin, 20, 20);
-            
-            capturableregion.getValue().setTimer(capturetimer);
-            
-            capturetimers.put(capturableregion.getValue(), capturetimer);
-        }
-        
-        //Region Owner Setup
-        for(Entry<String, CapturableRegion> capturableregion : capturableRegions.entrySet())
-        {
-            regionowners.put(capturableregion.getValue(), capturableregion.getValue().getOwner());
-        }
         return capturableRegions;
     }
 }

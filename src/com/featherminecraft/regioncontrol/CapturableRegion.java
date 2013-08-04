@@ -1,6 +1,8 @@
 package com.featherminecraft.regioncontrol;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.World;
 
@@ -13,22 +15,24 @@ public class CapturableRegion {
     private Faction owner;
     private List<ControlPoint> controlpoints;
     private SpawnPoint spawnpoint;
-    private Long expectedcapturetime;
     private String displayname;
     private List<CapturableRegion> adjacentregions;
-    private CaptureTimer timer;
-    private Integer influence;
+    private CaptureTimer captureTimer;
+    public Map<Faction,Float> influence = new HashMap<Faction,Float>();
     private Faction influenceowner;
     private Boolean beingcaptured = false;
     private Faction majorityController;
+    private float influenceRate;
     
-    public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner, Integer influence, Faction influenceowner) {
+    public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner, Float influence, Faction influenceowner) {
         this.displayname = displayname;
         this.region = region;
         this.world = world;
         this.owner = owner;
-        this.influence = influence;
+        this.influence.put(influenceowner, influence);
         this.influenceowner = influenceowner;
+        
+        captureTimer = new CaptureTimer(this);
     }
 
     public Faction getOwner() {
@@ -64,24 +68,6 @@ public class CapturableRegion {
         this.spawnpoint = spawnpoint;
     }
 
-    public Long getExpectedCaptureTime() {
-        return expectedcapturetime;
-    }
-
-    public void setExpectedCaptureTime(Long expectedcapturetime) {
-//        if(this.expectedcapturetime != expectedcapturetime)
-//        {
-//            if(expectedcapturetime == null)
-//            {
-//                CaptureTimeChangeEvent captureTimeChangeEvent = new CaptureTimeChangeEvent(this, expectedcapturetime);
-//                Bukkit.getServer().getPluginManager().callEvent(captureTimeChangeEvent);
-//                return;
-//            }
-            this.expectedcapturetime = expectedcapturetime;
-//        }
-
-    }
-
     public String getDisplayname() {
         return displayname;
     }
@@ -95,19 +81,11 @@ public class CapturableRegion {
     }
 
     public CaptureTimer getTimer() {
-        return timer;
+        return captureTimer;
     }
 
-    public void setTimer(CaptureTimer timer) {
-        this.timer = timer;
-    }
-
-    public Integer getInfluence() {
-        return influence;
-    }
-
-    public void setInfluence(Integer influence) {
-        this.influence = influence;
+    public void setTimer(CaptureTimer captureTimer) {
+        this.captureTimer = captureTimer;
     }
 
     public Faction getInfluenceOwner() {
@@ -152,5 +130,13 @@ public class CapturableRegion {
 
     public void setMajorityController(Faction majorityController) {
         this.majorityController = majorityController;
+    }
+
+    public float getInfluenceRate() {
+        return influenceRate;
+    }
+
+    public void setInfluenceRate(float influenceRate) {
+        this.influenceRate = influenceRate;
     }
 }

@@ -20,7 +20,7 @@ public class SpawnButton {
         this.button = button;
         this.region = region;
         Map<Faction,Boolean> isValidSpawn = new HashMap<Faction,Boolean>();
-        for(Entry<String, Faction> faction : ServerLogic.registeredfactions.entrySet())
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
         {
             isValidSpawn.put(faction.getValue(), false);
         }

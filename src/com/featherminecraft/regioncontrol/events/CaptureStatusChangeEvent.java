@@ -4,31 +4,21 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.featherminecraft.regioncontrol.CapturableRegion;
-import com.featherminecraft.regioncontrol.CaptureTimer;
 
-public class CaptureTimeChangeEvent extends Event {
+public class CaptureStatusChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     private CapturableRegion region;
-    private CaptureTimer timer;
-    private Long expectedCaptureTime;
+    private Boolean isBeingCaptured;
     
-    public CaptureTimeChangeEvent(CapturableRegion region, Long expectedTime) {
+    public CaptureStatusChangeEvent(CapturableRegion region, Boolean isbeingCaptured) 
+    {
         this.region = region;
-        this.timer = region.getTimer();
-        this.expectedCaptureTime = expectedTime;
+        this.isBeingCaptured = isbeingCaptured;
     }
 
     public CapturableRegion getRegion() {
         return region;
-    }
-
-    public CaptureTimer getTimer() {
-        return timer;
-    }
-
-    public Long getExpectedCaptureTime() {
-        return expectedCaptureTime;
     }
 
     public static HandlerList getHandlerList() {
@@ -38,5 +28,9 @@ public class CaptureTimeChangeEvent extends Event {
     @Override
     public HandlerList getHandlers() {
         return handlers;
+    }
+
+    public Boolean getCaptureStatus() {
+        return isBeingCaptured;
     }
 }

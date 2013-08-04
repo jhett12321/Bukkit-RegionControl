@@ -24,13 +24,13 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class PlayerUtils {
     public Faction getPlayerFaction(Player player) {
         String group = RegionControl.permission.getPrimaryGroup(player);
-        Faction faction = ServerLogic.registeredfactions.get(group);
+        Faction faction = ServerLogic.factions.get(group);
         return faction;
     }
     
     public List<SpawnPoint> getAvailableSpawnPoints(Player player)
     {
-        Map<String,CapturableRegion> capturableregions = ServerLogic.registeredregions;
+        Map<String,CapturableRegion> capturableregions = ServerLogic.regions;
         List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
         
         for(Entry<String, CapturableRegion> capturableregion : capturableregions.entrySet())

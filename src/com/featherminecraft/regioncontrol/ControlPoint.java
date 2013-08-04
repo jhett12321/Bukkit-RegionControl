@@ -47,7 +47,7 @@ public class ControlPoint extends BukkitRunnable {
         PlayerUtils playerUtils = new PlayerUtils();
         Map<Faction,Integer> PlayersOnPoint = new HashMap<Faction,Integer>();
 
-        for(Entry<String, Faction> faction : ServerLogic.registeredfactions.entrySet())
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
         {
             PlayersOnPoint.put(faction.getValue(), 0);
         }

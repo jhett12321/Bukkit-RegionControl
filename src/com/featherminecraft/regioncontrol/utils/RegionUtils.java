@@ -41,6 +41,6 @@ public class RegionUtils {
     
     public CapturableRegion getCapturableRegion(ProtectedRegion region, World world)
     {
-        return ServerLogic.registeredregions.get(world.getName() + "_" + region.getId());
+        return ServerLogic.regions.get(world.getName() + "_" + region.getId());
     }
 }

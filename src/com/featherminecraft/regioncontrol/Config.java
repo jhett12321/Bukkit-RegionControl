@@ -47,7 +47,7 @@ public class Config {
     public FileConfiguration getMainConfig() {
         if ( mainconfig == null )
         {
-            this.reloadDataFile();
+            this.reloadMainConfig();
         }
         return mainconfig;
     }
@@ -66,11 +66,11 @@ public class Config {
 
     public void saveMainConfig()
     {
-        if (data == null || dataFile == null) {
+        if (mainconfig == null || mainconfigfile == null) {
             return;
             }
         try {
-            getDataFile().save(dataFile);
+            getMainConfig().save(mainconfigfile);
         } catch (IOException ex) {
             RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config", ex);
         }

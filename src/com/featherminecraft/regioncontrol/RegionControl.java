@@ -118,16 +118,19 @@ public static boolean isfirstrun;
         }
     }
 
-    private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
-        permission = rsp.getProvider();
-        return permission != null;
+    private boolean setupPermissions()
+    {
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
+        if (permissionProvider != null) {
+            permission = permissionProvider.getProvider();
+        }
+        return (permission != null);
     }
 
     @Override
     public void onDisable() {
         //TODO Finish save code.
-        Map<String, CapturableRegion> registered_regions = ServerLogic.registeredregions;
+        Map<String, CapturableRegion> registered_regions = ServerLogic.regions;
         FileConfiguration datafile = new Config().getDataFile();
         
         for(Entry<String, CapturableRegion> region : registered_regions.entrySet())
