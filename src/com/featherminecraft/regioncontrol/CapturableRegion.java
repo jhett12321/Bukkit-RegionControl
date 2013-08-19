@@ -1,127 +1,93 @@
 package com.featherminecraft.regioncontrol;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.World;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class CapturableRegion {
 
-    private ProtectedRegion region;
-    private World world;
-    private Faction owner;
-    private List<ControlPoint> controlpoints;
-    private SpawnPoint spawnpoint;
-    private String displayname;
-    private List<CapturableRegion> adjacentregions;
-    private CaptureTimer captureTimer;
-    public Map<Faction,Float> influence = new HashMap<Faction,Float>();
-    private Faction influenceowner;
-    private Boolean beingcaptured = false;
+    //Runnable
+    private BukkitTask runnable;
+    
+    //Influence
+    private Float baseInfluence;
+    private InfluenceManager influenceManager;
+    private Map<Faction,Float> influenceMap = new HashMap<Faction,Float>();
+    private Float influenceRate = 0F;
+
+    private Faction influenceOwner;
     private Faction majorityController;
-    private float influenceRate;
+    
+    //Capture Timer
+    private CaptureTimer captureTimer;
+    private int minutesToCapture;
+    private int secondsToCapture;
     
     public CapturableRegion(String displayname, ProtectedRegion region, World world, Faction owner, Float influence, Faction influenceowner) {
-        this.displayname = displayname;
-        this.region = region;
-        this.world = world;
-        this.owner = owner;
-        this.influence.put(influenceowner, influence);
-        this.influenceowner = influenceowner;
+        //TODO Ensure that the influence map is initialized for all factions.
+        //TODO Define "Base Influence".
         
+        this.influenceMap.put(influenceowner, influence);
         captureTimer = new CaptureTimer(this);
-    }
-
-    public Faction getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Faction owner) {
-        this.owner = owner;
-    }
-
-    public ProtectedRegion getRegion() {
-        return region;
-    }
-    
-    public World getWorld()
-    {
-        return world;
-    }
-
-    public List<ControlPoint> getControlpoints() {
-        return controlpoints;
-    }
-    
-    public void setControlPoints(List<ControlPoint> regionalcontrolpoints) {
-        this.controlpoints = regionalcontrolpoints;
-    }
-
-    public SpawnPoint getSpawnPoint() {
-        return spawnpoint;
-    }
-
-    public void setSpawnPoint(SpawnPoint spawnpoint) {
-        this.spawnpoint = spawnpoint;
-    }
-
-    public String getDisplayname() {
-        return displayname;
-    }
-
-    public void setAdjacentRegions(List<CapturableRegion> capturableregions) {
-        this.adjacentregions = capturableregions;
-    }
-
-    public List<CapturableRegion> getAdjacentregions() {
-        return adjacentregions;
-    }
-
-    public CaptureTimer getTimer() {
-        return captureTimer;
-    }
-
-    public void setTimer(CaptureTimer captureTimer) {
-        this.captureTimer = captureTimer;
-    }
-
-    public Faction getInfluenceOwner() {
-        return influenceowner;
-    }
-
-    public void setInfluenceOwner(Faction influenceowner) {
-        this.influenceowner = influenceowner;
-    }
-
-    public int getBaseInfluence() {
-        return new Config().getMainConfig().getInt("regions." + this.region.getId() + ".influence");
-    }
-    
-    public Boolean isCapturable(Faction faction)
-    {
-        List<CapturableRegion> regions = adjacentregions;
-        regions.add(this);
+        influenceManager = new InfluenceManager(this);
         
-        for(CapturableRegion region : regions)
-        {
-            if(region.getOwner() == faction)
-            {
-                return true;
-            }
-        }
-        return false;
+        this.baseInfluence = baseInfluence;
+        RegionRunnables();
     }
     
-    public Boolean isBeingCaptured()
+    public void RegionRunnables()
     {
-        return beingcaptured;
+        runnable = new BukkitRunnable() {
+            
+            @Override
+            public void run() {
+                influenceManager.Runnable();
+                captureTimer.Runnable();
+                
+            }
+        }.runTaskTimer(RegionControl.plugin, 20, 20);
+    }
+    
+    
+    /*
+     * Influence Manager Begin
+     */
+    
+    public InfluenceManager getInfluenceManager() {
+        return influenceManager;
     }
 
-    public void setIsBeingCaptured(Boolean capturing) {
-        beingcaptured = capturing;
+    public void setInfluenceManager(InfluenceManager influenceManager) {
+        this.influenceManager = influenceManager;
+    }
+    
+    public Map<Faction, Float> getInfluenceMap() {
+        return influenceMap;
+    }
+
+    public void setInfluenceMap(Map<Faction, Float> influenceMap) {
+        this.influenceMap = influenceMap;
+    }
+    
+    public Faction getInfluenceOwner() {
+        return influenceOwner;
+    }
+
+    public void setInfluenceOwner(Faction influenceOwner) {
+        this.influenceOwner = influenceOwner;
+    }
+    
+    public Float getInfluenceRate() {
+        return influenceRate;
+    }
+
+    public void setInfluenceRate(Float influenceRate) {
+        this.influenceRate = influenceRate;
     }
 
     public Faction getMajorityController() {
@@ -131,12 +97,37 @@ public class CapturableRegion {
     public void setMajorityController(Faction majorityController) {
         this.majorityController = majorityController;
     }
-
-    public float getInfluenceRate() {
-        return influenceRate;
+    
+    /*
+     * Influence End
+     */
+    
+    /*
+     * Capture Timer Begin
+     */
+    
+    public int getMinutesToCapture() {
+        return minutesToCapture;
     }
 
-    public void setInfluenceRate(float influenceRate) {
-        this.influenceRate = influenceRate;
+    public void setMinutesToCapture(int minutesToCapture) {
+        this.minutesToCapture = minutesToCapture;
     }
+
+    public int getSecondsToCapture() {
+        return secondsToCapture;
+    }
+
+    public void setSecondsToCapture(int secondsToCapture) {
+        this.secondsToCapture = secondsToCapture;
+    }
+    
+    public Float getBaseInfluence() {
+        return baseInfluence;
+    }
+
+    public void setBaseInfluence(Float baseInfluence) {
+        this.baseInfluence = baseInfluence;
+    }
+
 }
