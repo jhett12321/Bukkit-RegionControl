@@ -9,12 +9,12 @@ import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
-import com.featherminecraft.regioncontrol.ControlPoint;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.RegionControl;
 import com.featherminecraft.regioncontrol.ServerLogic;
-import com.featherminecraft.regioncontrol.SpawnPoint;
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
+import com.featherminecraft.regioncontrol.capturableregion.ControlPoint;
+import com.featherminecraft.regioncontrol.capturableregion.SpawnPoint;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -30,7 +30,7 @@ public class PlayerUtils {
     
     public List<SpawnPoint> getAvailableSpawnPoints(Player player)
     {
-        Map<String,CapturableRegion> capturableregions = ServerLogic.regions;
+        Map<String,CapturableRegion> capturableregions = ServerLogic.capturableRegions;
         List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
         
         for(Entry<String, CapturableRegion> capturableregion : capturableregions.entrySet())

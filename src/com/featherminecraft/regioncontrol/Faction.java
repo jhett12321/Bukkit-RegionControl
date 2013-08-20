@@ -4,6 +4,8 @@ import java.awt.Color;
 
 import org.bukkit.Location;
 
+import com.featherminecraft.regioncontrol.capturableregion.SpawnPoint;
+
 //W.I.P.
 public class Faction {
 

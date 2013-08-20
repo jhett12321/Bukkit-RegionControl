@@ -4,9 +4,9 @@ import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
-import com.featherminecraft.regioncontrol.ControlPoint;
 import com.featherminecraft.regioncontrol.Faction;
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
+import com.featherminecraft.regioncontrol.capturableregion.ControlPoint;
 
 public class ControlPointCaptureEvent extends Event {
 

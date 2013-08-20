@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
 
 public class ChangeRegionEvent extends Event {
 

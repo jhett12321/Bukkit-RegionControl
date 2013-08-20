@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.Faction;
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
 import com.featherminecraft.regioncontrol.utils.RegionUtils;
 
 public class RegionDefendEvent extends Event {

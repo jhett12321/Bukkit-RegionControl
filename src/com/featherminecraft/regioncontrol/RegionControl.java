@@ -64,6 +64,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
+import com.featherminecraft.regioncontrol.capturableregion.ControlPoint;
 import com.featherminecraft.regioncontrol.listeners.PlayerListener;
 import com.featherminecraft.regioncontrol.listeners.SpoutPlayerListener;
 import com.featherminecraft.regioncontrol.spout.SpoutClientLogic;
@@ -130,7 +132,7 @@ public static boolean isfirstrun;
     @Override
     public void onDisable() {
         //TODO Finish save code.
-        Map<String, CapturableRegion> registered_regions = ServerLogic.regions;
+        Map<String, CapturableRegion> registered_regions = ServerLogic.capturableRegions;
         FileConfiguration datafile = new Config().getDataFile();
         
         for(Entry<String, CapturableRegion> region : registered_regions.entrySet())

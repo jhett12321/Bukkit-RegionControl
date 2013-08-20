@@ -5,9 +5,9 @@ import java.util.List;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
-import com.featherminecraft.regioncontrol.CaptureTimer;
 import com.featherminecraft.regioncontrol.ServerLogic;
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
+import com.featherminecraft.regioncontrol.capturableregion.CaptureTimer;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class RegionUtils {
@@ -41,6 +41,6 @@ public class RegionUtils {
     
     public CapturableRegion getCapturableRegion(ProtectedRegion region, World world)
     {
-        return ServerLogic.regions.get(world.getName() + "_" + region.getId());
+        return ServerLogic.capturableRegions.get(world.getName() + "_" + region.getId());
     }
 }

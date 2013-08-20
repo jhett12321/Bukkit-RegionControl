@@ -23,10 +23,10 @@ import org.getspout.spoutapi.gui.Button;
 import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.ClientRunnables;
 import com.featherminecraft.regioncontrol.Faction;
-import com.featherminecraft.regioncontrol.SpawnPoint;
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
+import com.featherminecraft.regioncontrol.capturableregion.SpawnPoint;
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 import com.featherminecraft.regioncontrol.spout.SpoutClientLogic;
 import com.featherminecraft.regioncontrol.utils.PlayerUtils;

@@ -1,4 +1,4 @@
-package com.featherminecraft.regioncontrol;
+package com.featherminecraft.regioncontrol.capturableregion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.featherminecraft.regioncontrol.Faction;
+import com.featherminecraft.regioncontrol.RegionControl;
+import com.featherminecraft.regioncontrol.ServerLogic;
 import com.featherminecraft.regioncontrol.events.ControlPointCaptureEvent;
 import com.featherminecraft.regioncontrol.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.regioncontrol.utils.PlayerUtils;
@@ -20,21 +23,19 @@ public class ControlPoint extends BukkitRunnable {
     private Integer radius;
     private Boolean capturing;
     private Faction owner;
-    private CapturableRegion region;
     private Map<Faction,Integer> pointinfluence;
     private int controlPointBaseInfluence;
     
-    public ControlPoint(String controlpointname, CapturableRegion region, Location location, Faction owner)
+    public ControlPoint(String controlpointname, Location location, Faction owner)
     {
         this.controlpointname = controlpointname;
         this.location = location;
-        this.region = region;
         this.owner = owner;
         this.controlPointBaseInfluence = 5; //TODO: Make this customizable
         
-        if (region.getWorld().getBlockAt(this.location).getTypeId() == 0)
+        if (this.location.getWorld().getBlockAt(this.location).getTypeId() == 0)
         {
-            region.getWorld().getBlockAt(this.location).setTypeId(76, false);
+            this.location.getWorld().getBlockAt(this.location).setTypeId(76, false);
         }
     }
     

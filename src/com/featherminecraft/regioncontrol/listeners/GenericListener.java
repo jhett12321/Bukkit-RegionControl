@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import com.featherminecraft.regioncontrol.ControlPoint;
+import com.featherminecraft.regioncontrol.capturableregion.ControlPoint;
 //import com.featherminecraft.regioncontrol.dynmap.DynmapImpl; TODO
 import com.featherminecraft.regioncontrol.events.ChangeRegionEvent;
 import com.featherminecraft.regioncontrol.events.ControlPointCaptureEvent;

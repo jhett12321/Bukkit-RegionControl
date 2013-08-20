@@ -1,9 +1,11 @@
-package com.featherminecraft.regioncontrol;
+package com.featherminecraft.regioncontrol.capturableregion;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.featherminecraft.regioncontrol.Faction;
 
 public class InfluenceManager {
 
@@ -56,7 +58,7 @@ public class InfluenceManager {
         }
     }
     
-    public Faction CalculateMajorityController()
+    public void CalculateMajorityController()
     {
         /*
          * Majority Controller Calculations
@@ -75,7 +77,7 @@ public class InfluenceManager {
         
         Float totalOwnedControlPoints = ((Integer) ownedControlPoints.size()).floatValue();
         percentageOwned = new HashMap<Faction,Float>();
-        Faction majorityController;
+        Faction majorityController = null;
         int majorityAmount = 0;
         for(Entry<Faction, Float> faction : ownedControlPoints.entrySet())
         {

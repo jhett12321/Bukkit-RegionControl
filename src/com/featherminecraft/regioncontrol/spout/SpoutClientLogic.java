@@ -8,9 +8,9 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.gui.*;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.RegionControl;
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
 
 public class SpoutClientLogic {
 

@@ -6,9 +6,9 @@ import java.util.Map.Entry;
 
 import org.getspout.spoutapi.gui.Button;
 
-import com.featherminecraft.regioncontrol.CapturableRegion;
 import com.featherminecraft.regioncontrol.Faction;
 import com.featherminecraft.regioncontrol.ServerLogic;
+import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
 
 public class SpawnButton {
     

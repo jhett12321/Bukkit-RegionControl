@@ -1,4 +1,6 @@
-package com.featherminecraft.regioncontrol;
+package com.featherminecraft.regioncontrol.capturableregion;
+
+import com.featherminecraft.regioncontrol.Faction;
 
 public class CaptureTimer {
     
