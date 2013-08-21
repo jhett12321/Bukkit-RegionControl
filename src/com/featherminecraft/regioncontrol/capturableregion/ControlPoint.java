@@ -1,149 +1,208 @@
 package com.featherminecraft.regioncontrol.capturableregion;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import com.featherminecraft.regioncontrol.Faction;
-import com.featherminecraft.regioncontrol.RegionControl;
 import com.featherminecraft.regioncontrol.ServerLogic;
-import com.featherminecraft.regioncontrol.events.ControlPointCaptureEvent;
-import com.featherminecraft.regioncontrol.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.regioncontrol.utils.PlayerUtils;
 
-public class ControlPoint extends BukkitRunnable {
+public class ControlPoint {
 
-    private String controlpointname;
+    //Region Variable
+    private CapturableRegion region;
+    
+    //Control Point Info
+    private String identifier;
     private Location location;
-    private Integer radius;
-    private Boolean capturing;
-    private Faction owner;
-    private Map<Faction,Integer> pointinfluence;
-    private int controlPointBaseInfluence;
+    private Integer captureRadius;
     
-    public ControlPoint(String controlpointname, Location location, Faction owner)
-    {
-        this.controlpointname = controlpointname;
-        this.location = location;
-        this.owner = owner;
-        this.controlPointBaseInfluence = 5; //TODO: Make this customizable
-        
-        if (this.location.getWorld().getBlockAt(this.location).getTypeId() == 0)
-        {
-            this.location.getWorld().getBlockAt(this.location).setTypeId(76, false);
-        }
-    }
-    
-    @Override
-    public void run() {
-        Player[] players = RegionControl.plugin.getServer().getOnlinePlayers();
-        
-        double radiusSquared = radius*radius;
-        
-        PlayerUtils playerUtils = new PlayerUtils();
-        Map<Faction,Integer> PlayersOnPoint = new HashMap<Faction,Integer>();
+    //Capture Influence
+    private Map<Faction,Float> influenceMap = new HashMap<Faction,Float>();
+    private Faction influenceOwner;
+    private Faction majorityPopulation;
+    private Float baseInfluence;
+    private Float captureRate;
 
+    //Public Variables
+    private Faction owner;
+    private boolean capturing;
+
+    public ControlPoint(String identifier,
+            CapturableRegion region,
+            Faction owner,
+            Location location,
+            Integer captureRadius,
+            Float baseInfluence,
+            Float influence,
+            Faction influenceOwner)
+    {
+        this.region = region;
+        
+        this.setIdentifier(identifier);
+        this.setOwner(owner);
+        this.location = location;
+        this.captureRadius = captureRadius;
+        this.baseInfluence = baseInfluence;
+        
+        this.influenceOwner = influenceOwner;
         for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
         {
-            PlayersOnPoint.put(faction.getValue(), 0);
-        }
-     
-        for (Player player : players) {
-            if(player.getLocation().distanceSquared(location) <= radiusSquared && region.isCapturable(playerUtils.getPlayerFaction(player)))
+            if(faction.getValue() != null)
             {
-                PlayersOnPoint.put(playerUtils.getPlayerFaction(player), PlayersOnPoint.get(playerUtils.getPlayerFaction(player)) + 1);
+                influenceMap.put(faction.getValue(), 0F);
             }
         }
         
-        int majorityPlayers = 0;
-        Faction majorityFaction = null;
-        for (Entry<Faction, Integer> faction : PlayersOnPoint.entrySet())
+        if(influenceOwner != null)
         {
-            if(faction.getValue() > majorityPlayers)
-            {
-                majorityFaction = faction.getKey();
-            }
-            else if(faction.getValue() == majorityPlayers)
-            {
-                majorityFaction = null;
-            }
+            this.influenceMap.put(influenceOwner, baseInfluence);
         }
-        
-        Faction factionwithinfluence = null;
-        for(Entry<Faction,Integer> faction : pointinfluence.entrySet())
-        {
-            if(faction.getValue() > 0)
-            {
-                factionwithinfluence = faction.getKey();
-            }
-        }
-        
-        if(majorityFaction == null)
-        {
-            this.capturing = false;
-        }
-        
-        if (factionwithinfluence == null )
-        {
-            this.pointinfluence.put(majorityFaction, this.pointinfluence.get(majorityFaction) + 1);
-            this.capturing = true;
-        }
-        
-        else if(factionwithinfluence == this.owner)
-        {
-            this.pointinfluence.put(majorityFaction, this.pointinfluence.get(majorityFaction) + 1);
-        }
-        
-        else if (factionwithinfluence != this.owner)
-        {
-            this.pointinfluence.put(this.owner, this.pointinfluence.get(this.owner) - 1);
-        }
-        
-        if(this.pointinfluence.get(this.owner) == 0 && this.owner != null)
-        {
-            Bukkit.getServer().getPluginManager().callEvent( new ControlPointNeutraliseEvent(this.region, this.owner, this) );
-        }
-        
-        if(this.owner == null && this.pointinfluence.get(majorityFaction) == controlPointBaseInfluence)
-        {
-            Bukkit.getServer().getPluginManager().callEvent( new ControlPointCaptureEvent(this.region, majorityFaction, this) );
-            this.capturing = false;
-        }
-        
-        if(this.capturing)
-        {
-            if(region.getWorld().getBlockAt(this.location).getTypeId() == 76)
-            {
-                region.getWorld().getBlockAt(this.location).setTypeId(75, false);
-            }
-        }
-
-        if(!capturing && region.getWorld().getBlockAt(this.location).getTypeId() == 75)
-        {
-            region.getWorld().getBlockAt(this.location).setTypeId(76, false);
-        }
-
     }
-
-    public String getControlPointName() {
-        return controlpointname;
+    
+    public void Runnable()
+    {
+        CalculateMajorityPopulation();
+        CalculateInfluenceOwner();
+        
+        Faction majorityPopulation = this.majorityPopulation;
+        Faction influenceOwner = this.influenceOwner;
+        Map<Faction, Float> influenceMap = this.influenceMap;
+        Float captureRate = this.captureRate;
+        
+        if(influenceOwner == null)
+        {
+            //TODO Run ControlPoint Neutralize Event
+            if(majorityPopulation != null && captureRate != null && captureRate != 0)
+            {
+                influenceMap.put(majorityPopulation, captureRate);
+            }
+        }
+        
+        else if(influenceOwner != majorityPopulation)
+        {
+            if(majorityPopulation != null && captureRate != null && captureRate != 0)
+            {
+                if(influenceMap.get(influenceOwner) - captureRate <= 0)
+                {
+                    influenceMap.put(influenceOwner, 0F);
+                }
+                
+                else
+                {
+                    influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) - captureRate);
+                }
+            }
+        }
+        
+        else if(influenceOwner == majorityPopulation)
+        {
+            if(majorityPopulation != null && captureRate != null && captureRate != 0)
+            {
+                if(influenceMap.get(influenceOwner) + captureRate >= this.baseInfluence)
+                {
+                    influenceMap.put(majorityPopulation, this.baseInfluence);
+                    //TODO Run ControlPoint Capture Event
+                }
+                
+                else
+                {
+                    influenceMap.put(majorityPopulation, influenceMap.get(influenceOwner) + captureRate);
+                }
+            }
+        }
+        
+        if(influenceMap.get(influenceOwner) == this.baseInfluence)
+        {
+            capturing = false;
+        }
+        
+        else
+        {
+            capturing = true;
+        }
     }
+    
+    public void CalculateMajorityPopulation()
+    {
+        /*
+         * Majority Population on Point Calculations
+         */
 
-    public Location getLocation() {
-        return location;
+        List<Player> players = ServerLogic.players.get(region);
+        Map<Faction,Integer> factionInfluence = new HashMap<Faction,Integer>();
+        PlayerUtils playerUtils = new PlayerUtils(); //Needs checking
+        
+        double radiusSquared = captureRadius*captureRadius;
+        
+        for (Player player : players) 
+        {
+            if(player.getLocation().distanceSquared(location) <= radiusSquared)
+            {
+                Faction playersFaction = playerUtils.getPlayerFaction(player);
+                factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
+            }
+        }
+        
+        Integer majorityPopulationAmount = 0;
+        Faction majorityPopulation = null;
+        for (Entry<Faction, Integer> faction : factionInfluence.entrySet())
+        {
+            if(faction.getValue() > majorityPopulationAmount)
+            {
+                majorityPopulation = faction.getKey();
+            }
+            
+            else if(faction.getValue() == majorityPopulationAmount)
+            {
+                majorityPopulation = null;
+            }
+        }
+        
+        if(majorityPopulation != null)
+        {
+            Integer populationAgainstAmount = 0;
+            for (Entry<Faction, Integer> faction : factionInfluence.entrySet())
+            {
+                if(faction.getKey() != majorityPopulation)
+                {
+                    populationAgainstAmount += faction.getValue();
+                }
+            }
+            
+            if(majorityPopulationAmount - populationAgainstAmount > 0)
+            {
+                this.captureRate = ((Integer) (majorityPopulationAmount - populationAgainstAmount)).floatValue();
+            }
+        }
+        
+        this.majorityPopulation = majorityPopulation;
+        
     }
+    
 
-    public CapturableRegion getCapturableRegion() {
-        return region;
-    }
-
-    public Integer getRadius() {
-        return radius;
+    public void CalculateInfluenceOwner()
+    {
+        /*
+         * Influence Owner Calculations
+         */
+        
+        Map<Faction, Float> influenceMap = this.influenceMap;
+        Faction influenceOwner = null;
+        for(Entry<Faction, Float> influence : influenceMap.entrySet())
+        {
+            if(influence.getValue() >= 0)
+            {
+                influenceOwner = influence.getKey();
+                break;
+            }
+        }
+        
+        this.influenceOwner = influenceOwner;
     }
 
     public Faction getOwner() {
@@ -153,9 +212,20 @@ public class ControlPoint extends BukkitRunnable {
     public void setOwner(Faction owner) {
         this.owner = owner;
     }
-    
-    public Boolean isCapturing()
-    {
+
+    public boolean isCapturing() {
         return capturing;
+    }
+
+    public void setCapturing(boolean capturing) {
+        this.capturing = capturing;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 }

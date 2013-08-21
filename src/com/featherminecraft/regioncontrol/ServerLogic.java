@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -17,7 +16,6 @@ import org.bukkit.entity.Player;
 import com.featherminecraft.regioncontrol.capturableregion.CapturableRegion;
 import com.featherminecraft.regioncontrol.capturableregion.ControlPoint;
 import com.featherminecraft.regioncontrol.capturableregion.SpawnPoint;
-import com.featherminecraft.regioncontrol.utils.RegionUtils;
 import com.featherminecraft.regioncontrol.utils.Utils;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 

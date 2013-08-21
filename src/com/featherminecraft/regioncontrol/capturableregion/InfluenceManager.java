@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.featherminecraft.regioncontrol.Faction;
+import com.featherminecraft.regioncontrol.ServerLogic;
 
 public class InfluenceManager {
 
@@ -45,7 +46,15 @@ public class InfluenceManager {
         {
             if(majorityController != null && influenceRate != null && influenceRate != 0)
             {
-                influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) - influenceRate);
+                if(influenceMap.get(influenceOwner) - influenceRate <= 0)
+                {
+                    influenceMap.put(influenceOwner, 0F);
+                }
+                
+                else
+                {
+                    influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) - influenceRate);
+                }
             }
         }
         
@@ -53,7 +62,24 @@ public class InfluenceManager {
         {
             if(majorityController != null && influenceRate != null && influenceRate != 0)
             {
-                influenceMap.put(majorityController, influenceMap.get(majorityController) + influenceRate);
+                if(influenceMap.get(influenceOwner) + influenceRate >= region.getBaseInfluence())
+                {
+                    influenceMap.put(majorityController, region.getBaseInfluence());
+                    if(region.getOwner() == influenceOwner)
+                    {
+                        //Run Region Defend Event
+                    }
+                    
+                    else if(region.getOwner() != influenceOwner)
+                    {
+                        //Run Region Capture Event
+                    }
+                }
+                
+                else
+                {
+                    influenceMap.put(majorityController, influenceMap.get(influenceOwner) + influenceRate);
+                }
             }
         }
     }
@@ -66,7 +92,14 @@ public class InfluenceManager {
         //TODO Control Points need to be rechecked.
         List<ControlPoint> controlPoints = region.getControlPoints();
         Map<Faction,Float> ownedControlPoints = new HashMap<Faction,Float>();
-      //TODO Initialize all factions with 0 owned control points. See ServerLogic class for faction maps.
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        {
+            if(faction.getValue() != null)
+            {
+                ownedControlPoints.put(faction.getValue(), 0F);
+            }
+        }
+
         for(ControlPoint controlPoint : controlPoints)
         {
             if(controlPoint.getOwner() != null && !controlPoint.isCapturing())

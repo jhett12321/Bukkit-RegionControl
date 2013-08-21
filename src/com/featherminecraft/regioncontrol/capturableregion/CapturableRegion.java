@@ -16,6 +16,9 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class CapturableRegion {
 
+    //RegionControl Object
+    private final CapturableRegion cregion = this;
+    
     //Region Info
     private String displayName;
     private Faction owner;
@@ -99,6 +102,10 @@ public class CapturableRegion {
             
             @Override
             public void run() {
+                for(ControlPoint controlPoint : controlPoints)
+                {
+                    controlPoint.Runnable(cregion);
+                }
                 influenceManager.Runnable();
                 captureTimer.Runnable();
                 
