@@ -26,7 +26,7 @@ public class ServerLogic {
     private static FileConfiguration datafile;
     
     //Temp Variable. Can be removed on plugin disable.
-    public static Map<CapturableRegion, List<Player>> players = new HashMap<CapturableRegion, List<Player>>();
+    public static Map<CapturableRegion, List<Player>> players = new HashMap<CapturableRegion, List<Player>>(); //TODO Check safety of this map.
     
     //Registered Variables; to be saved on plugin disable
     public static Map<String, Faction> factions = new HashMap<String, Faction>();
@@ -34,30 +34,26 @@ public class ServerLogic {
 
     public static void init()
     {
+        //TODO Implement Save Data and retrieving of this data.
         mainconfig = new Config().getMainConfig();
         datafile = new Config().getDataFile();
 
         //Faction Setup
-        factions = setupFactions();
+        setupFactions();
 
         //Capturable Region Setup
         setupRegions();
+        
+        //Spawn Region Setup
+        setupSpawnRegions();
     }
 
-    public static Map<String, Faction> setupFactions() {
-        //TODO Not Complete
+    public static void setupFactions() {
         Set<String> configfactions = mainconfig.getConfigurationSection("factions").getKeys(false);
         Map<String, Faction> factions = new HashMap<String,Faction>();
         for(String faction : configfactions)
         {
             String permissionGroup = mainconfig.getString("factions." + faction + ".permissiongroup");
-            
-            String spawnworld = mainconfig.getString("factions." + faction + ".defaultspawn" + ".world");
-            int spawnx = mainconfig.getInt("factions." + faction + ".defaultspawn" + ".x");
-            int spawny = mainconfig.getInt("factions." + faction + ".defaultspawn" + ".y");
-            int spawnz = mainconfig.getInt("factions." + faction + ".defaultspawn" + ".z");
-            
-            Location spawnlocation = new Location (Bukkit.getWorld(spawnworld), spawnx, spawny, spawnz);
             
             int red = mainconfig.getInt("factions." + faction + ".color" + ".red");
             int green = mainconfig.getInt("factions." + faction + ".color" + ".green");
@@ -65,16 +61,13 @@ public class ServerLogic {
             
             Color factioncolor = new Color(red, green, blue);
             
-            //TODO Determine faction 'spawn' region. Not sure how this will work for multi-world.
-            factions.put(faction, new Faction(faction, permissionGroup,factioncolor, spawnlocation));
+            factions.put(faction, new Faction(faction, permissionGroup, factioncolor));
         }
-        return factions;
+        ServerLogic.factions = factions;
     }
     
     public static void setupRegions()
     {
-        //TODO Implement Save Data and retrieving of this data.
-        
         Set<String> worlds = mainconfig.getConfigurationSection("worlds").getKeys(false);
 
         //Region Setup
@@ -107,8 +100,20 @@ public class ServerLogic {
                     int z = mainconfig.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".z");
                     Location controlpointlocation = new Location(world, x, y, z);
                     
-                    Faction controlpointowner = factions.get(datafile.get(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".owner"));
-                    ControlPoint controlPoint = new ControlPoint(configControlPoint, controlpointlocation, controlpointowner);
+                    int captureRadius = mainconfig.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".captureradius");
+                    Float baseInfluence = ((Integer) mainconfig.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".baseinfluence")).floatValue();
+                    Float influence = ((Integer) datafile.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".influence")).floatValue();
+                    
+                    Faction controlPointOwner = factions.get(datafile.get(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".owner"));
+                    Faction influenceOwner = factions.get(datafile.get(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".influenceowner"));
+                    
+                    ControlPoint controlPoint = new ControlPoint(configControlPoint,
+                            controlPointOwner, 
+                            controlpointlocation,
+                            captureRadius,
+                            baseInfluence,
+                            influence,
+                            influenceOwner);
                     controlPoints.add(controlPoint);
                 }
                 //ControlPoint List End
@@ -125,8 +130,24 @@ public class ServerLogic {
                 Float influence = ((Integer) datafile.getInt(configWorld + ".regions." + configRegion + ".influence")).floatValue(); //Influence
                 Faction influenceOwner = factions.get(datafile.get(configWorld + ".regions." + configRegion + ".influenceowner")); //Influence Owner
                 
-                CapturableRegion capturableregion = new CapturableRegion(regionDisplayname, owner, region, world, controlPoints, spawnPoint, baseInfluence, influence, influenceOwner);
+                CapturableRegion capturableregion = new CapturableRegion(regionDisplayname,
+                        owner,
+                        region,
+                        world,
+                        controlPoints,
+                        spawnPoint,
+                        baseInfluence,
+                        influence,
+                        influenceOwner);
+                
                 capturableRegions.put(configWorld + "_" + configRegion, capturableregion);
+                
+                //Define ControlPoint Region.
+                List<ControlPoint> controlPointList = capturableregion.getControlPoints();
+                for(ControlPoint controlpoint : controlPointList)
+                {
+                    controlpoint.setRegion(capturableregion);
+                }
             }
         }
 
@@ -149,6 +170,19 @@ public class ServerLogic {
                 }
                 capturableRegions.get(configWorld + "_" + configRegion).setAdjacentRegions(adjacentregions);
             }
+        }
+    }
+    
+    public static void setupSpawnRegions()
+    {
+        Set<String> configFactions = mainconfig.getConfigurationSection("factions").getKeys(false);
+        for(String configFaction : configFactions)
+        {
+            String regionWorld = mainconfig.getString("factions." + configFaction + ".defaultspawn" + ".world");
+            String regionName = mainconfig.getString("factions." + configFaction + ".defaultspawn" + ".region");
+            
+            Faction faction = factions.get(configFaction);
+            faction.setFactionSpawnRegion(capturableRegions.get(regionWorld + "_" + regionName));
         }
     }
 }

@@ -33,16 +33,14 @@ public class ControlPoint {
     private boolean capturing;
 
     public ControlPoint(String identifier,
-            CapturableRegion region,
             Faction owner,
             Location location,
             Integer captureRadius,
             Float baseInfluence,
             Float influence,
             Faction influenceOwner)
+    
     {
-        this.region = region;
-        
         this.setIdentifier(identifier);
         this.setOwner(owner);
         this.location = location;
@@ -227,5 +225,13 @@ public class ControlPoint {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public CapturableRegion getRegion() {
+        return region;
+    }
+
+    public void setRegion(CapturableRegion region) {
+        this.region = region;
     }
 }
