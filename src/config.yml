@@ -9,9 +9,8 @@ factions:
     permissionsgroup:
     default: false
     defaultspawn:
-      x:
-      y:
-      z:
+      world: runite
+      world_nether: runite_nethergate
     color:
       red:
       green:

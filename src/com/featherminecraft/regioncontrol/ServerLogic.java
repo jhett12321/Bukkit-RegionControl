@@ -31,6 +31,7 @@ public class ServerLogic {
     //Registered Variables; to be saved on plugin disable
     public static Map<String, Faction> factions = new HashMap<String, Faction>();
     public static Map<String, CapturableRegion> capturableRegions = new HashMap<String,CapturableRegion>();
+    public static Map<Faction, Map<World,CapturableRegion>> factionSpawnPoints = new HashMap<Faction,Map<World,CapturableRegion>>();
 
     public static void init()
     {
@@ -178,11 +179,16 @@ public class ServerLogic {
         Set<String> configFactions = mainconfig.getConfigurationSection("factions").getKeys(false);
         for(String configFaction : configFactions)
         {
-            String regionWorld = mainconfig.getString("factions." + configFaction + ".defaultspawn" + ".world");
-            String regionName = mainconfig.getString("factions." + configFaction + ".defaultspawn" + ".region");
-            
+            Set<String> regionWorlds = mainconfig.getConfigurationSection("factions." + configFaction + ".defaultspawn").getKeys(false);
+            Map<World,CapturableRegion> spawnRegions = new HashMap<World,CapturableRegion>();
+            for(String configWorld : regionWorlds)
+            {
+                CapturableRegion region = capturableRegions.get(configWorld + "_" + mainconfig.getString("factions." + configFaction + ".defaultspawn." + configWorld));
+                World world = Bukkit.getWorld(configWorld);
+                spawnRegions.put(world,region);
+            }
             Faction faction = factions.get(configFaction);
-            faction.setFactionSpawnRegion(capturableRegions.get(regionWorld + "_" + regionName));
+            factionSpawnPoints.put(faction, spawnRegions);
         }
     }
 }

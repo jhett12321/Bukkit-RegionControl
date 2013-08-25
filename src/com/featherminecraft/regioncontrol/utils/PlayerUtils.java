@@ -52,12 +52,12 @@ public class PlayerUtils {
      */
     public Boolean canCapture(ControlPoint controlpoint, Player player)
     {
-        if(controlpoint.getCapturableRegion().getOwner() == getPlayerFaction(player))
+        if(controlpoint.getRegion().getOwner() == getPlayerFaction(player))
         {
             return true;
         }
         
-        for(CapturableRegion adjacentregion : controlpoint.getCapturableRegion().getAdjacentregions())
+        for(CapturableRegion adjacentregion : controlpoint.getRegion().getAdjacentRegions())
         {
             if(adjacentregion.getOwner() == getPlayerFaction(player))
             {
@@ -68,12 +68,6 @@ public class PlayerUtils {
         return false;
     }
     
-    /**
-     * Checks whether a player can capture the selected ControlPoint.
-     * @param controlpoint - A ControlPoint.
-     * @param player - The Player to be checked
-     * @return Boolean whether a player can capture the ControlPoint
-     */
     public CapturableRegion getCurrentRegion(Player player)
     {
         CapturableRegion playerRegion = null;
@@ -86,7 +80,7 @@ public class PlayerUtils {
         if(currentregions != null && currentregions.size() == 1) {
             for(ProtectedRegion region : currentregions)
             {
-                CapturableRegion capturableregion = new RegionUtils().getCapturableRegion(region, player.getWorld());
+                CapturableRegion capturableregion = new RegionUtils().getCapturableRegionFromWorldGuardRegion(region, player.getWorld());
                 if(capturableregion.getRegion().contains(location))
                     playerRegion = capturableregion;
             }

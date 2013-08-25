@@ -53,7 +53,7 @@ public class ClientRunnables extends BukkitRunnable {
         if(newregions != null && newregions.size() == 1) {
             for(ProtectedRegion region : newregions)
             {
-                CapturableRegion capturableregion = new RegionUtils().getCapturableRegion(region, player.getWorld());
+                CapturableRegion capturableregion = new RegionUtils().getCapturableRegionFromWorldGuardRegion(region, player.getWorld());
                 if(capturableregion.getRegion().contains(newlocation))
                     newregion = capturableregion;
             }

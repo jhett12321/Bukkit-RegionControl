@@ -104,7 +104,7 @@ public class CapturableRegion {
             public void run() {
                 for(ControlPoint controlPoint : controlPoints)
                 {
-                    controlPoint.Runnable(cregion);
+                    controlPoint.Runnable();
                 }
                 influenceManager.Runnable();
                 captureTimer.Runnable();

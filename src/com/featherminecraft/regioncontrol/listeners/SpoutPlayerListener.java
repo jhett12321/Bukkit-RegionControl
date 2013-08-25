@@ -71,7 +71,7 @@ public class SpoutPlayerListener implements Listener {
         if(applicableregions != null && applicableregions.size() == 1) {
             for(ProtectedRegion region : applicableregions)
             {
-                CapturableRegion capturableregion = new RegionUtils().getCapturableRegion(region, event.getPlayer().getWorld());
+                CapturableRegion capturableregion = new RegionUtils().getCapturableRegionFromWorldGuardRegion(region, event.getPlayer().getWorld());
                     if(capturableregion.getRegion().contains(location))
                     {
                         RegionUtils.removePlayerFromRegion(event.getPlayer(), capturableregion);
