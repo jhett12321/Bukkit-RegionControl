@@ -1,4 +1,4 @@
-package com.featherminecraft.RegionControl.dynmap;
+/*package com.featherminecraft.RegionControl.dynmap;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -148,7 +148,7 @@ public class DynmapImpl extends JavaPlugin {
         if(as == null) {
             as = cusstyle.get(resid);
         }
-        if(as == null) {    /* Check for wildcard style matches */
+        if(as == null) {     Check for wildcard style matches 
             for(String wc : cuswildstyle.keySet()) {
                 String[] tok = wc.split("\\|");
                 if((tok.length == 1) && resid.startsWith(tok[0]))
@@ -157,7 +157,7 @@ public class DynmapImpl extends JavaPlugin {
                     as = cuswildstyle.get(wc);
             }
         }
-        if(as == null) {    /* Check for owner style matches */
+        if(as == null) {     Check for owner style matches 
             if(ownerstyle.isEmpty() != true) {
                 DefaultDomain dd = region.getOwners();
                 Set<String> play = dd.getPlayers();
@@ -206,21 +206,21 @@ public class DynmapImpl extends JavaPlugin {
         }
     }
     
-    /* Handle specific region */
+     Handle specific region 
     private void handleRegion(World world, ProtectedRegion region, Map<String, AreaMarker> newmap) {
         String name = region.getId();
         double[] x = null;
         double[] z = null;
                 
-        /* Handle areas */
+         Handle areas 
         if(isVisible(region.getId(), world.getName())) {
             String id = region.getId();
             String tn = region.getTypeName();
             BlockVector l0 = region.getMinimumPoint();
             BlockVector l1 = region.getMaximumPoint();
 
-            if(tn.equalsIgnoreCase("cuboid")) { /* Cubiod region? */
-                /* Make outline */
+            if(tn.equalsIgnoreCase("cuboid")) {  Cubiod region? 
+                 Make outline 
                 x = new double[4];
                 z = new double[4];
                 x[0] = l0.getX(); z[0] = l0.getZ();
@@ -238,46 +238,46 @@ public class DynmapImpl extends JavaPlugin {
                     x[i] = pt.getX(); z[i] = pt.getZ();
                 }
             }
-            else {  /* Unsupported type */
+            else {   Unsupported type 
                 return;
             }
             String markerid = world.getName() + "_" + id;
-            AreaMarker m = resareas.remove(markerid); /* Existing area? */
+            AreaMarker m = resareas.remove(markerid);  Existing area? 
             if(m == null) {
                 m = set.createAreaMarker(markerid, name, false, world.getName(), x, z, false);
                 if(m == null)
                     return;
             }
             else {
-                m.setCornerLocations(x, z); /* Replace corner locations */
-                m.setLabel(name);   /* Update label */
+                m.setCornerLocations(x, z);  Replace corner locations 
+                m.setLabel(name);    Update label 
             }
-            if(use3d) { /* If 3D? */
+            if(use3d) {  If 3D? 
                 m.setRangeY(l1.getY()+1.0, l0.getY());
             }            
-            /* Set line and fill properties */
+             Set line and fill properties 
             addStyle(id, world.getName(), m, region);
 
-            /* Build popup */
+             Build popup 
             String desc = formatInfoWindow(region, m);
 
-            m.setDescription(desc); /* Set popup */
+            m.setDescription(desc);  Set popup 
 
-            /* Add to map */
+             Add to map 
             newmap.put(markerid, m);
         }
     }
     
-    /* Update worldguard region information */
+     Update worldguard region information 
     private void updateRegions() {
-        Map<String,AreaMarker> newmap = new HashMap<String,AreaMarker>(); /* Build new map */
+        Map<String,AreaMarker> newmap = new HashMap<String,AreaMarker>();  Build new map 
  
-        /* Loop through worlds */
+         Loop through worlds 
         for(World w : getServer().getWorlds()) {
-            RegionManager rm = wg.getRegionManager(w); /* Get region manager for world */
+            RegionManager rm = wg.getRegionManager(w);  Get region manager for world 
             if(rm == null) continue;
             
-            Map<String,ProtectedRegion> regions = rm.getRegions();  /* Get all the regions */
+            Map<String,ProtectedRegion> regions = rm.getRegions();   Get all the regions 
             for(ProtectedRegion pr : regions.values()) {
                 int depth = 1;
                 ProtectedRegion p = pr;
@@ -290,11 +290,11 @@ public class DynmapImpl extends JavaPlugin {
                 handleRegion(w, pr, newmap);
             }
         }
-        /* Now, review old map - anything left is gone */
+         Now, review old map - anything left is gone 
         for(AreaMarker oldm : resareas.values()) {
             oldm.deleteMarker();
         }
-        /* And replace with new map */
+         And replace with new map 
         resareas = newmap;
         
         getServer().getScheduler().scheduleSyncDelayedTask(this, new WorldGuardUpdate(), updperiod);
@@ -317,14 +317,14 @@ public class DynmapImpl extends JavaPlugin {
     public void onEnable() {
         info("initializing");
         PluginManager pm = getServer().getPluginManager();
-        /* Get dynmap */
+         Get dynmap 
         dynmap = pm.getPlugin("dynmap");
         if(dynmap == null) {
             severe("Cannot find dynmap!");
             return;
         }
-        api = (DynmapAPI)dynmap; /* Get API */
-        /* Get WorldGuard */
+        api = (DynmapAPI)dynmap;  Get API 
+         Get WorldGuard 
         Plugin p = pm.getPlugin("WorldGuard");
         if(p == null) {
             severe("Cannot find WorldGuard!");
@@ -335,7 +335,7 @@ public class DynmapImpl extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new OurServerListener(), this);        
         
         registerCustomFlags();
-        /* If both enabled, activate */
+         If both enabled, activate 
         if(dynmap.isEnabled() && wg.isEnabled())
             activate();
     }
@@ -370,13 +370,13 @@ public class DynmapImpl extends JavaPlugin {
     private boolean reload = false;
     
     private void activate() {        
-        /* Now, get markers API */
+         Now, get markers API 
         markerapi = api.getMarkerAPI();
         if(markerapi == null) {
             severe("Error loading dynmap marker API!");
             return;
         }
-        /* Load configuration */
+         Load configuration 
         if(reload) {
             this.reloadConfig();
         }
@@ -384,10 +384,10 @@ public class DynmapImpl extends JavaPlugin {
             reload = true;
         }
         FileConfiguration cfg = getConfig();
-        cfg.options().copyDefaults(true);   /* Load defaults, if needed */
-        this.saveConfig();  /* Save updates, if needed */
+        cfg.options().copyDefaults(true);    Load defaults, if needed 
+        this.saveConfig();   Save updates, if needed 
         
-        /* Now, add marker set for mobs (make it transient) */
+         Now, add marker set for mobs (make it transient) 
         set = markerapi.getMarkerSet("worldguard.markerset");
         if(set == null)
             set = markerapi.createMarkerSet("worldguard.markerset", cfg.getString("layer.name", "WorldGuard"), null, false);
@@ -406,7 +406,7 @@ public class DynmapImpl extends JavaPlugin {
         infowindow = cfg.getString("infowindow", DEF_INFOWINDOW);
         maxdepth = cfg.getInt("maxdepth", 16);
 
-        /* Get style information */
+         Get style information 
         defstyle = new AreaStyle(cfg, "regionstyle");
         cusstyle = new HashMap<String, AreaStyle>();
         ownerstyle = new HashMap<String, AreaStyle>();
@@ -439,13 +439,13 @@ public class DynmapImpl extends JavaPlugin {
             hidden = new HashSet<String>(hid);
         }
 
-        /* Set up update job - based on periond */
+         Set up update job - based on periond 
         int per = cfg.getInt("update.period", 300);
         if(per < 15) per = 15;
         updperiod = (long)(per*20);
         stop = false;
         
-        getServer().getScheduler().scheduleSyncDelayedTask(this, new WorldGuardUpdate(), 40);   /* First time is 2 seconds */
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new WorldGuardUpdate(), 40);    First time is 2 seconds 
         
         info("version " + this.getDescription().getVersion() + " is activated");
     }
@@ -459,4 +459,4 @@ public class DynmapImpl extends JavaPlugin {
         stop = true;
     }
 
-}
+}*/
