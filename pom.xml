@@ -1,0 +1,112 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.featherminecraft</groupId>
+  <artifactId>RegionControl</artifactId>
+  <version>0.5.4-SNAPSHOT</version>
+  <name>RegionControl</name>
+
+	<properties>
+		<mainClass>${project.groupId}.RegionControl</mainClass>
+		<!-- Bukkit/Minecraft Versions -->
+		<craftbukkitVersion>1.6.2-R0.2-SNAPSHOT</craftbukkitVersion>
+		<minecraftVersion>1.6.2</minecraftVersion>
+		
+		<!-- Plugin Versions -->
+		<vaultVersion>1.2.25-SNAPSHOT</vaultVersion>
+		<worldEditVersion>5.5.8-SNAPSHOT</worldEditVersion>
+		<worldGuardVersion>5.8.1-SNAPSHOT</worldGuardVersion>
+		<spoutVersion>1.6.2-R0.2-SNAPSHOT</spoutVersion>
+	</properties>
+
+  <repositories>
+<!-- Bukkit can be found at the following repository -->
+  	<repository>
+  		<id>bukkit-repo</id>
+  		<url>http://repo.bukkit.org/content/groups/public/</url>
+  	</repository>
+  	<repository>
+	<id>vault-repo</id>
+	<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+  	</repository>
+  	<repository>
+      <id>sk89q-repo</id>
+      <url>http://maven.sk89q.com/repo/</url>
+    </repository>
+    
+      <repository>
+      <id>spout-repo</id>
+      <url>http://repo.spout.org</url>
+    </repository>
+</repositories>
+<dependencies>
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>3.8.1</version>
+		<scope>test</scope>
+	</dependency>
+
+	<!-- Bukkit -->
+	<dependency>
+		<groupId>org.bukkit</groupId>
+		<artifactId>craftbukkit</artifactId>
+		<!-- Bukkit API Version, change if necessary -->
+		<version>${craftbukkitVersion}</version>
+	</dependency>
+	
+	<!--  Plugin Dependencies -->
+	<!--  Vault -->
+	<dependency>
+		<groupId>net.milkbowl.vault</groupId>
+		<artifactId>Vault</artifactId>
+		<version>${vaultVersion}</version>
+		</dependency>
+	<!-- WorldEdit -->
+	<dependency>
+		<groupId>com.sk89q</groupId>
+		<artifactId>worldedit</artifactId>
+		<version>${worldEditVersion}</version>
+		<type>jar</type>
+	</dependency>
+	<!-- WorldGuard -->
+	<dependency>
+		<groupId>com.sk89q</groupId>
+		<artifactId>worldguard</artifactId>
+		<version>${worldGuardVersion}</version>
+		<type>jar</type>
+	</dependency>
+	<!-- Spout -->
+	<dependency>
+		<groupId>org.getspout</groupId>
+		<artifactId>spoutplugin</artifactId>
+		<version>${spoutVersion}</version>
+		<type>jar</type>
+	</dependency>
+</dependencies>
+	<build>
+	<defaultGoal>clean install</defaultGoal>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+	        <includes>
+	            <include>**</include>
+	        </includes>
+      </resource>
+    </resources>
+    
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+ 
+	</build>
+</project>

@@ -1,0 +1,15 @@
+regions:
+  exampleregion:
+    owner: faction1
+    influence: 243
+    influenceowner: faction1
+    controlpoints:
+      a:
+        owner:
+      b:
+        owner:
+      c:
+        owner:
+players:
+  jhett12321:
+    faction: faction1
