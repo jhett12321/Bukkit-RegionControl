@@ -34,13 +34,13 @@ public class GenericListener {
         @EventHandler(priority = EventPriority.MONITOR)
         public void onControlPointNeutralise(ControlPointNeutraliseEvent event)
         {
-            event.getControlPoint().setOwner(null);
+            
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onControlPointCapture(ControlPointCaptureEvent event)
         {
-            event.getControlpoint().setOwner(event.getOwner());
+            
         }
     }
 }

@@ -33,21 +33,24 @@ public class SpoutClientLogic {
     private Texture ownericon;
     private Texture influenceownericon;
     
+    //Bar Animation Info
+    private Short barAnimRate;
+    private Float barFloatValue;
+    private Short barShortValue;
+    
     //Definable Variables
     private Faction influenceOwner;
     private Faction owner;
-    private Long millisecondsremaining;
-    private Short barAnimRate;
-    
     //Misc
     private BukkitTask runnable;
     protected Faction majorityController;
     private CapturableRegion region;
 
-
     public static void init()
     {
         //TODO check inside config what files have been defined for the faction icons.
+        //TODO Iterate over factions to find faction icon.
+        
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/background_top.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/background_bottom.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Losing.png"));
@@ -72,10 +75,9 @@ public class SpoutClientLogic {
     */
 
     public void setupClientElements(SpoutPlayer splayer) {
-        millisecondsremaining = null;
         this.splayer = splayer;
 
-        Screen screen = splayer.getMainScreen();
+        Screen screen = this.splayer.getMainScreen();
         
         Color factioncolor = new Color(1F, 0, 0, 0.8F);
         
@@ -239,49 +241,68 @@ public class SpoutClientLogic {
         screen.attachWidgets(RegionControl.plugin, toptexture, background, bottomtexture , ownericon, regionname,controlPointA,controlPointB,controlPointC, influenceownericon , captureBarBackground,captureBar, captureBarSpace, capturetimer,captureBarAnim);
     }
     
-    public void updateRegion(CapturableRegion newregion)
+    public void updateRegion(CapturableRegion updatedRegion)
     {
-        this.region = newregion;
-        this.owner = newregion.getOwner();
-        ownericon.setUrl(factionIcons.get(owner));
-        regionname.setText(newregion.getDisplayName());
-        
-        if(newregion.isBeingCaptured())
+        if(updatedRegion == null)
         {
-            //Set all "capture" elements visible.
-            
-            Float influencerate = newregion.getInfluenceRate();
+            return;
+        }
+        
+        this.region = updatedRegion;
+        this.owner = updatedRegion.getOwner();
+        this.influenceOwner = updatedRegion.getOwner();
+        
+        //ownericon.setUrl(factionIcons.get(owner));
+        ownericon.setUrl("faction.png");
+        regionname.setText(updatedRegion.getDisplayName());
+        
+        if(updatedRegion.isBeingCaptured())
+        {
+            Float influencerate = region.getInfluenceRate();
             
             if(influencerate == 1)
             {
-                barAnimRate = 5;
+                barAnimRate = 7;
+                barFloatValue = 0.92F;
+                barShortValue = 100;
             }
             
             else if(influencerate == 2)
             {
-                barAnimRate = 3;
+                barAnimRate = 5;
+                barFloatValue = 1.15F;
+                barShortValue = 100;
             }
             
             else if(influencerate == 3)
             {
-                barAnimRate = 1;
+                barAnimRate = 3;
+                barFloatValue = 1.55F;
+                barShortValue = 100;
             }
             
-            if(influencerate == 1 || influencerate == 2 || influencerate == 3)
+            else if(influencerate == 4)
+            {
+                barAnimRate = 1;
+                barFloatValue = 2.35F;
+                barShortValue = 100;
+            }
+            
+            if(influencerate == 1 || influencerate == 2 || influencerate == 3 || influencerate == 4)
             {
                 captureBarAnim.animateStop(true);
-                majorityController = newregion.getMajorityController();
+                majorityController = updatedRegion.getMajorityController();
                 if(owner == influenceOwner)
                 {
                     if(majorityController == owner)
                     {
                         captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
-                        captureBarAnim.animate(WidgetAnim.POS_X, 2.3F, (short) 40, barAnimRate, true, true).animateStart();
+                        captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                     }
                     else if (majorityController != owner)
                     {
                         captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
-                        captureBarAnim.animate(WidgetAnim.POS_X, -2.3F, (short) 40, barAnimRate, true, true).animateStart();
+                        captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                     }
                 }
                 
@@ -290,12 +311,12 @@ public class SpoutClientLogic {
                     if(majorityController == owner)
                     {
                         captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
-                        captureBarAnim.animate(WidgetAnim.POS_X, -2.3F, (short) 40, barAnimRate, true, true).animateStart();
+                        captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                     }
                     else if (majorityController != owner)
                     {
                         captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
-                        captureBarAnim.animate(WidgetAnim.POS_X, 2.3F, (short) 40, barAnimRate, true, true).animateStart();
+                        captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                     }
                 }
             }
@@ -303,8 +324,8 @@ public class SpoutClientLogic {
             runnable = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    Integer seconds = (int) ((millisecondsremaining / 1000) % 60);
-                    Integer minutes = (int) ((millisecondsremaining / (1000*60)));
+                    Integer seconds = region.getSecondsToCapture();
+                    Integer minutes = region.getMinutesToCapture();
                     
                     String secondsString = seconds.toString();
                     if(seconds < 10)
@@ -325,11 +346,10 @@ public class SpoutClientLogic {
             }.runTaskTimer(RegionControl.plugin, 20, 20);
         }
         
-        else if(!newregion.isBeingCaptured() && runnable != null)
+        else if(!updatedRegion.isBeingCaptured() && runnable != null)
         {
             runnable.cancel();
             captureBarAnim.animateStop(false);
-            
         }
     }
 }

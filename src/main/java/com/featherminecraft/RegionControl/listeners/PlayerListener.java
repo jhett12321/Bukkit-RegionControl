@@ -11,53 +11,60 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
-
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.ClientRunnables;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
+import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
 import com.featherminecraft.RegionControl.utils.RegionUtils;
-import com.featherminecraft.RegionControl.utils.Utils;
 
 public class PlayerListener implements Listener {
 
     BukkitTask clientrunnables;
     
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) 
+    {
+        //Utilities Begin
+        PlayerUtils playerUtils = new PlayerUtils();
+        //Utilities End
+        
         Player player = event.getPlayer();
-        RCPlayer rcPlayer = new RCPlayer(null, null, null); //TODO
+        if(player == null)
+        {
+            //Player is undefined
+            return;
+        }
+        
+        Faction faction = playerUtils.getPlayerFaction(player);
+        if(faction == null)
+        {
+            player.kickPlayer("You currently do not belong to a valid faction!");
+            return;
+        }
+        CapturableRegion currentRegion = faction.getFactionSpawnRegion(player.getWorld());
+        
+        RCPlayer rcPlayer = new RCPlayer(player, faction, currentRegion);
         clientrunnables = new ClientRunnables(rcPlayer).runTaskTimer(RegionControl.plugin, 20, 20);
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
+        //Utilities Begin
+        PlayerUtils playerUtils = new PlayerUtils();
+        RegionUtils regionUtils = new RegionUtils();
+        //Utilities End
+        
         clientrunnables.cancel();
         
-        Vector location = toVector(event.getPlayer().getLocation());
-        WorldGuardPlugin worldguard = Utils.getWorldGuard();
-        RegionManager regionmanager = worldguard.getRegionManager(event.getPlayer().getWorld());
-        ApplicableRegionSet applicableregions = regionmanager.getApplicableRegions(location);
+        RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
+        CapturableRegion currentRegion = player.getCurrentRegion();
+        regionUtils.removePlayerFromRegion(player, currentRegion);
         
-        if(applicableregions != null && applicableregions.size() == 1) {
-            for(ProtectedRegion region : applicableregions)
-            {
-                CapturableRegion capturableregion = new RegionUtils().getCapturableRegionFromWorldGuardRegion(region, event.getPlayer().getWorld());
-                    if(capturableregion.getRegion().contains(location))
-                    {
-                        RegionUtils.removePlayerFromRegion(event.getPlayer(), capturableregion);
-                }
-            }
-        }
+        ServerLogic.players.remove(player);
     }
     
     @EventHandler

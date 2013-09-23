@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
+import com.featherminecraft.RegionControl.utils.ConfigUtils;
 import com.featherminecraft.RegionControl.utils.Utils;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -24,7 +25,8 @@ public class ServerLogic {
     private static FileConfiguration datafile;
     
     //Temp Variable. Can be removed on plugin disable.
-    public static Map<CapturableRegion, List<RCPlayer>> players = new HashMap<CapturableRegion, List<RCPlayer>>(); //TODO Check safety of this map.
+    public static Map<CapturableRegion, List<RCPlayer>> regionPlayers = new HashMap<CapturableRegion, List<RCPlayer>>();
+    public static Map<String, RCPlayer> players;
     
     //Registered Variables; to be saved on plugin disable
     public static Map<String, Faction> factions = new HashMap<String, Faction>();
@@ -33,7 +35,6 @@ public class ServerLogic {
 
     public static void init()
     {
-        //TODO Implement Save Data and retrieving of this data.
         mainconfig = new Config().getMainConfig();
         datafile = new Config().getDataFile();
 
@@ -67,11 +68,16 @@ public class ServerLogic {
     
     private static void setupRegions()
     {
+        //TODO Consider accessing config via Config Utilities
         Set<String> worlds = mainconfig.getConfigurationSection("worlds").getKeys(false);
 
         //Region Setup
         for(String configWorld : worlds)
         {
+            //Utilities Begin
+            ConfigUtils configUtils = new ConfigUtils();
+            //Utilities End
+            
             Set<String> regions = mainconfig.getConfigurationSection(configWorld + ".regions").getKeys(false);
             for(String configRegion : regions)
             {
@@ -81,7 +87,7 @@ public class ServerLogic {
                 String configOwner = datafile.getString(configWorld + ".regions." + configRegion + ".owner");
                 if(configOwner == null)
                 {
-                    configOwner = new Config().getDefaultFaction();
+                    configOwner = configUtils.getDefaultFaction();
                 }
                 Faction owner = factions.get(configOwner);
                 //Owner End
@@ -130,6 +136,7 @@ public class ServerLogic {
                 Faction influenceOwner = factions.get(datafile.get(configWorld + ".regions." + configRegion + ".influenceowner")); //Influence Owner
                 
                 CapturableRegion capturableregion = new CapturableRegion(regionDisplayname,
+                        configRegion,
                         owner,
                         region,
                         world,
@@ -140,6 +147,7 @@ public class ServerLogic {
                         influenceOwner);
                 
                 capturableRegions.put(configWorld + "_" + configRegion, capturableregion);
+                regionPlayers.put(capturableregion, new ArrayList<RCPlayer>());
                 
                 //Define ControlPoint Region.
                 List<ControlPoint> controlPointList = capturableregion.getControlPoints();

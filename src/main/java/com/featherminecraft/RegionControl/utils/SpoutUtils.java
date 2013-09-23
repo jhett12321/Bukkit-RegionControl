@@ -4,8 +4,6 @@ import org.getspout.spoutapi.gui.Label;
 import org.getspout.spoutapi.gui.Texture;
 import org.getspout.spoutapi.gui.Widget;
 
-import com.featherminecraft.RegionControl.Config;
-
 public class SpoutUtils {
     public Widget updateLabelText (Label widget, String text)
     {
@@ -21,7 +19,7 @@ public class SpoutUtils {
     
     public int getMaxSpawnButtons()
     {
-        return new Config().getMainConfig().getInt("spout.maxspawnbuttons");
+        return new ConfigUtils().getMainConfig().getInt("spout.maxspawnbuttons");
     }
     
 }

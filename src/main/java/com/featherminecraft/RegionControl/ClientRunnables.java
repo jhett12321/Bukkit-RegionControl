@@ -17,7 +17,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-
 public class ClientRunnables extends BukkitRunnable {
 
     private RCPlayer player;
@@ -61,7 +60,7 @@ public class ClientRunnables extends BukkitRunnable {
         
         if(newregion != currentregion && currentregion != null && newregion != null)
         {
-            ChangeRegionEvent changeregionevent = new ChangeRegionEvent(newregion, currentregion, player.getBukkitPlayer(), player.getBukkitPlayer().getWorld());
+            ChangeRegionEvent changeregionevent = new ChangeRegionEvent(newregion, currentregion, player, player.getBukkitPlayer().getWorld());
             Bukkit.getServer().getPluginManager().callEvent(changeregionevent);
         }
         

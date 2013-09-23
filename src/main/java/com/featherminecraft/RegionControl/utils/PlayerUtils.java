@@ -14,6 +14,7 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 import com.featherminecraft.RegionControl.Faction;
+import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.sk89q.worldedit.Vector;
@@ -88,5 +89,11 @@ public class PlayerUtils {
         }
         
         return playerRegion;
+    }
+
+    public RCPlayer getRCPlayerFromBukkitPlayer(Player player) {
+        Map<String,RCPlayer> players = ServerLogic.players;
+        RCPlayer rcPlayer = players.get(player);
+        return rcPlayer;
     }
 }

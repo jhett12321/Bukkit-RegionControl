@@ -3,36 +3,33 @@ package com.featherminecraft.RegionControl.utils;
 import java.util.List;
 
 import org.bukkit.World;
-import org.bukkit.entity.Player;
-
-
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class RegionUtils {
-    public static void addPlayerToRegion(RCPlayer player, CapturableRegion region)
+    public void addPlayerToRegion(RCPlayer player, CapturableRegion region)
     {
-        List<RCPlayer> currentplayers = ServerLogic.players.get(region);
+        List<RCPlayer> currentplayers = ServerLogic.regionPlayers.get(region);
         currentplayers.add(player);
-        ServerLogic.players.put(region, currentplayers);
+        ServerLogic.regionPlayers.put(region, currentplayers);
     }
 
-    public static void removePlayerFromRegion(Player player, CapturableRegion region)
+    public void removePlayerFromRegion(RCPlayer player, CapturableRegion region)
     {
-        List<RCPlayer> currentplayers = ServerLogic.players.get(region);
+        List<RCPlayer> currentplayers = ServerLogic.regionPlayers.get(region);
         currentplayers.remove(player);
     }
     
     public int getRegionPlayerCount(CapturableRegion region)
     {
-        return ServerLogic.players.get(region).size();
+        return ServerLogic.regionPlayers.get(region).size();
     }
     
     public List<RCPlayer> getRegionPlayerList(CapturableRegion region)
     {
-        return ServerLogic.players.get(region);
+        return ServerLogic.regionPlayers.get(region);
     }
 
     /**

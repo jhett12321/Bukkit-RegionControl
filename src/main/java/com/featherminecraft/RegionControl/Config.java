@@ -1,6 +1,5 @@
 package com.featherminecraft.RegionControl;
 
-import java.util.Set;
 import java.util.logging.Level;
 
 import java.io.File;
@@ -10,12 +9,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Config {
-    private static FileConfiguration mainconfig;
-    private static FileConfiguration data;
-    private static File mainconfigfile;
-    private static File dataFile;
+    protected static FileConfiguration mainconfig;
+    protected static FileConfiguration data;
+    protected static File mainconfigfile;
+    protected static File dataFile;
     
-    public void reloadMainConfig()
+    protected void reloadMainConfig()
     {
         mainconfigfile = new File(RegionControl.plugin.getDataFolder(), "config.yml");
         if (!mainconfigfile.exists())
@@ -25,7 +24,7 @@ public class Config {
         mainconfig = YamlConfiguration.loadConfiguration(mainconfigfile);
     }
 
-    public void reloadDataFile()
+    protected void reloadDataFile()
     {
         dataFile = new File(RegionControl.plugin.getDataFolder(), "Data/data.yml");
         dataFile.getParentFile().mkdirs();
@@ -36,7 +35,7 @@ public class Config {
         data = YamlConfiguration.loadConfiguration(dataFile);
     }
 
-    public FileConfiguration getDataFile() {
+    protected FileConfiguration getDataFile() {
         if ( data == null )
         {
             this.reloadDataFile();
@@ -52,39 +51,31 @@ public class Config {
         return mainconfig;
     }
 
-    public void saveDataFile()
+    protected Boolean saveDataFile()
     {
         if (data == null || dataFile == null) {
-            return;
+            return false;
             }
         try {
             getDataFile().save(dataFile);
         } catch (IOException ex) {
             RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config", ex);
+            return false;
         }
+        return true;
     }
 
-    public void saveMainConfig()
+    protected Boolean saveMainConfig()
     {
         if (mainconfig == null || mainconfigfile == null) {
-            return;
+            return false;
             }
         try {
             getMainConfig().save(mainconfigfile);
         } catch (IOException ex) {
             RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config", ex);
+            return false;
         }
-    }
-
-    public String getDefaultFaction() {
-        Set<String> factions = mainconfig.getConfigurationSection("factions").getKeys(false);
-        for(String faction : factions)
-        {
-            if(mainconfig.getBoolean("factions." + faction + ".default"))
-            {
-                return faction;
-            }
-        }
-        return null;
+        return true;
     }
 }

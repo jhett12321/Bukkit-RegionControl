@@ -1,22 +1,23 @@
 package com.featherminecraft.RegionControl.events;
 
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
-
+//This event is triggered upon a player changing regions.
+//TODO Incomplete
 public class ChangeRegionEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     private CapturableRegion oldregion;
     private CapturableRegion newregion;
-    private Player player;
+    private RCPlayer player;
     private World world;
 
-    public ChangeRegionEvent(CapturableRegion newregion, CapturableRegion oldregion,  Player player, World world) {
+    public ChangeRegionEvent(CapturableRegion newregion, CapturableRegion oldregion, RCPlayer player, World world) {
         this.oldregion = oldregion;
         this.newregion = newregion;
         this.player = player;
@@ -35,7 +36,7 @@ public class ChangeRegionEvent extends Event {
         return newregion;
     }
 
-    public Player getPlayer() {
+    public RCPlayer getPlayer() {
         return player;
     }
 

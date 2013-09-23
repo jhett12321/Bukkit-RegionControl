@@ -10,6 +10,7 @@ public class RCPlayer {
     private String playerName;
     private CapturableRegion currentRegion;
     private Faction faction;
+    private Boolean hasSpout = false;
 
     public RCPlayer(Player player,Faction faction, CapturableRegion currentRegion)
     {
@@ -37,5 +38,13 @@ public class RCPlayer {
 
     public void setFaction(Faction faction) {
         this.faction = faction;
+    }
+
+    public Boolean getHasSpout() {
+        return hasSpout;
+    }
+
+    public void setHasSpout(Boolean hasSpout) {
+        this.hasSpout = hasSpout;
     }
 }

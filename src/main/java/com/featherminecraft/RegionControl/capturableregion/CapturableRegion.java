@@ -21,6 +21,7 @@ public class CapturableRegion {
     
     //Region Info
     private String displayName;
+    private String regionId;
     private Faction owner;
     private List<CapturableRegion> adjacentRegions;
     
@@ -52,6 +53,7 @@ public class CapturableRegion {
 
     /**The CapturableRegion Constructor
      * @param displayName A display name for the region, displayed on HUD Elements.
+     * @param regionId The configuration value of this region.
      * @param owner A Faction object who currently owns this region
      * @param region A WorldGuard Protected Region that this CapturableRegion belongs to
      * @param world The World which this region resides.
@@ -62,6 +64,7 @@ public class CapturableRegion {
      * @param influenceOwner A Faction Object representing the current owner of this region.
      */
     public CapturableRegion(String displayName,
+            String regionId,
             Faction owner,
             ProtectedRegion region,
             World world,
@@ -72,6 +75,7 @@ public class CapturableRegion {
             Faction influenceOwner) {
         
         this.displayName = displayName;
+        this.regionId = regionId;
         this.owner = owner;
         this.region = region;
         this.world = world;
@@ -126,6 +130,14 @@ public class CapturableRegion {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+    
+    public String getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(String regionId) {
+        this.regionId = regionId;
     }
     
     public Faction getOwner() {

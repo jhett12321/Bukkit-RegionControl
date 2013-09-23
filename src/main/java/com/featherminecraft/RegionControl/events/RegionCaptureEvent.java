@@ -11,6 +11,7 @@ import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.utils.RegionUtils;
 
+//This event is triggered upon capture of a region.
 public class RegionCaptureEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();

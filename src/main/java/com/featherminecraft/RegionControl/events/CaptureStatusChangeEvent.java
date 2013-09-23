@@ -5,7 +5,7 @@ import org.bukkit.event.HandlerList;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
-
+//This event is triggered when a region's capture ability status, updates.
 public class CaptureStatusChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();

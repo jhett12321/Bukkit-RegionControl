@@ -41,7 +41,7 @@ public class ControlPoint {
     
     {
         this.setIdentifier(identifier);
-        this.setOwner(owner);
+        this.owner = owner;
         this.location = location;
         this.captureRadius = captureRadius;
         this.baseInfluence = baseInfluence;
@@ -124,13 +124,13 @@ public class ControlPoint {
         }
     }
     
-    public void CalculateMajorityPopulation()
+    private void CalculateMajorityPopulation()
     {
         /*
          * Majority Population on Point Calculations
          */
 
-        List<RCPlayer> players = ServerLogic.players.get(region);
+        List<RCPlayer> players = ServerLogic.regionPlayers.get(region);
         Map<Faction,Integer> factionInfluence = new HashMap<Faction,Integer>();
         
         double radiusSquared = captureRadius*captureRadius;
@@ -181,7 +181,7 @@ public class ControlPoint {
     }
     
 
-    public void CalculateInfluenceOwner()
+    private void CalculateInfluenceOwner()
     {
         /*
          * Influence Owner Calculations
@@ -231,5 +231,29 @@ public class ControlPoint {
 
     public void setRegion(CapturableRegion region) {
         this.region = region;
+    }
+    
+    public Map<Faction, Float> getInfluenceMap() {
+        return influenceMap;
+    }
+
+    public void setInfluenceMap(Map<Faction, Float> influenceMap) {
+        this.influenceMap = influenceMap;
+    }
+
+    public Faction getInfluenceOwner() {
+        return influenceOwner;
+    }
+
+    public void setInfluenceOwner(Faction influenceOwner) {
+        this.influenceOwner = influenceOwner;
+    }
+
+    public Float getBaseInfluence() {
+        return baseInfluence;
+    }
+
+    public void setBaseInfluence(Float baseInfluence) {
+        this.baseInfluence = baseInfluence;
     }
 }

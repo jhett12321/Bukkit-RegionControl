@@ -2,7 +2,6 @@ package com.featherminecraft.RegionControl.utils;
 
 import org.bukkit.plugin.Plugin;
 
-import com.featherminecraft.RegionControl.Config;
 import com.featherminecraft.RegionControl.RegionControl;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -47,7 +46,7 @@ public class Utils {
     public static boolean SpoutAvailable()
     {
         Plugin spoutplugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("SpoutPlugin");
-        if(!new Config().getMainConfig().getBoolean("spout.enabled")) {
+        if(!new ConfigUtils().getMainConfig().getBoolean("spout.enabled")) {
         	//Spout is not enabled in the config
         	return false;
         } else if (spoutplugin == null) {

@@ -54,22 +54,17 @@ ISSUE/S:
 
 package com.featherminecraft.RegionControl;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import net.milkbowl.vault.permission.Permission;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
+import com.featherminecraft.RegionControl.utils.ConfigUtils;
 import com.featherminecraft.RegionControl.utils.Utils;
 
 public final class RegionControl extends JavaPlugin {
@@ -131,25 +126,10 @@ public static boolean isfirstrun;
     }
 
     @Override
-    public void onDisable() {
-        //TODO Finish save code.
-        Map<String, CapturableRegion> registered_regions = ServerLogic.capturableRegions;
-        FileConfiguration datafile = new Config().getDataFile();
-        
-        for(Entry<String, CapturableRegion> region : registered_regions.entrySet())
-        {
-            Float influence = region.getValue().getInfluenceMap().get(region.getValue().getInfluenceOwner());
-            String influenceowner = region.getValue().getInfluenceOwner().getName();
-            String regionowner = region.getValue().getOwner().getName();
-            
-            //TODO Worlds need to be handled differently. Perhaps worlds.world.regions.region.x. This will require a major refactor.
-            datafile.set("regions" + region.getValue().getRegion().getId() + "." , regionowner);
-            
-            for(ControlPoint controlPoint : region.getValue().getControlPoints())
-            {
-                String controlPointOwner = controlPoint.getOwner().getName();
-            }
-        }
-
+    public void onDisable() 
+    {
+        ServerLogic.regionPlayers = null;
+        ConfigUtils configUtils = new ConfigUtils();
+        configUtils.saveAll();
     }
 }

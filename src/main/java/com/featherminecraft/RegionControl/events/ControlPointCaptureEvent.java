@@ -9,6 +9,7 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.Faction;
 
+//This event is triggered upon a Control Point Capture.
 public class ControlPointCaptureEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
