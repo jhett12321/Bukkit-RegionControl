@@ -1,16 +1,17 @@
 package com.featherminecraft.RegionControl;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.World;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
-
 public class Faction {
 
     private String name;
-    private CapturableRegion spawnRegion;
+    private Map<World,CapturableRegion> spawnRegion = new HashMap<World,CapturableRegion>();
     private String permissionGroup;
     private Color factionColor;
     
@@ -27,12 +28,11 @@ public class Faction {
     
     public CapturableRegion getFactionSpawnRegion(World world) 
     {
-        //TODO implement world checking.
-        return spawnRegion;
+        return spawnRegion.get(world);
     }
     
     public void setFactionSpawnRegion(CapturableRegion spawnRegion) {
-       this.spawnRegion = spawnRegion;
+       this.spawnRegion.put(spawnRegion.getWorld(), spawnRegion);
     }
     
     public String getPermissionGroup() {

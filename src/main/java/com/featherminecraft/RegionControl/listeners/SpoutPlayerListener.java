@@ -1,78 +1,74 @@
 package com.featherminecraft.RegionControl.listeners;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.getspout.spoutapi.event.screen.ScreenOpenEvent;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
+import org.getspout.spoutapi.gui.InGameHUD;
+import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-
-import com.featherminecraft.RegionControl.ClientRunnables;
+import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
+import com.featherminecraft.RegionControl.spout.RespawnScreen;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
-
+import com.featherminecraft.RegionControl.utils.PlayerUtils;
 
 public class SpoutPlayerListener implements Listener {
-    private SpoutClientLogic spoutclientlogic;
-    private Location respawnlocation;
-    private ClientRunnables clientrunnables;
-    private SpoutPlayer splayer;
 
     @EventHandler
-    public void onSpoutcraftEnable(SpoutCraftEnableEvent event) {
+    public void onSpoutcraftEnable(SpoutCraftEnableEvent event)
+    {
         SpoutPlayer splayer = event.getPlayer();
-        this.splayer = splayer;
         
-        spoutclientlogic = new SpoutClientLogic();
-        spoutclientlogic.setupClientElements(splayer);
+        RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer.getPlayer());
+        rcPlayer.setHasSpout(true);
+        
+        rcPlayer.setSpoutClientLogic(new SpoutClientLogic());
+        rcPlayer.getSpoutClientLogic().setupClientElements(splayer);
     }
     
     @EventHandler
-    public void onChangeRegion(ChangeRegionEvent event) {
-        spoutclientlogic.updateRegion(event.getNewRegion());
+    public void onChangeRegion(ChangeRegionEvent event)
+    {
+        RCPlayer player = event.getPlayer();
+        SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
+        spoutClientLogic.updateRegion(event.getNewRegion());
     }
 
-    /*
+    
     @EventHandler
     public void onScreenOpen(ScreenOpenEvent event)
     {
-        ScreenType screentype = event.getScreenType();
-        //Respawn Screen
-        if(screentype == ScreenType.GAME_OVER_SCREEN)
+        SpoutPlayer splayer = event.getPlayer();
+        RCPlayer rcplayer = new PlayerUtils().getRCPlayerFromBukkitPlayer((Player) splayer);
+        
+        if(event.getScreenType().equals(ScreenType.GAME_OVER_SCREEN))
         {
-            Map<SpawnPoint,Button> respawnbuttons = spoutclientlogic.getBestSpawnPointsForPlayer(event.getPlayer());
-            int positiony = 0;
-            for(Entry<SpawnPoint, Button> button : respawnbuttons.entrySet())
-            {
-                positiony = positiony + 10;
-                button.getValue().setVisible(true);
-            }
+            InGameHUD mainscreen = splayer.getMainScreen();
+            new RespawnScreen(mainscreen, rcplayer);
         }
     }
     
     @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if(respawnlocation != null)
+    public void onPlayerRespawn(PlayerRespawnEvent event)
+    {
+        PlayerUtils playerUtils = new PlayerUtils();
+        
+        Player player = event.getPlayer();
+        RCPlayer rcplayer = playerUtils.getRCPlayerFromBukkitPlayer(player);
+        Location respawnLocation = rcplayer.getRespawnLocation();
+        if(respawnLocation != null)
         {
-            event.setRespawnLocation(respawnlocation);
+            event.setRespawnLocation(respawnLocation);
         }
         
         else
         {
-            event.setRespawnLocation(new PlayerUtils().getPlayerFaction(event.getPlayer()).getFactionSpawnPoint().getLocation()); //TODO: Replace with config default value for per-faction spawn.
+            event.setRespawnLocation(rcplayer.getFaction().getFactionSpawnRegion(player.getWorld()).getSpawnPoint().getLocation()); //TODO: Replace with config default value for per-faction spawn.
         }
     }
-    
-    @EventHandler
-    public void onButtonClick(ButtonClickEvent event) {
-        Button button = event.getButton();
-        Map<SpawnPoint,Button> respawnbuttons = spoutclientlogic.getSpawnButtons();
-        for(Entry<SpawnPoint, Button> respawnbutton : respawnbuttons.entrySet())
-        {
-            if(respawnbutton == button)
-            {
-                respawnlocation = respawnbutton.getKey().getLocation();
-            }
-        }
-    }*/
 }
