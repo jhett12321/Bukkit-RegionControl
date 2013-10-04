@@ -25,7 +25,6 @@ public class ServerLogic {
     private static FileConfiguration datafile;
     
     //Temp Variable. Can be removed on plugin disable.
-    public static Map<CapturableRegion, List<RCPlayer>> regionPlayers = new HashMap<CapturableRegion, List<RCPlayer>>();
     public static Map<String, RCPlayer> players;
     
     //Registered Variables; to be saved on plugin disable
@@ -147,7 +146,6 @@ public class ServerLogic {
                         influenceOwner);
                 
                 capturableRegions.put(configWorld + "_" + configRegion, capturableregion);
-                regionPlayers.put(capturableregion, new ArrayList<RCPlayer>());
                 
                 //Define ControlPoint Region.
                 List<ControlPoint> controlPointList = capturableregion.getControlPoints();

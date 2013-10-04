@@ -5,14 +5,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
+
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.ServerLogic;
+import com.featherminecraft.RegionControl.events.CaptureStatusChangeEvent;
+import com.featherminecraft.RegionControl.events.InfluenceRateChangeEvent;
+import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
+import com.featherminecraft.RegionControl.events.RegionDefendEvent;
 
 public class InfluenceManager {
 
     //Region Variable
     private CapturableRegion region;
-    
     
     //Private Vars
     private HashMap<Faction, Float> percentageOwned;
@@ -25,14 +30,10 @@ public class InfluenceManager {
     
     public void Runnable()
     {
-        CalculateMajorityController();
-        CalculateInfluenceOwner();
-        CalculateInfluenceRate();
-        
-        Faction majorityController = region.getMajorityController();
-        Faction influenceOwner = region.getInfluenceOwner();
+        Faction majorityController = CalculateMajorityController();
+        Faction influenceOwner = CalculateInfluenceOwner();
+        Float influenceRate = CalculateInfluenceRate();
         Map<Faction, Float> influenceMap = region.getInfluenceMap();
-        Float influenceRate = region.getInfluenceRate();
         
         if(influenceOwner == null)
         {
@@ -67,12 +68,12 @@ public class InfluenceManager {
                     influenceMap.put(majorityController, region.getBaseInfluence());
                     if(region.getOwner() == influenceOwner)
                     {
-                        //Run Region Defend Event
+                        Bukkit.getServer().getPluginManager().callEvent(new RegionDefendEvent(region, influenceOwner));
                     }
                     
                     else if(region.getOwner() != influenceOwner)
                     {
-                        //Run Region Capture Event
+                        Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureEvent(region, region.getOwner(), influenceOwner));
                     }
                 }
                 
@@ -84,7 +85,7 @@ public class InfluenceManager {
         }
     }
     
-    public void CalculateMajorityController()
+    public Faction CalculateMajorityController()
     {
         /*
          * Majority Controller Calculations
@@ -126,10 +127,11 @@ public class InfluenceManager {
             }
         }
         
-        region.setMajorityController(majorityController);
+        region.setMajorityController(majorityController); //TODO Migrate to event
+        return majorityController;
     }
     
-    public void CalculateInfluenceOwner()
+    public Faction CalculateInfluenceOwner()
     {
         /*
          * Influence Owner Calculations
@@ -146,10 +148,20 @@ public class InfluenceManager {
             }
         }
         
-        region.setInfluenceOwner(influenceOwner);
+        if(region.getInfluenceOwner() != influenceOwner && influenceOwner != null)
+        {
+            Bukkit.getServer().getPluginManager().callEvent(new InfluenceRateChangeEvent(region, region.getInfluenceRate(), region.getInfluenceRate()));
+        }
+        
+        if(region.getInfluenceOwner() != influenceOwner)
+        {
+            region.setInfluenceOwner(influenceOwner); //Migrate to Event
+        }
+        
+        return influenceOwner;
     }
     
-    public void CalculateInfluenceRate()
+    public Float CalculateInfluenceRate()
     {
         /*
          * Influence Rate Calculations, Take away influence for this loop.
@@ -191,6 +203,22 @@ public class InfluenceManager {
             influenceRate = 1F;
         }
         
-        region.setInfluenceRate(influenceRate);
+        if(influenceRate > 0F && !region.isBeingCaptured())
+        {
+            Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, true));
+        }
+        
+        if(influenceRate == 0F && region.isBeingCaptured())
+        {
+            Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
+        }
+        
+        if(region.getInfluenceRate() != influenceRate)
+        {
+            Bukkit.getServer().getPluginManager().callEvent(new InfluenceRateChangeEvent(region, region.getInfluenceRate(), influenceRate));
+        }
+        
+        region.setInfluenceRate(influenceRate); //TODO Migrate to listener.
+        return influenceRate;
     }
 }

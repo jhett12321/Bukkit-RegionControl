@@ -25,6 +25,8 @@ public class RegionCaptureEvent extends Event {
         this.players = new RegionUtils().getRegionPlayerList(region);
         this.oldowner = oldowner;
         this.newowner = newowner;
+        
+        region.setOwner(newowner);
     }
 
     public static HandlerList getHandlerList() {

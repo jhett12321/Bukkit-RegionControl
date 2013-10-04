@@ -104,15 +104,15 @@ public static boolean isfirstrun;
         config.reloadDataFile();
         setupPermissions();
         ServerLogic.init();
-
+        
+        playerlistener = new PlayerListener();
+        pm.registerEvents(playerlistener, this);
+        
         if(Utils.SpoutAvailable())
         {
             SpoutClientLogic.init();
             spoutplayerlistener = new SpoutPlayerListener();
             pm.registerEvents(spoutplayerlistener, this);
-        } else {
-            playerlistener = new PlayerListener();
-            pm.registerEvents(playerlistener, this);
         }
     }
 
@@ -128,7 +128,6 @@ public static boolean isfirstrun;
     @Override
     public void onDisable() 
     {
-        ServerLogic.regionPlayers = null;
         ConfigUtils configUtils = new ConfigUtils();
         configUtils.saveAll();
     }

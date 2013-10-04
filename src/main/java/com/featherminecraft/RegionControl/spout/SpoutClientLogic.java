@@ -1,7 +1,6 @@
 package com.featherminecraft.RegionControl.spout;
 
 import java.io.File;
-import java.util.Map;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.getspout.spoutapi.SpoutManager;
@@ -14,12 +13,6 @@ import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RegionControl;
 
 public class SpoutClientLogic {
-
-    //Needs to be initalised before main setup begins.
-    private SpoutPlayer splayer;
-    private Map<Faction,String> factionIcons;
-    private Map<Faction,Color> factionColors;
-    
     //Variables created from setup
     private Container controlPointsContainer;
     private Container backgroundContainer;
@@ -50,7 +43,6 @@ public class SpoutClientLogic {
     {
         //TODO check inside config what files have been defined for the faction icons.
         //TODO Iterate over factions to find faction icon.
-        
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/background_top.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/background_bottom.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Losing.png"));
@@ -62,22 +54,9 @@ public class SpoutClientLogic {
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/captured.wav"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/captured2.wav"));
     }
-    /**
- * RegionControl UI Test - InDev 0.5 - Remarks and recommendations for implementation.
- * Ensure that before animating a texture that it has been defined.
- * Use Bukkit Runnables, not the scheduler
- * Pre-Cache textures.
-    */
-
-    /**
- * RegionControl UI Test 2 - InDev 0.5 - Remarks and recommendations for implementation.
- * When Dividing or getting percentages, both values MUST BE FLOATS.
-    */
 
     public void setupClientElements(SpoutPlayer splayer) {
-        this.splayer = splayer;
-
-        Screen screen = this.splayer.getMainScreen();
+        Screen screen = splayer.getMainScreen();
         
         Color factioncolor = new Color(1F, 0, 0, 0.8F);
         
@@ -141,7 +120,6 @@ public class SpoutClientLogic {
         regionInfo.addChildren(ownericon, regionname);
         
         //Control Points
-        //For Container Width, recommended to get amount of control points from region.
         controlPointsContainer = (Container) new GenericContainer()
         .setLayout(ContainerType.HORIZONTAL)
         .setAlign(WidgetAnchor.CENTER_CENTER)
@@ -252,12 +230,25 @@ public class SpoutClientLogic {
         this.owner = updatedRegion.getOwner();
         this.influenceOwner = updatedRegion.getOwner();
         
-        //ownericon.setUrl(factionIcons.get(owner));
+        //ownericon.setUrl(region.getOwner().getFactionIconUrl()); //TODO
         ownericon.setUrl("faction.png");
-        regionname.setText(updatedRegion.getDisplayName());
+        regionname.setText(region.getDisplayName());
         
-        if(updatedRegion.isBeingCaptured())
+        if(region.isBeingCaptured())
         {
+            Integer red = region.getInfluenceOwner().getFactionColor().getRed();
+            Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
+            Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
+            Integer alpha = region.getInfluenceOwner().getFactionColor().getAlpha();
+            
+            Color spoutColor = new Color(red,green,blue,alpha);
+            captureBar.setColor(spoutColor).setVisible(true);
+            captureBarSpace.setVisible(true);
+            captureBarBackground.setVisible(true);
+            capturetimer.setVisible(true);
+            influenceownericon.setVisible(true);
+            backgroundContainer.setHeight(70);
+            
             Float influencerate = region.getInfluenceRate();
             
             if(influencerate == 1)
@@ -340,7 +331,14 @@ public class SpoutClientLogic {
                     int barwidth = (int) (influence / baseinfluence * 100);
                     captureBar.setWidth(barwidth);
                     captureBarSpace.setWidth(100 - barwidth);
-                    captureBar.setColor(factionColors.get(influenceOwner));
+                    
+                    Integer red = region.getInfluenceOwner().getFactionColor().getRed();
+                    Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
+                    Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
+                    Integer alpha = region.getInfluenceOwner().getFactionColor().getAlpha();
+                    
+                    Color spoutColor = new Color(red,green,blue,alpha);
+                    captureBar.setColor(spoutColor).setVisible(true);
                 }
                 
             }.runTaskTimer(RegionControl.plugin, 20, 20);
@@ -349,7 +347,13 @@ public class SpoutClientLogic {
         else if(!updatedRegion.isBeingCaptured() && runnable != null)
         {
             runnable.cancel();
-            captureBarAnim.animateStop(false);
+            captureBarAnim.animateStop(false).setVisible(false);
+            captureBar.setVisible(false);
+            captureBarSpace.setVisible(false);
+            captureBarBackground.setVisible(false);
+            capturetimer.setVisible(false);
+            influenceownericon.setVisible(false);
+            backgroundContainer.setHeight(40);
         }
     }
 }

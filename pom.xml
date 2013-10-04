@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.featherminecraft</groupId>
   <artifactId>RegionControl</artifactId>
-  <version>0.6-D8</version>
+  <version>0.6-D9</version>
   <name>RegionControl</name>
 
 	<properties>
@@ -109,4 +109,8 @@
 		</plugins>
  
 	</build>
+	<ciManagement>
+		<system>Bamboo</system>
+		<url>https://blackfeatherproductions.com/bamboo</url>
+	</ciManagement>
 </project>

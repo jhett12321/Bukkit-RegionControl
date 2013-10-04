@@ -9,21 +9,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitTask;
-
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.ClientRunnables;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
-import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
 import com.featherminecraft.RegionControl.utils.RegionUtils;
 
 public class PlayerListener implements Listener {
 
-    BukkitTask clientrunnables;
-    
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) 
     {
@@ -46,8 +40,7 @@ public class PlayerListener implements Listener {
         }
         CapturableRegion currentRegion = faction.getFactionSpawnRegion(player.getWorld());
         
-        RCPlayer rcPlayer = new RCPlayer(player, faction, currentRegion);
-        clientrunnables = new ClientRunnables(rcPlayer).runTaskTimer(RegionControl.plugin, 20, 20);
+        new RCPlayer(player, faction, currentRegion);
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -58,13 +51,11 @@ public class PlayerListener implements Listener {
         RegionUtils regionUtils = new RegionUtils();
         //Utilities End
         
-        clientrunnables.cancel();
-        
         RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
         CapturableRegion currentRegion = player.getCurrentRegion();
         regionUtils.removePlayerFromRegion(player, currentRegion);
         
-        ServerLogic.players.remove(player);
+        ServerLogic.players.remove(event.getPlayer().getName());
     }
     
     @EventHandler

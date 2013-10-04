@@ -1,5 +1,6 @@
 package com.featherminecraft.RegionControl.capturableregion;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.featherminecraft.RegionControl.Faction;
+import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -24,6 +26,7 @@ public class CapturableRegion {
     private String regionId;
     private Faction owner;
     private List<CapturableRegion> adjacentRegions;
+    private boolean isBeingCaptured;
     
     //WorldGuard Region Info
     private ProtectedRegion region;
@@ -32,9 +35,9 @@ public class CapturableRegion {
     //Region Objects
     private List<ControlPoint> controlPoints;
     private SpawnPoint spawnPoint;
+    private List<RCPlayer> players = new ArrayList<RCPlayer>();
     
     //Runnable
-    @SuppressWarnings("unused")
     private BukkitTask runnable;
     
     //Influence
@@ -172,6 +175,14 @@ public class CapturableRegion {
         this.adjacentRegions = adjacentRegions;
     }
     
+    public boolean isBeingCaptured() {
+        return isBeingCaptured;
+    }
+
+    public void setBeingCaptured(boolean isBeingCaptured) {
+        this.isBeingCaptured = isBeingCaptured;
+    }
+    
     /*
      * Region Info End
      */
@@ -199,6 +210,11 @@ public class CapturableRegion {
     /*
      * Region Objects End
      */
+    
+    //Runnable
+    public BukkitTask getRunnable() {
+        return runnable;
+    }
     
     /*
      * Influence Manager Begin
@@ -276,8 +292,11 @@ public class CapturableRegion {
         this.baseInfluence = baseInfluence;
     }
 
-    public boolean isBeingCaptured() {
-        // TODO Auto-generated method stub
-        return false;
+    public List<RCPlayer> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<RCPlayer> players) {
+        this.players = players;
     }
 }

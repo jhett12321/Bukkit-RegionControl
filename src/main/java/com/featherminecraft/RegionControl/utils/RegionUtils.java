@@ -11,25 +11,26 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class RegionUtils {
     public void addPlayerToRegion(RCPlayer player, CapturableRegion region)
     {
-        List<RCPlayer> currentplayers = ServerLogic.regionPlayers.get(region);
+        List<RCPlayer> currentplayers = region.getPlayers();
         currentplayers.add(player);
-        ServerLogic.regionPlayers.put(region, currentplayers);
+        region.setPlayers(currentplayers);
     }
 
     public void removePlayerFromRegion(RCPlayer player, CapturableRegion region)
     {
-        List<RCPlayer> currentplayers = ServerLogic.regionPlayers.get(region);
+        List<RCPlayer> currentplayers = region.getPlayers();
         currentplayers.remove(player);
+        region.setPlayers(currentplayers);
     }
     
     public int getRegionPlayerCount(CapturableRegion region)
     {
-        return ServerLogic.regionPlayers.get(region).size();
+        return region.getPlayers().size();
     }
     
     public List<RCPlayer> getRegionPlayerList(CapturableRegion region)
     {
-        return ServerLogic.regionPlayers.get(region);
+        return region.getPlayers();
     }
 
     /**

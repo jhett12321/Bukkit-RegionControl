@@ -130,7 +130,7 @@ public class ControlPoint {
          * Majority Population on Point Calculations
          */
 
-        List<RCPlayer> players = ServerLogic.regionPlayers.get(region);
+        List<RCPlayer> players = region.getPlayers();
         Map<Faction,Integer> factionInfluence = new HashMap<Faction,Integer>();
         
         double radiusSquared = captureRadius*captureRadius;

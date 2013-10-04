@@ -14,6 +14,7 @@ public class Faction {
     private Map<World,CapturableRegion> spawnRegion = new HashMap<World,CapturableRegion>();
     private String permissionGroup;
     private Color factionColor;
+    private String factionIconUrl;
     
     public Faction(String name, String permissiongroup, Color factioncolor)
     {
@@ -42,5 +43,13 @@ public class Faction {
     public Color getFactionColor()
     {
         return factionColor;
+    }
+
+    public String getFactionIconUrl() {
+        return factionIconUrl;
+    }
+
+    public void setFactionIconUrl(String factionIconUrl) {
+        this.factionIconUrl = factionIconUrl;
     }
 }
