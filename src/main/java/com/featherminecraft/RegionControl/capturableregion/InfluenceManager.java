@@ -105,7 +105,7 @@ public class InfluenceManager {
         {
             if(controlPoint.getOwner() != null && !controlPoint.isCapturing())
             {
-                ownedControlPoints.put(controlPoint.getOwner(), ownedControlPoints.get(controlPoint) + 1);
+                ownedControlPoints.put(controlPoint.getOwner(), ownedControlPoints.get(controlPoint.getOwner()) + 1);
             }
         }
         
@@ -181,41 +181,44 @@ public class InfluenceManager {
             }
         }
         
-        Float percentageDifference = percentageOwned.get(region.getMajorityController()) - percentageAgainst;
         Float influenceRate = 0F;
-        if(percentageDifference == 1F)
+        if(region.getMajorityController() != null)
         {
-            influenceRate = 4F;
-        }
-        
-        else if(percentageDifference > 0.66)
-        {
-            influenceRate = 3F;
-        }
-        
-        else if(percentageDifference > 0.33)
-        {
-            influenceRate = 2F;
-        }
-        
-        else if(percentageDifference > 0.01F)
-        {
-            influenceRate = 1F;
-        }
-        
-        if(influenceRate > 0F && !region.isBeingCaptured())
-        {
-            Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, true));
-        }
-        
-        if(influenceRate == 0F && region.isBeingCaptured())
-        {
-            Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
-        }
-        
-        if(region.getInfluenceRate() != influenceRate)
-        {
-            Bukkit.getServer().getPluginManager().callEvent(new InfluenceRateChangeEvent(region, region.getInfluenceRate(), influenceRate));
+            Float percentageDifference = percentageOwned.get(region.getMajorityController()) - percentageAgainst;
+            if(percentageDifference == 1F)
+            {
+                influenceRate = 4F;
+            }
+            
+            else if(percentageDifference > 0.66)
+            {
+                influenceRate = 3F;
+            }
+            
+            else if(percentageDifference > 0.33)
+            {
+                influenceRate = 2F;
+            }
+            
+            else if(percentageDifference > 0.01F)
+            {
+                influenceRate = 1F;
+            }
+            
+            if(influenceRate > 0F && !region.isBeingCaptured())
+            {
+                Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, true));
+            }
+            
+            if(influenceRate == 0F && region.isBeingCaptured())
+            {
+                Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
+            }
+            
+            if(region.getInfluenceRate() != influenceRate)
+            {
+                Bukkit.getServer().getPluginManager().callEvent(new InfluenceRateChangeEvent(region, region.getInfluenceRate(), influenceRate));
+            }
         }
         
         region.setInfluenceRate(influenceRate); //TODO Migrate to listener.

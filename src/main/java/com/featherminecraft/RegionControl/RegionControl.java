@@ -103,7 +103,10 @@ public static boolean isfirstrun;
         config.reloadMainConfig();
         config.reloadDataFile();
         setupPermissions();
-        ServerLogic.init();
+        if(!ServerLogic.init())
+        {
+            setEnabled(false);
+        }
         
         playerlistener = new PlayerListener();
         pm.registerEvents(playerlistener, this);

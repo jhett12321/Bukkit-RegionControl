@@ -3,9 +3,11 @@ package com.featherminecraft.RegionControl.utils;
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 
@@ -26,8 +28,25 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class PlayerUtils {
     public Faction getPlayerFaction(Player player) {
         String group = RegionControl.permission.getPrimaryGroup(player);
-        Faction faction = ServerLogic.factions.get(group);
-        return faction;
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Group is: " + group);
+        Collection<Faction> factions = ServerLogic.factions.values();
+        
+        Faction playerFaction = null;
+        for(Faction faction : factions)
+        {
+            if(faction.getPermissionGroup() == group)
+            {
+                playerFaction = faction;
+            }
+        }
+        
+        if(playerFaction == null)
+        {
+            //TODO set player to use default faction, or kick player (possibly a config option?)
+        }
+        
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Faction is: " + playerFaction.getName());
+        return playerFaction;
     }
     
     public List<SpawnPoint> getAvailableSpawnPoints(Player player)

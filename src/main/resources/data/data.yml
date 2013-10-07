@@ -5,11 +5,17 @@ regions:
     influenceowner: faction1
     controlpoints:
       a:
-        owner:
+        owner: faction1
+        influence: 10
+        influenceowner: faction1
       b:
-        owner:
+        owner: faction1
+        influence: 10
+        influenceowner: faction1
       c:
-        owner:
+        owner: faction1
+        influence: 10
+        influenceowner: faction1
 players:
   jhett12321:
     faction: faction1

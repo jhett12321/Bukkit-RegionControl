@@ -1,50 +1,46 @@
 factions:
-  neutralfaction:
-    displayname:
-    permissionsgroup:
-    default: true
-    
   faction1:
     displayname: 'The Elder Tyrants'
-    permissionsgroup:
-    default: false
+    permissiongroup: default
+    default: true
     defaultspawn:
-      world: runite
-      world_nether: runite_nethergate
+      world: exampleregion
     color:
-      red:
-      green:
-      blue:
+      red: 255
+      green: 0
+      blue: 0
 
 worlds:
   world:
     regions:
-      exampleregion_worldguard_id:
+      exampleregion:
         world: world
         displayname: 'Example Region Name'
         baseinfluence: 300
         adjacentregions:
-          - exampleregion2
-          - exampleregion3
         controlpoints:
           a:
-            x:
-            y:
-            z:
+            x: 135
+            y: 45
+            z: 224
+            captureradius: 10
+            baseinfluence: 10
           b:
-            x:
-            y:
-            z:
+            x: 192
+            y: 23
+            z: 224
+            captureradius: 10
+            baseinfluence: 10
           c:
-            x:
-            y:
-            z:
+            x: 225
+            y: 42
+            z: 98
+            captureradius: 10
+            baseinfluence: 10
         spawnpoint:
-          x:
-          y:
-          z:
-
-
+          x: 177
+          y: 64
+          z: 29
 
 spout:
   enabled: true

@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,7 +34,7 @@ public class ServerLogic {
     public static Map<String, CapturableRegion> capturableRegions = new HashMap<String,CapturableRegion>();
     public static Map<Faction, Map<World,CapturableRegion>> factionSpawnPoints = new HashMap<Faction,Map<World,CapturableRegion>>();
 
-    public static void init()
+    public static Boolean init()
     {
         mainconfig = new Config().getMainConfig();
         datafile = new Config().getDataFile();
@@ -41,18 +43,23 @@ public class ServerLogic {
         setupFactions();
 
         //Capturable Region Setup
-        setupRegions();
+        if(!setupRegions())
+        {
+            return false;
+        }
         
         //Spawn Region Setup
         setupSpawnRegions();
+        
+        return true;
     }
 
     private static void setupFactions() {
         Set<String> configfactions = mainconfig.getConfigurationSection("factions").getKeys(false);
-        Map<String, Faction> factions = new HashMap<String,Faction>();
         for(String faction : configfactions)
         {
             String permissionGroup = mainconfig.getString("factions." + faction + ".permissiongroup");
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + faction + "'s Permission Group is: " + permissionGroup);
             
             int red = mainconfig.getInt("factions." + faction + ".color" + ".red");
             int green = mainconfig.getInt("factions." + faction + ".color" + ".green");
@@ -60,30 +67,36 @@ public class ServerLogic {
             
             Color factioncolor = new Color(red, green, blue);
             
-            factions.put(faction, new Faction(faction, permissionGroup, factioncolor));
+            Faction factionObject = new Faction(faction, permissionGroup, factioncolor);
+            
+            factions.put(faction, factionObject);
         }
-        ServerLogic.factions = factions;
     }
     
-    private static void setupRegions()
+    private static Boolean setupRegions()
     {
+        //Utilities Begin
+        ConfigUtils configUtils = new ConfigUtils();
+        //Utilities End
+        
         //TODO Consider accessing config via Config Utilities
         Set<String> worlds = mainconfig.getConfigurationSection("worlds").getKeys(false);
-
+        
         //Region Setup
         for(String configWorld : worlds)
         {
-            //Utilities Begin
-            ConfigUtils configUtils = new ConfigUtils();
-            //Utilities End
-            
-            Set<String> regions = mainconfig.getConfigurationSection(configWorld + ".regions").getKeys(false);
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Loading Regions for: " + configWorld);
+            Set<String> regions = mainconfig.getConfigurationSection("worlds." + configWorld + ".regions").getKeys(false);
             for(String configRegion : regions)
             {
-                String regionDisplayname = mainconfig.getString(configWorld + ".regions." + configRegion + ".displayname"); //Display Name
+                if(configRegion == null)
+                {
+                    continue;
+                }
+                String regionDisplayname = mainconfig.getString("worlds." + configWorld + ".regions." + configRegion + ".displayname"); //Display Name
                 
                 //Owner Begin
-                String configOwner = datafile.getString(configWorld + ".regions." + configRegion + ".owner");
+                String configOwner = datafile.getString("worlds." + configWorld + ".regions." + configRegion + ".owner");
                 if(configOwner == null)
                 {
                     configOwner = configUtils.getDefaultFaction();
@@ -95,21 +108,21 @@ public class ServerLogic {
                 ProtectedRegion region = Utils.getWorldGuard().getRegionManager(world).getRegion(configRegion); //Region
                 
                 //ControlPoint List Begin
-                Set<String> configControlPoints = mainconfig.getConfigurationSection(configWorld + ".regions." + configRegion + ".controlpoints").getKeys(false);
+                Set<String> configControlPoints = mainconfig.getConfigurationSection("worlds." + configWorld + ".regions." + configRegion + ".controlpoints").getKeys(false);
                 List<ControlPoint> controlPoints = new ArrayList<ControlPoint>();
                 for(String configControlPoint : configControlPoints)
                 {
-                    int x = mainconfig.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".x");
-                    int y = mainconfig.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".y");
-                    int z = mainconfig.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".z");
+                    int x = mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".x");
+                    int y = mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".y");
+                    int z = mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".z");
                     Location controlpointlocation = new Location(world, x, y, z);
                     
-                    int captureRadius = mainconfig.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".captureradius");
-                    Float baseInfluence = ((Integer) mainconfig.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".baseinfluence")).floatValue();
-                    Float influence = ((Integer) datafile.getInt(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".influence")).floatValue();
+                    int captureRadius = mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".captureradius");
+                    Float baseInfluence = ((Integer) mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".baseinfluence")).floatValue();
+                    Float influence = ((Integer) datafile.getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".influence")).floatValue();
                     
-                    Faction controlPointOwner = factions.get(datafile.get(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".owner"));
-                    Faction influenceOwner = factions.get(datafile.get(configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".influenceowner"));
+                    Faction controlPointOwner = factions.get(datafile.get("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".owner"));
+                    Faction influenceOwner = factions.get(datafile.get("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".influenceowner"));
                     
                     ControlPoint controlPoint = new ControlPoint(configControlPoint,
                             controlPointOwner, 
@@ -123,16 +136,16 @@ public class ServerLogic {
                 //ControlPoint List End
                 
                 //SpawnPoint Begin
-                int x = mainconfig.getInt(configWorld + ".regions." + configRegion + ".spawnpoint" + ".x");
-                int y = mainconfig.getInt(configWorld + ".regions." + configRegion + ".spawnpoint" + ".y");
-                int z = mainconfig.getInt(configWorld + ".regions." + configRegion + ".spawnpoint" + ".z");
+                int x = mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".spawnpoint" + ".x");
+                int y = mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".spawnpoint" + ".y");
+                int z = mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".spawnpoint" + ".z");
                 Location spawnpointlocation = new Location(world, x, y, z);
                 SpawnPoint spawnPoint = new SpawnPoint(spawnpointlocation); 
                 //SpawnPoint End
                 
-                Float baseInfluence = ((Integer) mainconfig.getInt(configWorld + ".regions." + configRegion + ".baseinfluence")).floatValue(); //Base Influence
-                Float influence = ((Integer) datafile.getInt(configWorld + ".regions." + configRegion + ".influence")).floatValue(); //Influence
-                Faction influenceOwner = factions.get(datafile.get(configWorld + ".regions." + configRegion + ".influenceowner")); //Influence Owner
+                Float baseInfluence = ((Integer) mainconfig.getInt("worlds." + configWorld + ".regions." + configRegion + ".baseinfluence")).floatValue(); //Base Influence
+                Float influence = ((Integer) datafile.getInt("worlds." + configWorld + ".regions." + configRegion + ".influence")).floatValue(); //Influence
+                Faction influenceOwner = factions.get(datafile.get("worlds." + configWorld + ".regions." + configRegion + ".influenceowner")); //Influence Owner
                 
                 CapturableRegion capturableregion = new CapturableRegion(regionDisplayname,
                         configRegion,
@@ -159,10 +172,10 @@ public class ServerLogic {
         //Adjacent Region Setup
         for(String configWorld : worlds)
         {
-            Set<String> regions = mainconfig.getConfigurationSection(configWorld + ".regions").getKeys(false);
+            Set<String> regions = mainconfig.getConfigurationSection("worlds." + configWorld + ".regions").getKeys(false);
             for(String configRegion : regions)
             {
-                List<String> configAdjacentRegions = mainconfig.getStringList(configWorld + ".regions." + configRegion + ".adjacentregions");
+                List<String> configAdjacentRegions = mainconfig.getStringList("worlds." + configWorld + ".regions." + configRegion + ".adjacentregions");
                 
                 List<CapturableRegion> adjacentregions = new ArrayList<CapturableRegion>();
                 for(String configAdjacentRegion : configAdjacentRegions)
@@ -176,6 +189,7 @@ public class ServerLogic {
                 capturableRegions.get(configWorld + "_" + configRegion).setAdjacentRegions(adjacentregions);
             }
         }
+        return true;
     }
     
     private static void setupSpawnRegions()
@@ -183,12 +197,13 @@ public class ServerLogic {
         Set<String> configFactions = mainconfig.getConfigurationSection("factions").getKeys(false);
         for(String configFaction : configFactions)
         {
-            Set<String> regionWorlds = mainconfig.getConfigurationSection("factions." + configFaction + ".defaultspawn").getKeys(false);
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Setting up Default Spawns for: " + configFaction);
+            Map<String, Object> regionWorlds = mainconfig.getConfigurationSection("factions." + configFaction + ".defaultspawn").getValues(false);
             Map<World,CapturableRegion> spawnRegions = new HashMap<World,CapturableRegion>();
-            for(String configWorld : regionWorlds)
+            for(Entry<String, Object> configWorld : regionWorlds.entrySet())
             {
-                CapturableRegion region = capturableRegions.get(configWorld + "_" + mainconfig.getString("factions." + configFaction + ".defaultspawn." + configWorld));
-                World world = Bukkit.getWorld(configWorld);
+                CapturableRegion region = capturableRegions.get(configWorld.getKey() + "_" + configWorld.getValue().toString());
+                World world = Bukkit.getWorld(configWorld.getKey());
                 spawnRegions.put(world,region);
             }
             Faction faction = factions.get(configFaction);

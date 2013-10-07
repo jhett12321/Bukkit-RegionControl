@@ -1,10 +1,10 @@
 name: RegionControl
-version: "0.6-D9"
+version: "0.6-D10"
 description: Utilises WorldGuard Regions to create a Capture-the-Region gamemode.
 author: Jhett12321
 website: http://featherminecraft.com
 
-main: com.featherminecraft.regioncontrol.RegionControl
+main: com.featherminecraft.RegionControl.RegionControl
 depend: [WorldGuard, WorldEdit]
 softdepend: [SpoutPlugin]
 

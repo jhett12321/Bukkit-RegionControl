@@ -51,11 +51,18 @@ public class PlayerListener implements Listener {
         RegionUtils regionUtils = new RegionUtils();
         //Utilities End
         
-        RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
-        CapturableRegion currentRegion = player.getCurrentRegion();
-        regionUtils.removePlayerFromRegion(player, currentRegion);
-        
-        ServerLogic.players.remove(event.getPlayer().getName());
+        //If a player is kicked for not being in a faction, they do not have an RCPlayer object
+        try {
+            RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
+            CapturableRegion currentRegion = player.getCurrentRegion();
+            regionUtils.removePlayerFromRegion(player, currentRegion);
+            
+            ServerLogic.players.remove(event.getPlayer().getName());
+        }
+        catch (NullPointerException e)
+        {
+            return;
+        }
     }
     
     @EventHandler

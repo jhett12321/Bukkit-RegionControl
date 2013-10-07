@@ -19,18 +19,18 @@ public class Config {
         mainconfigfile = new File(RegionControl.plugin.getDataFolder(), "config.yml");
         if (!mainconfigfile.exists())
         {
-            RegionControl.plugin.saveResource("mainconfig.yml", false);
+            RegionControl.plugin.saveResource("config.yml", false);
         }
         mainconfig = YamlConfiguration.loadConfiguration(mainconfigfile);
     }
 
     protected void reloadDataFile()
     {
-        dataFile = new File(RegionControl.plugin.getDataFolder(), "Data/data.yml");
+        dataFile = new File(RegionControl.plugin.getDataFolder(), "data/data.yml");
         dataFile.getParentFile().mkdirs();
         if (!dataFile.exists())
         {
-            RegionControl.plugin.saveResource("Data/data.yml", false);
+            RegionControl.plugin.saveResource("data/data.yml", false);
         }
         data = YamlConfiguration.loadConfiguration(dataFile);
     }

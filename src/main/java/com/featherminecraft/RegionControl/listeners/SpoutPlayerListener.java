@@ -1,5 +1,7 @@
 package com.featherminecraft.RegionControl.listeners;
 
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +14,9 @@ import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.RegionControl.RCPlayer;
+import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
+import com.featherminecraft.RegionControl.events.InfluenceRateChangeEvent;
 import com.featherminecraft.RegionControl.spout.RespawnScreen;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
@@ -38,7 +42,20 @@ public class SpoutPlayerListener implements Listener {
         SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
         spoutClientLogic.updateRegion(event.getNewRegion());
     }
-
+    
+    @EventHandler
+    public void onInfluenceRateChange(InfluenceRateChangeEvent event)
+    {
+        CapturableRegion region = event.getRegion();
+        List<RCPlayer> affectedPlayers = event.getRegion().getPlayers();
+        
+        for(RCPlayer player : affectedPlayers)
+        {
+            SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
+            spoutClientLogic.updateRegion(event.getRegion());
+        }
+    }
+    
     
     @EventHandler
     public void onScreenOpen(ScreenOpenEvent event)
