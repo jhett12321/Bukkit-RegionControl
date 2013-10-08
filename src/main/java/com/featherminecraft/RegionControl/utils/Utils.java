@@ -45,7 +45,7 @@ public class Utils {
 
     public static boolean SpoutAvailable()
     {
-        Plugin spoutplugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("SpoutPlugin");
+        Plugin spoutplugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("Spout");
         if(!new ConfigUtils().getMainConfig().getBoolean("spout.enabled")) {
         	//Spout is not enabled in the config
         	return false;

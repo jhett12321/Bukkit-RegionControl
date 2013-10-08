@@ -1,6 +1,7 @@
 package com.featherminecraft.RegionControl.listeners;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -14,6 +15,7 @@ import org.getspout.spoutapi.gui.ScreenType;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.RegionControl.RCPlayer;
+import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.events.InfluenceRateChangeEvent;
@@ -26,18 +28,20 @@ public class SpoutPlayerListener implements Listener {
     @EventHandler
     public void onSpoutcraftEnable(SpoutCraftEnableEvent event)
     {
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Added: " + event.getPlayer().getName() + " to the spout players list");
         SpoutPlayer splayer = event.getPlayer();
         
         RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer.getPlayer());
         rcPlayer.setHasSpout(true);
         
         rcPlayer.setSpoutClientLogic(new SpoutClientLogic());
-        rcPlayer.getSpoutClientLogic().setupClientElements(splayer);
+        rcPlayer.getSpoutClientLogic().setupClientElements(rcPlayer);
     }
     
     @EventHandler
     public void onChangeRegion(ChangeRegionEvent event)
     {
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: ChangeRegionEvent Listened");
         RCPlayer player = event.getPlayer();
         SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
         spoutClientLogic.updateRegion(event.getNewRegion());
@@ -47,7 +51,7 @@ public class SpoutPlayerListener implements Listener {
     public void onInfluenceRateChange(InfluenceRateChangeEvent event)
     {
         CapturableRegion region = event.getRegion();
-        List<RCPlayer> affectedPlayers = event.getRegion().getPlayers();
+        List<RCPlayer> affectedPlayers = region.getPlayers();
         
         for(RCPlayer player : affectedPlayers)
         {

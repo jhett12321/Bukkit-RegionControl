@@ -32,7 +32,7 @@ public class Faction {
         return spawnRegion.get(world);
     }
     
-    public void setFactionSpawnRegion(CapturableRegion spawnRegion) {
+    public void addFactionSpawnRegion(CapturableRegion spawnRegion) {
        this.spawnRegion.put(spawnRegion.getWorld(), spawnRegion);
     }
     

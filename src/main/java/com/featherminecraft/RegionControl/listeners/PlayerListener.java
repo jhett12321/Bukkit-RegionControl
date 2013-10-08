@@ -40,7 +40,7 @@ public class PlayerListener implements Listener {
         }
         CapturableRegion currentRegion = faction.getFactionSpawnRegion(player.getWorld());
         
-        new RCPlayer(player, faction, currentRegion);
+        ServerLogic.players.put(player.getName(), new RCPlayer(player, faction, currentRegion));
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -57,6 +57,7 @@ public class PlayerListener implements Listener {
             CapturableRegion currentRegion = player.getCurrentRegion();
             regionUtils.removePlayerFromRegion(player, currentRegion);
             
+            player.getClientRunnables().cancel();
             ServerLogic.players.remove(event.getPlayer().getName());
         }
         catch (NullPointerException e)

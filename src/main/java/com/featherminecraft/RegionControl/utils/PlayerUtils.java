@@ -3,7 +3,6 @@ package com.featherminecraft.RegionControl.utils;
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,16 +28,9 @@ public class PlayerUtils {
     public Faction getPlayerFaction(Player player) {
         String group = RegionControl.permission.getPrimaryGroup(player);
         RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Group is: " + group);
-        Collection<Faction> factions = ServerLogic.factions.values();
+        Map<String, Faction> factions = ServerLogic.factions;
         
-        Faction playerFaction = null;
-        for(Faction faction : factions)
-        {
-            if(faction.getPermissionGroup() == group)
-            {
-                playerFaction = faction;
-            }
-        }
+        Faction playerFaction = factions.get(group);
         
         if(playerFaction == null)
         {
@@ -111,8 +103,7 @@ public class PlayerUtils {
     }
 
     public RCPlayer getRCPlayerFromBukkitPlayer(Player player) {
-        Map<String,RCPlayer> players = ServerLogic.players;
-        RCPlayer rcPlayer = players.get(player);
+        RCPlayer rcPlayer = ServerLogic.players.get(player.getName());
         return rcPlayer;
     }
 }

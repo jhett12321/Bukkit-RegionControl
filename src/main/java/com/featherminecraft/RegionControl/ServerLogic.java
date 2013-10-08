@@ -27,12 +27,11 @@ public class ServerLogic {
     private static FileConfiguration datafile;
     
     //Temp Variable. Can be removed on plugin disable.
-    public static Map<String, RCPlayer> players;
+    public static Map<String, RCPlayer> players = new HashMap<String,RCPlayer>();
     
     //Registered Variables; to be saved on plugin disable
     public static Map<String, Faction> factions = new HashMap<String, Faction>();
     public static Map<String, CapturableRegion> capturableRegions = new HashMap<String,CapturableRegion>();
-    public static Map<Faction, Map<World,CapturableRegion>> factionSpawnPoints = new HashMap<Faction,Map<World,CapturableRegion>>();
 
     public static Boolean init()
     {
@@ -69,7 +68,7 @@ public class ServerLogic {
             
             Faction factionObject = new Faction(faction, permissionGroup, factioncolor);
             
-            factions.put(faction, factionObject);
+            factions.put(permissionGroup, factionObject);
         }
     }
     
@@ -200,14 +199,16 @@ public class ServerLogic {
             RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Setting up Default Spawns for: " + configFaction);
             Map<String, Object> regionWorlds = mainconfig.getConfigurationSection("factions." + configFaction + ".defaultspawn").getValues(false);
             Map<World,CapturableRegion> spawnRegions = new HashMap<World,CapturableRegion>();
+            String permissionGroup = mainconfig.getString("factions." + configFaction + ".permissiongroup");
+            Faction faction = factions.get(permissionGroup);
+            
             for(Entry<String, Object> configWorld : regionWorlds.entrySet())
             {
                 CapturableRegion region = capturableRegions.get(configWorld.getKey() + "_" + configWorld.getValue().toString());
                 World world = Bukkit.getWorld(configWorld.getKey());
                 spawnRegions.put(world,region);
+                faction.addFactionSpawnRegion(region);
             }
-            Faction faction = factions.get(configFaction);
-            factionSpawnPoints.put(faction, spawnRegions);
         }
     }
     

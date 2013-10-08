@@ -2,7 +2,10 @@ package com.featherminecraft.RegionControl;
 
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
@@ -26,7 +29,16 @@ public class ClientRunnables extends BukkitRunnable {
     {
         this.player = player;
         
-        SpawnPoint spawnPoint = player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()).getSpawnPoint();
+        World world = player.getBukkitPlayer().getWorld();
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current world is: " + world.getName());
+        
+        Faction faction = player.getFaction();
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current faction is: " + faction.getName());
+        
+        CapturableRegion spawnRegion = faction.getFactionSpawnRegion(world);
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the faction's spawn region is: " + spawnRegion.getDisplayName());
+
+        SpawnPoint spawnPoint = faction.getFactionSpawnRegion(world).getSpawnPoint();
         
         if(spawnPoint.getLocation() == null)
         {
@@ -60,8 +72,9 @@ public class ClientRunnables extends BukkitRunnable {
         
         if(newregion != currentregion && currentregion != null && newregion != null)
         {
-            ChangeRegionEvent changeregionevent = new ChangeRegionEvent(newregion, currentregion, player, player.getBukkitPlayer().getWorld());
-            Bukkit.getServer().getPluginManager().callEvent(changeregionevent);
+            Bukkit.getServer().getPluginManager().callEvent(
+                    new ChangeRegionEvent(newregion, currentregion, player, player.getBukkitPlayer().getWorld())
+                    );
         }
         
         if(newregion != null)

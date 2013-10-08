@@ -1,10 +1,13 @@
 package com.featherminecraft.RegionControl.events;
 
+import java.util.logging.Level;
+
 import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.featherminecraft.RegionControl.RCPlayer;
+import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
 //This event is triggered upon a player changing regions.
@@ -18,6 +21,7 @@ public class ChangeRegionEvent extends Event {
     private World world;
 
     public ChangeRegionEvent(CapturableRegion newregion, CapturableRegion oldregion, RCPlayer player, World world) {
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Triggered ChangeRegionEvent");
         this.oldregion = oldregion;
         this.newregion = newregion;
         this.player = player;
