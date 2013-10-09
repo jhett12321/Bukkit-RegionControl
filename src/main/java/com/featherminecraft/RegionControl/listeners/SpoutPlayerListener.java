@@ -44,7 +44,22 @@ public class SpoutPlayerListener implements Listener {
         RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: ChangeRegionEvent Listened");
         RCPlayer player = event.getPlayer();
         SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
-        spoutClientLogic.updateRegion(event.getNewRegion());
+        CapturableRegion newRegion = event.getNewRegion();
+        if(newRegion == null)
+        {
+            spoutClientLogic.updateRegion(null);
+        }
+        else
+        {
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + newRegion.getDisplayName() + "'s Owner is " + newRegion.getOwner().getName());
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + newRegion.getDisplayName() + "'s Influence Owner is " + newRegion.getInfluenceOwner().getName());
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + newRegion.getDisplayName() + "'s Influence Rate is " + newRegion.getInfluenceRate());
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + newRegion.getDisplayName() + "'s Majority Controller is " + newRegion.getMajorityController().getName());
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + newRegion.getDisplayName() + "'s Influence is " + newRegion.getInfluenceMap().get(newRegion.getMajorityController()));
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + newRegion.getDisplayName() + "'s Base Influence is " + newRegion.getBaseInfluence());
+            spoutClientLogic.updateRegion(newRegion);
+        }
+        
     }
     
     @EventHandler

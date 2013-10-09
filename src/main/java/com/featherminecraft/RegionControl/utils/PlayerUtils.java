@@ -28,9 +28,16 @@ public class PlayerUtils {
     public Faction getPlayerFaction(Player player) {
         String group = RegionControl.permission.getPrimaryGroup(player);
         RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Group is: " + group);
-        Map<String, Faction> factions = ServerLogic.factions;
         
-        Faction playerFaction = factions.get(group);
+        Faction playerFaction = null;
+        
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        {
+            if(faction.getValue().getPermissionGroup().equals(group))
+            {
+                playerFaction = faction.getValue();
+            }
+        }
         
         if(playerFaction == null)
         {

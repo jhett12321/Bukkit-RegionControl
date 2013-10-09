@@ -55,7 +55,10 @@ public class PlayerListener implements Listener {
         try {
             RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
             CapturableRegion currentRegion = player.getCurrentRegion();
-            regionUtils.removePlayerFromRegion(player, currentRegion);
+            if(currentRegion != null)
+            {
+                regionUtils.removePlayerFromRegion(player, currentRegion);
+            }
             
             player.getClientRunnables().cancel();
             ServerLogic.players.remove(event.getPlayer().getName());

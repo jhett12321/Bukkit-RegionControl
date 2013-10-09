@@ -49,8 +49,8 @@ public class ClientRunnables extends BukkitRunnable {
     @Override
     public void run()
     {
-    	CapturableRegion currentRegion = player.getCurrentRegion();
-    	
+        CapturableRegion currentRegion = player.getCurrentRegion();
+        
         //Player Region Watcher
         CapturableRegion newregion = null;
         

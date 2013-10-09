@@ -1,21 +1,23 @@
-regions:
-  exampleregion:
-    owner: faction1
-    influence: 243
-    influenceowner: faction1
-    controlpoints:
-      a:
+worlds:
+  world:
+    regions:
+      exampleregion:
         owner: faction1
-        influence: 10
+        influence: 243
         influenceowner: faction1
-      b:
-        owner: faction1
-        influence: 10
-        influenceowner: faction1
-      c:
-        owner: faction1
-        influence: 10
-        influenceowner: faction1
+        controlpoints:
+          a:
+            owner: faction1
+            influence: 10
+            influenceowner: faction1
+          b:
+            owner: faction1
+            influence: 10
+            influenceowner: faction1
+          c:
+            owner: faction1
+            influence: 10
+            influenceowner: faction1
 players:
   jhett12321:
     faction: faction1

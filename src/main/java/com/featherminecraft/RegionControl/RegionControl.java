@@ -66,7 +66,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
-import com.featherminecraft.RegionControl.utils.ConfigUtils;
 import com.featherminecraft.RegionControl.utils.Utils;
 
 public final class RegionControl extends JavaPlugin {
@@ -134,7 +133,6 @@ public static boolean isfirstrun;
     @Override
     public void onDisable() 
     {
-        ConfigUtils configUtils = new ConfigUtils();
-        configUtils.saveAll();
+        new Config().saveAll();
     }
 }

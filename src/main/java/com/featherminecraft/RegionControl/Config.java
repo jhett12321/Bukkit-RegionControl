@@ -1,5 +1,8 @@
 package com.featherminecraft.RegionControl;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import java.io.File;
@@ -8,13 +11,16 @@ import java.io.IOException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
+
 public class Config {
-    protected static FileConfiguration mainconfig;
-    protected static FileConfiguration data;
-    protected static File mainconfigfile;
-    protected static File dataFile;
+    private static FileConfiguration mainconfig;
+    private static FileConfiguration dataConfig;
+    private static File mainconfigfile;
+    private static File dataFile;
     
-    protected void reloadMainConfig()
+    public void reloadMainConfig()
     {
         mainconfigfile = new File(RegionControl.plugin.getDataFolder(), "config.yml");
         if (!mainconfigfile.exists())
@@ -24,7 +30,7 @@ public class Config {
         mainconfig = YamlConfiguration.loadConfiguration(mainconfigfile);
     }
 
-    protected void reloadDataFile()
+    public void reloadDataFile()
     {
         dataFile = new File(RegionControl.plugin.getDataFolder(), "data/data.yml");
         dataFile.getParentFile().mkdirs();
@@ -32,15 +38,15 @@ public class Config {
         {
             RegionControl.plugin.saveResource("data/data.yml", false);
         }
-        data = YamlConfiguration.loadConfiguration(dataFile);
+        dataConfig = YamlConfiguration.loadConfiguration(dataFile);
     }
 
-    protected FileConfiguration getDataFile() {
-        if ( data == null )
+    public FileConfiguration getDataConfig() {
+        if ( dataConfig == null )
         {
             this.reloadDataFile();
         }
-        return data;
+        return dataConfig;
     }
 
     public FileConfiguration getMainConfig() {
@@ -51,13 +57,13 @@ public class Config {
         return mainconfig;
     }
 
-    protected Boolean saveDataFile()
+    public Boolean saveDataFile()
     {
-        if (data == null || dataFile == null) {
+        if (dataConfig == null || dataFile == null) {
             return false;
             }
         try {
-            getDataFile().save(dataFile);
+            getDataConfig().save(dataFile);
         } catch (IOException ex) {
             RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config", ex);
             return false;
@@ -65,7 +71,7 @@ public class Config {
         return true;
     }
 
-    protected Boolean saveMainConfig()
+    public Boolean saveMainConfig()
     {
         if (mainconfig == null || mainconfigfile == null) {
             return false;
@@ -77,5 +83,76 @@ public class Config {
             return false;
         }
         return true;
+    }
+    
+    public String getDefaultFaction() 
+    {
+        Set<String> factions = mainconfig.getConfigurationSection("factions").getKeys(false);
+        for(String faction : factions)
+        {
+            if(mainconfig.getBoolean("factions." + faction + ".default"))
+            {
+                return faction;
+            }
+        }
+        return null;
+    }
+    
+    public void saveAll()
+    {
+        RegionControl.plugin.getLogger().info("Saving Region Data...");
+        //Utilities Begin
+
+        //Utilities End
+        
+        //Begin retrieving of Region Data
+        Collection<CapturableRegion> regions = ServerLogic.capturableRegions.values();
+        
+        for(CapturableRegion region : regions)
+        {
+            //Not Here: DisplayName, Spawnpoint
+            //Variables being set
+//            Float baseInfluence = region.getBaseInfluence();
+            Faction influenceOwner = region.getInfluenceOwner();
+            String configInfluenceOwner = influenceOwner.getName();
+            float configInfluence = region.getInfluenceMap().get(influenceOwner);
+            String configOwner = region.getOwner().getName();
+            
+            //Key location variables
+            String configWorld = region.getWorld().getName();
+            String configId = region.getRegionId();
+            
+            //Saving of data
+            //TODO Later Implementation: In-game setting of baseinfluence.
+            //mainconfig.set("worlds." + configWorld + ".regions." + configId + ".baseinfluence", baseInfluence.intValue());
+            
+            dataConfig.set("worlds." + configWorld + ".regions." + configId + ".influenceowner", configInfluenceOwner);
+            dataConfig.set("worlds." + configWorld + ".regions." + configId + ".influence", configInfluence);
+            dataConfig.set("worlds." + configWorld + ".regions." + configId + ".owner", configOwner);
+            
+            //Control Points
+            List<ControlPoint> controlPoints = region.getControlPoints();
+            for(ControlPoint controlPoint : controlPoints)
+            {
+                Faction controlPointInfluenceOwner = controlPoint.getInfluenceOwner();
+                String configControlPointInfluenceOwner = controlPointInfluenceOwner.getName();
+                Float configControlPointInfluence = controlPoint.getInfluenceMap().get(controlPointInfluenceOwner);
+                String configControlPointId = controlPoint.getIdentifier();
+                String configControlPointOwner = controlPoint.getOwner().getName();
+                
+                dataConfig.set("worlds." + configWorld + ".regions." + configId + ".controlpoints." + configControlPointId + ".influenceowner", configControlPointInfluenceOwner);
+                dataConfig.set("worlds." + configWorld + ".regions." + configId + ".controlpoints." + configControlPointId + ".influence", configControlPointInfluence);
+                dataConfig.set("worlds." + configWorld + ".regions." + configId + ".controlpoints." + configControlPointId + ".owner", configControlPointOwner);
+            }
+        }
+        
+        if (saveDataFile() && saveMainConfig())
+        {
+            RegionControl.plugin.getLogger().info("Save Complete!");
+        }
+        else
+        {
+            RegionControl.plugin.getLogger().severe("Save Failed. Please check your plugin directory has write permissions.");
+        }
     }
 }

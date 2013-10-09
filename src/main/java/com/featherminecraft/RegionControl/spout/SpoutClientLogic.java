@@ -144,14 +144,15 @@ public class SpoutClientLogic {
         screenElements.add(ownericon);
         
         regionname = (Label) ((Label) new GenericLabel().setText(rcplayer.getCurrentRegion().getDisplayName()).
-                setMargin(0, 3)).setShadow(false).setResize(true).setFixed(true);
+                setMargin(5, 5)).setShadow(false).setResize(true).setFixed(true);
         
         screenElements.add(regionname);
         
         float currentscale = 1F;
-        while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 125)
+        while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 116)
         {
-            currentscale -= 0.05F;
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Text Width is currently: " + GenericLabel.getStringWidth(regionname.getText(), currentscale)); //Debug
+            currentscale -= 0.01F;
         }
         regionname.setScale(currentscale);
         
@@ -323,7 +324,7 @@ public class SpoutClientLogic {
         regionname.setText(region.getDisplayName());
         
         float currentscale = 1F;
-        while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 118)
+        while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 116)
         {
 //            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Text Width is currently: " + GenericLabel.getStringWidth(regionname.getText(), currentscale)); //Debug
             currentscale -= 0.01F;
@@ -381,32 +382,16 @@ public class SpoutClientLogic {
             {
                 captureBarAnim.animateStop(true);
                 majorityController = updatedRegion.getMajorityController();
-                if(owner == influenceOwner)
+                if(majorityController == influenceOwner)
                 {
-                    if(majorityController == owner)
-                    {
-                        captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
-                        captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
-                    }
-                    else if (majorityController != owner)
-                    {
-                        captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
-                        captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
-                    }
+                    captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
+                    captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                 }
                 
-                else if (owner != influenceOwner)
+                else if (majorityController != influenceOwner)
                 {
-                    if(majorityController == owner)
-                    {
-                        captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
-                        captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
-                    }
-                    else if (majorityController != owner)
-                    {
-                        captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
-                        captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
-                    }
+                    captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
+                    captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                 }
             }
             
