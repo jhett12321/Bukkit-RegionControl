@@ -18,6 +18,37 @@ worlds:
         displayname: 'Example Region Name'
         baseinfluence: 300
         adjacentregions:
+         - exampleregion2
+        controlpoints:
+          a:
+            x: 135
+            y: 45
+            z: 224
+            captureradius: 10
+            baseinfluence: 10
+          b:
+            x: 192
+            y: 23
+            z: 224
+            captureradius: 10
+            baseinfluence: 10
+          c:
+            x: 225
+            y: 42
+            z: 98
+            captureradius: 10
+            baseinfluence: 10
+        spawnpoint:
+          x: 177
+          y: 64
+          z: 29
+
+      exampleregion2:
+        world: world
+        displayname: 'Example Region Number 2'
+        baseinfluence: 300
+        adjacentregions:
+         - exampleregion
         controlpoints:
           a:
             x: 135

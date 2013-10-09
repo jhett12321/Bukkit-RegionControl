@@ -3,7 +3,6 @@ package com.featherminecraft.RegionControl.spout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.getspout.spoutapi.SpoutManager;
@@ -50,7 +49,9 @@ public class SpoutClientLogic {
     private Container regionInfo;
     private Texture background;
     private List<Widget> screenElements = new ArrayList<Widget>();
+    private List<Widget> screenCaptureElements = new ArrayList<Widget>();
     private boolean allElementsHidden = false;
+    private boolean captureElementsHidden = true;
 
     public static void init()
     {
@@ -114,7 +115,7 @@ public class SpoutClientLogic {
         
         background = (Texture) new GenericTexture("background.png")
         .setDrawAlphaChannel(true)
-        .setHeight(80)
+        .setHeight(40)
         .setWidth(150)
         .setPriority(RenderPriority.Highest);
         
@@ -188,11 +189,13 @@ public class SpoutClientLogic {
         .setHeight(10).setX(5).setY(40);
         
         screenElements.add(influenceOwnerIconContainer);
+        screenCaptureElements.add(influenceOwnerIconContainer);
         
         influenceOwnerIcon = (Texture) new GenericTexture("faction.png")
         .setMargin(0, 0, 0, 3).setHeight(8).setWidth(8).setFixed(true);
         
         screenElements.add(influenceOwnerIcon);
+        screenCaptureElements.add(influenceOwnerIcon);
         
         influenceOwnerIconContainer.addChild(influenceOwnerIcon);
         
@@ -204,11 +207,13 @@ public class SpoutClientLogic {
         .setHeight(10).setX(20).setY(40); //Changed X to 20. (+10)
         
         screenElements.add(captureBarContainer);
+        screenCaptureElements.add(captureBarContainer);
         
         captureBar = (Gradient) new GenericGradient(factioncolor).setWidth(100)
                 .setHeight(10).setMargin(0, 3).setFixed(true).setPriority(RenderPriority.High);
         
         screenElements.add(captureBar);
+        screenCaptureElements.add(captureBar);
         
         captureBarContainer.addChild(captureBar);
         
@@ -220,11 +225,13 @@ public class SpoutClientLogic {
         .setHeight(10).setX(73).setY(40);
         
         screenElements.add(captureBarSpaceContainer);
+        screenCaptureElements.add(captureBarSpaceContainer);
         
         captureBarSpace = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(0)
                 .setHeight(10).setFixed(true).setPriority(RenderPriority.Low);
         
         screenElements.add(captureBarSpace);
+        screenCaptureElements.add(captureBarSpace);
         
         captureBarSpaceContainer.addChild(captureBarSpace);
         
@@ -236,11 +243,13 @@ public class SpoutClientLogic {
         .setHeight(12).setX(21).setY(39);
         
         screenElements.add(captureBarBackgroundContainer);
+        screenCaptureElements.add(captureBarBackgroundContainer);
         
         captureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(103)
                 .setHeight(12).setFixed(true).setPriority(RenderPriority.Highest);
         
         screenElements.add(captureBarBackground);
+        screenCaptureElements.add(captureBarBackground);
         
         captureBarBackgroundContainer.addChild(captureBarBackground);
         
@@ -252,10 +261,12 @@ public class SpoutClientLogic {
         .setHeight(10).setX(60).setY(41);
         
         screenElements.add(timerContainer);
+        screenCaptureElements.add(timerContainer);
         
         captureTimer = (Label) new GenericLabel().setText(" ").setResize(true).setFixed(true).setPriority(RenderPriority.Lowest);
         
         screenElements.add(captureTimer);
+        screenCaptureElements.add(captureTimer);
         
         timerContainer.addChild(captureTimer);
         
@@ -269,19 +280,16 @@ public class SpoutClientLogic {
         .setHeight(10).setMarginLeft(100).setY(40);
         
         screenElements.add(barAnimContainer);
+        screenCaptureElements.add(barAnimContainer);
         
         captureBarAnim = (Texture) new GenericTexture().setDrawAlphaChannel(true)
                 .setHeight(10).setFixed(true).setPriority(RenderPriority.Normal).setVisible(false);
         
         screenElements.add(captureBarAnim);
+        screenCaptureElements.add(captureBarAnim);
         
         captureBarAnim.setUrl("null.png").setWidth(125);
-        captureBarAnim.setVisible(false);
-        captureBar.setVisible(false);
-        captureBarSpace.setVisible(false);
-        captureBarBackground.setVisible(false);
-        captureTimer.setVisible(false);
-        influenceOwnerIcon.setVisible(false);
+        hideAllElements();
         
         barAnimContainer.addChild(captureBarAnim);
         
@@ -303,7 +311,7 @@ public class SpoutClientLogic {
         
         else if(updatedRegion != null && allElementsHidden == true)
         {
-            showAllElements();
+            showNonCaptureElements();
         }
         
         this.region = updatedRegion;
@@ -314,8 +322,18 @@ public class SpoutClientLogic {
         ownericon.setUrl("faction.png");
         regionname.setText(region.getDisplayName());
         
+        float currentscale = 1F;
+        while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 118)
+        {
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Text Width is currently: " + GenericLabel.getStringWidth(regionname.getText(), currentscale)); //Debug
+            currentscale -= 0.01F;
+        }
+        regionname.setScale(currentscale);
+        
         if(region.isBeingCaptured())
         {
+            showCaptureElements();
+            
             Integer red = region.getInfluenceOwner().getFactionColor().getRed();
             Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
             Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
@@ -449,15 +467,31 @@ public class SpoutClientLogic {
         }
     }
     
-    public void showAllElements()
+    //TODO check if a hideCaptureElements and a showAllElements is needed.
+    public void showNonCaptureElements()
     {
         if(allElementsHidden)
         {
             for(Widget element : screenElements)
             {
-                element.setVisible(true);
+                if(!screenCaptureElements.contains(element))
+                {
+                    element.setVisible(true);
+                }
             }
             allElementsHidden = false;
+        }
+    }
+    
+    public void showCaptureElements()
+    {
+        if(captureElementsHidden)
+        {
+            for(Widget element : screenElements)
+            {
+                element.setVisible(true);
+            }
+            captureElementsHidden = false;
         }
     }
 }
