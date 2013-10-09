@@ -1,12 +1,9 @@
 package com.featherminecraft.RegionControl.utils;
 
 import java.util.List;
-import java.util.logging.Level;
-
 import org.bukkit.World;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.RCPlayer;
-import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 

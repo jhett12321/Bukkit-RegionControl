@@ -50,7 +50,7 @@ public class SpoutClientLogic {
     private Container regionInfo;
     private Texture background;
     private List<Widget> screenElements = new ArrayList<Widget>();
-    private boolean allElementsHidden;
+    private boolean allElementsHidden = false;
 
     public static void init()
     {

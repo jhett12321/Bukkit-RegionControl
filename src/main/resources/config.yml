@@ -1,7 +1,7 @@
 factions:
   faction1:
     displayname: 'The Elder Tyrants'
-    permissiongroup: default
+    permissiongroup: admin
     default: true
     defaultspawn:
       world: exampleregion
