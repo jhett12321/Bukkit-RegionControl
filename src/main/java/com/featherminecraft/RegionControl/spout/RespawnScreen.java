@@ -47,7 +47,7 @@ public class RespawnScreen {
             }
         }
         
-        SortedMap<Integer,CapturableRegion> distances = new TreeMap<Integer,CapturableRegion>(); //TODO Check This
+        SortedMap<Integer,CapturableRegion> distances = new TreeMap<Integer,CapturableRegion>();
         for(CapturableRegion region : friendlyRegions)
         {
             Location playerLoc = player.getBukkitPlayer().getLocation();
@@ -60,9 +60,9 @@ public class RespawnScreen {
         Map<Integer,CapturableRegion> identifiers = new HashMap<Integer,CapturableRegion>();
         for(Entry<Integer, CapturableRegion> listEntry : distances.entrySet())
         {
-            ListWidgetItem item = new ListWidgetItem(listEntry.toString() + "m", listEntry.getValue().getDisplayName());
+            ListWidgetItem item = new ListWidgetItem(listEntry.getKey().toString() + "m", listEntry.getValue().getDisplayName());
             respawnList.add(item);
-            Integer intId = respawnList.size(); //TODO check to see if this is not a fencepost error.
+            Integer intId = respawnList.size();
             identifiers.put(intId, listEntry.getValue());
         }
         

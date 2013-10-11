@@ -18,7 +18,7 @@ public class ChangeRegionEvent extends Event {
     private RCPlayer player;
 
     public ChangeRegionEvent(CapturableRegion newregion, CapturableRegion oldregion, RCPlayer player) {
-        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Triggered ChangeRegionEvent");
+//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Triggered ChangeRegionEvent");
         this.oldregion = oldregion;
         this.newregion = newregion;
         this.player = player;

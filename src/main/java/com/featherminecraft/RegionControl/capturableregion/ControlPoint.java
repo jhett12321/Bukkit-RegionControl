@@ -4,10 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
+import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 
 public class ControlPoint {
@@ -18,7 +24,7 @@ public class ControlPoint {
     //Control Point Info
     private String identifier;
     private Location location;
-    private Integer captureRadius;
+    private Double captureRadius;
     
     //Capture Influence
     private Map<Faction,Float> influenceMap = new HashMap<Faction,Float>();
@@ -34,7 +40,7 @@ public class ControlPoint {
     public ControlPoint(String identifier,
             Faction owner,
             Location location,
-            Integer captureRadius,
+            Double captureRadius,
             Float baseInfluence,
             Float influence,
             Faction influenceOwner)
@@ -59,7 +65,21 @@ public class ControlPoint {
         {
             this.influenceMap.put(influenceOwner, baseInfluence);
         }
-    }
+        
+        this.location.getBlock().setTypeId(85,false);
+        this.location.setY(location.getY() + 1);
+        this.location.getBlock().setTypeId(85,false);
+        this.location.setY(location.getY() + 1);
+        
+        if(influenceMap.get(influenceOwner) == baseInfluence)
+        {
+            this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(owner.getFactionColor()).getWoolData(),false);
+        }
+        else
+        {
+            this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(Color.WHITE).getWoolData(),false);
+        }
+        }
     
     public void Runnable()
     {
@@ -113,13 +133,15 @@ public class ControlPoint {
             }
         }
         
-        if(influenceMap.get(influenceOwner) == this.baseInfluence)
+        if(influenceMap.get(influenceOwner) == this.baseInfluence && capturing == true)
         {
+            this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(this.owner.getFactionColor()).getDyeData(),false);
             capturing = false;
         }
         
-        else
+        else if(influenceMap.get(influenceOwner) != this.baseInfluence && capturing == false)
         {
+            this.location.getBlock().setTypeId(Material.WOOL.getId(),false);
             capturing = true;
         }
     }
@@ -133,12 +155,17 @@ public class ControlPoint {
         List<RCPlayer> players = region.getPlayers();
         Map<Faction,Integer> factionInfluence = new HashMap<Faction,Integer>();
         
-        double radiusSquared = captureRadius*captureRadius;
+        for (Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        {
+            factionInfluence.put(faction.getValue(), 0);
+        }
         
         for (RCPlayer player : players) 
         {
-            if(player.getBukkitPlayer().getLocation().distanceSquared(location) <= radiusSquared)
+            if(player.getBukkitPlayer().getLocation().distanceSquared(location) <= captureRadius*captureRadius)
             {
+//                RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Player " + player.getBukkitPlayer().getName()
+//                        + " is in capture distance of ControlPoint " + this.identifier + " in region " + this.region.getDisplayName());
                 Faction playersFaction = player.getFaction();
                 factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
             }

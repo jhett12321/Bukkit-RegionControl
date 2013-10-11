@@ -1,3 +1,6 @@
+#Available Colors For Factions
+#black,blue,brown,cyan,gray,green,light_blue,lime,magenta,orange,pink,purple,red,silver,white,yellow
+
 factions:
   faction1:
     displayname: 'The Elder Tyrants'
@@ -5,10 +8,7 @@ factions:
     default: true
     defaultspawn:
       world: exampleregion
-    color:
-      red: 255
-      green: 0
-      blue: 0
+    color: red
 
 worlds:
   world:

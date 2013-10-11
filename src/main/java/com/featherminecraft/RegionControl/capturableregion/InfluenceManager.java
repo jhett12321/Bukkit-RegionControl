@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 
 import com.featherminecraft.RegionControl.Faction;
+import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.events.CaptureStatusChangeEvent;
 import com.featherminecraft.RegionControl.events.InfluenceRateChangeEvent;
@@ -31,9 +33,17 @@ public class InfluenceManager {
     public void Runnable()
     {
         Faction majorityController = CalculateMajorityController();
+
         Faction influenceOwner = CalculateInfluenceOwner();
         Float influenceRate = CalculateInfluenceRate();
         Map<Faction, Float> influenceMap = region.getInfluenceMap();
+        
+        if(majorityController != null & influenceOwner != null && influenceRate != null)
+        {
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceOwner is: " + influenceOwner.getName());
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated Majority Controller is: " + majorityController.getName());
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceRate is: " + influenceRate.toString());
+        }
         
         if(influenceOwner == null)
         {
@@ -83,6 +93,11 @@ public class InfluenceManager {
                 }
             }
         }
+        
+        region.setInfluenceMap(influenceMap);
+        region.setInfluenceOwner(influenceOwner);
+        region.setMajorityController(majorityController);
+        region.setInfluenceRate(influenceRate);
     }
     
     public Faction CalculateMajorityController()
@@ -90,7 +105,6 @@ public class InfluenceManager {
         /*
          * Majority Controller Calculations
          */
-        //TODO Control Points need to be rechecked.
         List<ControlPoint> controlPoints = region.getControlPoints();
         Map<Faction,Float> ownedControlPoints = new HashMap<Faction,Float>();
         for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
@@ -111,6 +125,14 @@ public class InfluenceManager {
         
         Float totalOwnedControlPoints = ((Integer) ownedControlPoints.size()).floatValue();
         percentageOwned = new HashMap<Faction,Float>();
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        {
+            if(faction.getValue() != null)
+            {
+                percentageOwned.put(faction.getValue(), 0F);
+            }
+        }
+        
         Faction majorityController = null;
         int majorityAmount = 0;
         for(Entry<Faction, Float> faction : ownedControlPoints.entrySet())
@@ -141,7 +163,7 @@ public class InfluenceManager {
         Faction influenceOwner = null;
         for(Entry<Faction, Float> influence : influenceMap.entrySet())
         {
-            if(influence.getValue() >= 0)
+            if(influence.getValue() > 0)
             {
                 influenceOwner = influence.getKey();
                 break;

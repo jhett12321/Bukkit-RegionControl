@@ -291,6 +291,7 @@ public class SpoutClientLogic {
         
         captureBarAnim.setUrl("null.png").setWidth(125);
         hideAllElements();
+        showNonCaptureElements();
         
         barAnimContainer.addChild(captureBarAnim);
         
@@ -338,9 +339,8 @@ public class SpoutClientLogic {
             Integer red = region.getInfluenceOwner().getFactionColor().getRed();
             Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
             Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
-            Integer alpha = region.getInfluenceOwner().getFactionColor().getAlpha();
             
-            Color spoutColor = new Color(red,green,blue,alpha);
+            Color spoutColor = new Color(red,green,blue);
             captureBar.setColor(spoutColor).setVisible(true);
             captureBarSpace.setVisible(true);
             captureBarBackground.setVisible(true);
@@ -418,9 +418,8 @@ public class SpoutClientLogic {
                     Integer red = region.getInfluenceOwner().getFactionColor().getRed();
                     Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
                     Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
-                    Integer alpha = region.getInfluenceOwner().getFactionColor().getAlpha();
                     
-                    Color spoutColor = new Color(red,green,blue,alpha);
+                    Color spoutColor = new Color(red,green,blue);
                     captureBar.setColor(spoutColor).setVisible(true);
                 }
                 
@@ -436,7 +435,7 @@ public class SpoutClientLogic {
             captureBarBackground.setVisible(false);
             captureTimer.setVisible(false);
             influenceOwnerIcon.setVisible(false);
-            backgroundContainer.setHeight(40);
+            background.setHeight(40);
         }
     }
     

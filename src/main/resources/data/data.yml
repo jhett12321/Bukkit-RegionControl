@@ -18,6 +18,3 @@ worlds:
             owner: faction1
             influence: 10
             influenceowner: faction1
-players:
-  jhett12321:
-    faction: faction1

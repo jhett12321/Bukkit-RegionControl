@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
+import com.featherminecraft.RegionControl.utils.RegionUtils;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -26,13 +27,13 @@ public class ClientRunnables extends BukkitRunnable {
         this.player = player;
         
         World world = player.getBukkitPlayer().getWorld();
-        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current world is: " + world.getName());
+//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current world is: " + world.getName());
         
         Faction faction = player.getFaction();
-        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current faction is: " + faction.getName());
+//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current faction is: " + faction.getName());
         
         CapturableRegion spawnRegion = faction.getFactionSpawnRegion(world);
-        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the faction's spawn region is: " + spawnRegion.getDisplayName());
+//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the faction's spawn region is: " + spawnRegion.getDisplayName());
 
         SpawnPoint spawnPoint = faction.getFactionSpawnRegion(world).getSpawnPoint();
         
@@ -49,10 +50,13 @@ public class ClientRunnables extends BukkitRunnable {
     @Override
     public void run()
     {
+        //Utilities Begin
+        RegionUtils regionUtils = new RegionUtils();
+        
         CapturableRegion currentRegion = player.getCurrentRegion();
         
         //Player Region Watcher
-        CapturableRegion newregion = null;
+        CapturableRegion newRegion = null;
         
         Vector newlocation = toVector(player.getBukkitPlayer().getLocation());
         
@@ -61,26 +65,37 @@ public class ClientRunnables extends BukkitRunnable {
         {
         	ProtectedRegion region = capturableRegion.getValue().getRegion();
             if(region.contains(newlocation))
-                newregion = capturableRegion.getValue();
+                newRegion = capturableRegion.getValue();
         }
         
-        if(newregion == null && currentRegion != null)
+        if(newRegion != currentRegion)
         {
-            Bukkit.getServer().getPluginManager().callEvent(
-                    new ChangeRegionEvent(null, currentRegion, player)
-                    );
-        }
-        
-        if(newregion != currentRegion && newregion != null)
-        {
-            Bukkit.getServer().getPluginManager().callEvent(
-                    new ChangeRegionEvent(newregion, currentRegion, player)
-                    );
-        }
-        
-        if(newregion != currentRegion)
-        {
-            player.setCurrentRegion(newregion);
+            if(newRegion == null && currentRegion != null)
+            {
+                Bukkit.getServer().getPluginManager().callEvent(
+                        new ChangeRegionEvent(null, currentRegion, player)
+                        );
+                regionUtils.removePlayerFromRegion(player, currentRegion);
+            }
+            
+            if(newRegion != null && currentRegion != null)
+            {
+                Bukkit.getServer().getPluginManager().callEvent(
+                        new ChangeRegionEvent(newRegion, currentRegion, player)
+                        );
+                regionUtils.removePlayerFromRegion(player, currentRegion);
+                regionUtils.addPlayerToRegion(player, newRegion);
+            }
+            
+            if(currentRegion == null && newRegion != null)
+            {
+                Bukkit.getServer().getPluginManager().callEvent(
+                        new ChangeRegionEvent(newRegion, null, player)
+                        );
+                regionUtils.addPlayerToRegion(player, newRegion);
+            }
+            
+            player.setCurrentRegion(newRegion);
         }
     }
 }

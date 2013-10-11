@@ -1,5 +1,7 @@
 package com.featherminecraft.RegionControl.listeners;
 
+import java.util.List;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -23,6 +25,7 @@ public class PlayerListener implements Listener {
     {
         //Utilities Begin
         PlayerUtils playerUtils = new PlayerUtils();
+        RegionUtils regionUtils = new RegionUtils();
         //Utilities End
         
         Player player = event.getPlayer();
@@ -40,7 +43,10 @@ public class PlayerListener implements Listener {
         }
         CapturableRegion currentRegion = faction.getFactionSpawnRegion(player.getWorld());
         
-        ServerLogic.players.put(player.getName(), new RCPlayer(player, faction, currentRegion));
+        RCPlayer rcPlayer = new RCPlayer(player, faction, currentRegion);
+        
+        ServerLogic.players.put(player.getName(), rcPlayer);
+        regionUtils.addPlayerToRegion(rcPlayer, currentRegion);
     }
     
     @EventHandler(priority = EventPriority.MONITOR)

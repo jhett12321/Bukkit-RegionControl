@@ -60,7 +60,7 @@ public class CapturableRegion {
      * @param owner A Faction object who currently owns this region
      * @param region A WorldGuard Protected Region that this CapturableRegion belongs to
      * @param world The World which this region resides.
-     * @param controlPoints A list of ControlPoint objects that are within this region
+     * @param controlpoints A list of ControlPoint objects that are within this region
      * @param spawnPoint The SpawnPoint object that belongs in this region
      * @param baseInfluence The minimum influence required to own this region
      * @param influence Influence of the current influence owner
@@ -71,7 +71,7 @@ public class CapturableRegion {
             Faction owner,
             ProtectedRegion region,
             World world,
-            List<ControlPoint> controlPoints,
+            List<ControlPoint> controlpoints,
             SpawnPoint spawnPoint,
             Float baseInfluence,
             Float influence,
@@ -82,7 +82,7 @@ public class CapturableRegion {
         this.owner = owner;
         this.region = region;
         this.world = world;
-        this.controlPoints = controlPoints;
+        this.controlPoints = controlpoints;
         this.spawnPoint = spawnPoint;
         this.baseInfluence = baseInfluence;
         
@@ -100,11 +100,12 @@ public class CapturableRegion {
         influenceManager = new InfluenceManager(this);
         
         this.baseInfluence = baseInfluence;
-        RegionRunnables();
-    }
-    
-    public void RegionRunnables()
-    {
+        
+        for(ControlPoint controlPoint : controlPoints)
+        {
+            controlPoint.setRegion(this);
+        }
+        
         runnable = new BukkitRunnable() {
             
             @Override
@@ -115,7 +116,6 @@ public class CapturableRegion {
                 }
                 influenceManager.Runnable();
                 captureTimer.Runnable();
-                
             }
         }.runTaskTimer(RegionControl.plugin, 20, 20);
     }

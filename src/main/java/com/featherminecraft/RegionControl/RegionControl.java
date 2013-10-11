@@ -1,57 +1,3 @@
-/* Task List
-TODO:
-    TODO 1. Code Testing
-Details:
-File/s: All
-JIRA Link:
-Classification: Improvement
-Priority: Major
-
-    TODO 2. Implement onDisable Code
-Details:
-File/s: RegionControl.java Line 91
-JIRA Link: 
-Classification: New Feature
-Priority: Blocker
-
-    TODO 3. Make sure that static is being used properly in functions.
-Details:
-File/s: RegionControl.java
-JIRA Link: 
-Classification: Improvement
-Priority: Major
-
-    TODO 4. Implement Dynmap (Or some similar full screen map) to client that shows current region control.
-Details:
-File/s: Unknown
-JIRA Link: 
-Classification: New Feature
-Priority: Trivial
-
-    TODO 5. Replace main configuration with individual configuration files
-Details:
-File/s: Config.java All Lines
-JIRA Link: 
-Classification: Improvement
-Priority: Minor
-
-    TODO 6. Map Filters
-Details:
-Pre-req: Dynmap Implementation
-JIRA Link: 
-Classification: Improvement
-Priority: Trivial
-
-    TODO 7. World Saving - Remember who owned each region after server restart/shutdown.
-Details:
-File/s: ServerLogic.java
-JIRA Link: 
-Classification: New Feature
-Priority: Critical
-
-ISSUE/S:
- */
-
 package com.featherminecraft.RegionControl;
 
 import java.util.logging.Level;
@@ -133,6 +79,6 @@ public static boolean isfirstrun;
     @Override
     public void onDisable() 
     {
-        new Config().saveAll();
+        //new Config().saveAll();
     }
 }

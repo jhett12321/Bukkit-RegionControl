@@ -1,6 +1,6 @@
 package com.featherminecraft.RegionControl;
 
-import java.awt.Color;
+import org.bukkit.Color;
 import java.util.HashMap;
 import java.util.Map;
 
