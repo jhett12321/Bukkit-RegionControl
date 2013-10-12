@@ -4,8 +4,6 @@ import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -35,7 +33,7 @@ public class ClientRunnables extends BukkitRunnable {
         CapturableRegion spawnRegion = faction.getFactionSpawnRegion(world);
 //        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the faction's spawn region is: " + spawnRegion.getDisplayName());
 
-        SpawnPoint spawnPoint = faction.getFactionSpawnRegion(world).getSpawnPoint();
+        SpawnPoint spawnPoint = spawnRegion.getSpawnPoint();
         
         if(spawnPoint.getLocation() == null)
         {

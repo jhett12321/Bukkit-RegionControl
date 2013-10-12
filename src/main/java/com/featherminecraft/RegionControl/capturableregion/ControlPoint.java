@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -13,8 +13,9 @@ import org.bukkit.Material;
 
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
-import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
+import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
+import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
 
 public class ControlPoint {
 
@@ -93,7 +94,8 @@ public class ControlPoint {
         
         if(influenceOwner == null)
         {
-            //TODO Run ControlPoint Neutralize Event
+            //TODO set InfluenceOwner after calling this event, otherwise influenceOwner is null.
+            Bukkit.getServer().getPluginManager().callEvent(new ControlPointNeutraliseEvent(region, influenceOwner, this));
             if(majorityPopulation != null && captureRate != null && captureRate != 0)
             {
                 influenceMap.put(majorityPopulation, captureRate);
@@ -123,7 +125,7 @@ public class ControlPoint {
                 if(influenceMap.get(influenceOwner) + captureRate >= this.baseInfluence)
                 {
                     influenceMap.put(majorityPopulation, this.baseInfluence);
-                    //TODO Run ControlPoint Capture Event
+                    Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(region, influenceOwner, this));
                 }
                 
                 else

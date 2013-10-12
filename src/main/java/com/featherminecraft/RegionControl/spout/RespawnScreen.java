@@ -1,9 +1,7 @@
 package com.featherminecraft.RegionControl.spout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -57,16 +55,13 @@ public class RespawnScreen {
         }
         
         List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
-        Map<Integer,CapturableRegion> identifiers = new HashMap<Integer,CapturableRegion>();
         for(Entry<Integer, CapturableRegion> listEntry : distances.entrySet())
         {
             ListWidgetItem item = new ListWidgetItem(listEntry.getKey().toString() + "m", listEntry.getValue().getDisplayName());
             respawnList.add(item);
-            Integer intId = respawnList.size();
-            identifiers.put(intId, listEntry.getValue());
         }
         
-        this.ListModel = new RespawnListModel(player, respawnList, identifiers);
+        this.ListModel = new RespawnListModel(player, respawnList);
         GenericContainer listContainer = new GenericContainer();
         listContainer.setAnchor(WidgetAnchor.TOP_LEFT).setX(5).setY(40);
         this.listWidget = new GenericListView(this.ListModel);

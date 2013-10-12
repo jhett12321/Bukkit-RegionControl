@@ -1,7 +1,5 @@
 package com.featherminecraft.RegionControl;
 
-import java.util.logging.Level;
-
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.plugin.PluginManager;
@@ -9,6 +7,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
+import com.featherminecraft.RegionControl.listeners.GenericListener;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
@@ -16,8 +15,6 @@ import com.featherminecraft.RegionControl.utils.Utils;
 
 public final class RegionControl extends JavaPlugin {
 
-private PlayerListener playerlistener;
-private SpoutPlayerListener spoutplayerlistener;
 public static Permission permission;
 public static RegionControl plugin;
 public static boolean isfirstrun;
@@ -55,15 +52,14 @@ public static boolean isfirstrun;
             setEnabled(false);
         }
         
-        playerlistener = new PlayerListener();
-        pm.registerEvents(playerlistener, this);
+        pm.registerEvents(new PlayerListener(), this);
+        pm.registerEvents(new GenericListener(), this);
         
         if(Utils.SpoutAvailable())
         {
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Beginning Spout Init");
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Beginning Spout Init");
             SpoutClientLogic.init();
-            spoutplayerlistener = new SpoutPlayerListener();
-            pm.registerEvents(spoutplayerlistener, this);
+            pm.registerEvents(new SpoutPlayerListener(), this);
         }
     }
 

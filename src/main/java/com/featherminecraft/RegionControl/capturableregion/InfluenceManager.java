@@ -4,12 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 
 import com.featherminecraft.RegionControl.Faction;
-import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.events.CaptureStatusChangeEvent;
 import com.featherminecraft.RegionControl.events.InfluenceRateChangeEvent;
@@ -40,9 +37,9 @@ public class InfluenceManager {
         
         if(majorityController != null & influenceOwner != null && influenceRate != null)
         {
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceOwner is: " + influenceOwner.getName());
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated Majority Controller is: " + majorityController.getName());
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceRate is: " + influenceRate.toString());
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceOwner is: " + influenceOwner.getName());
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated Majority Controller is: " + majorityController.getName());
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceRate is: " + influenceRate.toString());
         }
         
         if(influenceOwner == null)

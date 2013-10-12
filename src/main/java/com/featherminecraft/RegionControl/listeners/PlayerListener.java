@@ -1,7 +1,6 @@
 package com.featherminecraft.RegionControl.listeners;
 
-import java.util.List;
-
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -11,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
@@ -114,5 +115,26 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+    
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event)
+    {
+        PlayerUtils playerUtils = new PlayerUtils();
+        
+        Player player = event.getPlayer();
+        RCPlayer rcplayer = playerUtils.getRCPlayerFromBukkitPlayer(player);
+        Location respawnLocation = rcplayer.getRespawnLocation();
+        if(respawnLocation != null)
+        {
+            event.setRespawnLocation(respawnLocation);
+        }
+        
+        else
+        {
+            event.setRespawnLocation(rcplayer.getFaction().getFactionSpawnRegion(player.getWorld()).getSpawnPoint().getLocation()); //TODO: Replace with config default value for per-faction spawn.
+        }
+        
+        rcplayer.setRespawnLocation(null);
     }
 }

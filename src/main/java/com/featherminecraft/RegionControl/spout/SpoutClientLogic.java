@@ -9,9 +9,7 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.gui.*;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 
@@ -33,13 +31,8 @@ public class SpoutClientLogic {
     private Float barFloatValue;
     private Short barShortValue;
     
-    //Definable Variables
-    private Faction influenceOwner;
-    private Faction owner;
     //Misc
     private BukkitTask runnable;
-    protected Faction majorityController;
-    private CapturableRegion region;
     private Container influenceOwnerIconContainer;
     private Container captureBarContainer;
     private Container captureBarSpaceContainer;
@@ -300,7 +293,7 @@ public class SpoutClientLogic {
         
     }
     
-    public void updateRegion(CapturableRegion updatedRegion)
+    public void updateRegion(final CapturableRegion updatedRegion)
     {
         if(updatedRegion == null)
         {
@@ -316,13 +309,9 @@ public class SpoutClientLogic {
             showNonCaptureElements();
         }
         
-        this.region = updatedRegion;
-        this.owner = updatedRegion.getOwner();
-        this.influenceOwner = updatedRegion.getOwner();
-        
         //ownericon.setUrl(region.getOwner().getFactionIconUrl()); //TODO
         ownericon.setUrl("faction.png");
-        regionname.setText(region.getDisplayName());
+        regionname.setText(updatedRegion.getDisplayName());
         
         float currentscale = 1F;
         while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 116)
@@ -332,13 +321,13 @@ public class SpoutClientLogic {
         }
         regionname.setScale(currentscale);
         
-        if(region.isBeingCaptured())
+        if(updatedRegion.isBeingCaptured())
         {
             showCaptureElements();
             
-            Integer red = region.getInfluenceOwner().getFactionColor().getRed();
-            Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
-            Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
+            Integer red = updatedRegion.getInfluenceOwner().getFactionColor().getRed();
+            Integer green = updatedRegion.getInfluenceOwner().getFactionColor().getGreen();
+            Integer blue = updatedRegion.getInfluenceOwner().getFactionColor().getBlue();
             
             Color spoutColor = new Color(red,green,blue);
             captureBar.setColor(spoutColor).setVisible(true);
@@ -348,7 +337,7 @@ public class SpoutClientLogic {
             influenceOwnerIcon.setVisible(true);
             backgroundContainer.setHeight(70);
             
-            Float influencerate = region.getInfluenceRate();
+            Float influencerate = updatedRegion.getInfluenceRate();
             
             if(influencerate == 1)
             {
@@ -381,14 +370,13 @@ public class SpoutClientLogic {
             if(influencerate == 1 || influencerate == 2 || influencerate == 3 || influencerate == 4)
             {
                 captureBarAnim.animateStop(true);
-                majorityController = updatedRegion.getMajorityController();
-                if(majorityController == influenceOwner)
+                if(updatedRegion.getMajorityController() == updatedRegion.getInfluenceOwner())
                 {
                     captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
                     captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                 }
                 
-                else if (majorityController != influenceOwner)
+                else if (updatedRegion.getMajorityController() != updatedRegion.getInfluenceOwner())
                 {
                     captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
                     captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
@@ -398,8 +386,8 @@ public class SpoutClientLogic {
             runnable = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    Integer seconds = region.getSecondsToCapture();
-                    Integer minutes = region.getMinutesToCapture();
+                    Integer seconds = updatedRegion.getSecondsToCapture();
+                    Integer minutes = updatedRegion.getMinutesToCapture();
                     
                     String secondsString = seconds.toString();
                     if(seconds < 10)
@@ -408,16 +396,16 @@ public class SpoutClientLogic {
                     }
                     captureTimer.setText(minutes.toString() + ":" + secondsString);
                     
-                    float influence = region.getInfluenceMap().get(region.getInfluenceOwner());
-                    float baseinfluence = region.getBaseInfluence();
+                    float influence = updatedRegion.getInfluenceMap().get(updatedRegion.getInfluenceOwner());
+                    float baseinfluence = updatedRegion.getBaseInfluence();
                     
                     int barwidth = (int) (influence / baseinfluence * 100);
                     captureBar.setWidth(barwidth);
                     captureBarSpace.setWidth(100 - barwidth);
                     
-                    Integer red = region.getInfluenceOwner().getFactionColor().getRed();
-                    Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
-                    Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
+                    Integer red = updatedRegion.getInfluenceOwner().getFactionColor().getRed();
+                    Integer green = updatedRegion.getInfluenceOwner().getFactionColor().getGreen();
+                    Integer blue = updatedRegion.getInfluenceOwner().getFactionColor().getBlue();
                     
                     Color spoutColor = new Color(red,green,blue);
                     captureBar.setColor(spoutColor).setVisible(true);
