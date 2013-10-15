@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+
 import org.bukkit.entity.Player;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
@@ -24,7 +26,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class PlayerUtils {
     public Faction getPlayerFaction(Player player) {
         String group = RegionControl.permission.getPrimaryGroup(player);
-//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Group is: " + group);
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Group is: " + group);
         
         Faction playerFaction = null;
         
@@ -41,7 +43,7 @@ public class PlayerUtils {
             //TODO set player to use default faction, or kick player (possibly a config option?)
         }
         
-//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Faction is: " + playerFaction.getName());
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Faction is: " + playerFaction.getName());
         return playerFaction;
     }
     

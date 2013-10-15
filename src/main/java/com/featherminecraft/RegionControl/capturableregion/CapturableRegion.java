@@ -95,7 +95,6 @@ public class CapturableRegion {
         }
         
         influenceMap.put(influenceOwner, influence);
-        this.influenceMap.put(influenceOwner, influence);
         captureTimer = new CaptureTimer(this);
         influenceManager = new InfluenceManager(this);
         

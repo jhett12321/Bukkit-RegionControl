@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -13,6 +14,7 @@ import org.bukkit.Material;
 
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
+import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
 import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
@@ -47,7 +49,7 @@ public class ControlPoint {
             Faction influenceOwner)
     
     {
-        this.setIdentifier(identifier);
+        this.identifier = identifier;
         this.owner = owner;
         this.location = location;
         this.captureRadius = captureRadius;
@@ -84,19 +86,13 @@ public class ControlPoint {
     
     public void Runnable()
     {
-        CalculateMajorityPopulation();
-        CalculateInfluenceOwner();
-        
-        Faction majorityPopulation = this.majorityPopulation;
-        Faction influenceOwner = this.influenceOwner;
-        Map<Faction, Float> influenceMap = this.influenceMap;
-        Float captureRate = this.captureRate;
+        Faction majorityPopulation = CalculateMajorityPopulation();
+        Faction influenceOwner = CalculateInfluenceOwner();
         
         if(influenceOwner == null)
         {
-            //TODO set InfluenceOwner after calling this event, otherwise influenceOwner is null.
             Bukkit.getServer().getPluginManager().callEvent(new ControlPointNeutraliseEvent(region, influenceOwner, this));
-            if(majorityPopulation != null && captureRate != null && captureRate != 0)
+            if(majorityPopulation != null && captureRate != null && captureRate != 0F)
             {
                 influenceMap.put(majorityPopulation, captureRate);
             }
@@ -104,11 +100,12 @@ public class ControlPoint {
         
         else if(influenceOwner != majorityPopulation)
         {
-            if(majorityPopulation != null && captureRate != null && captureRate != 0)
+            if(majorityPopulation != null && captureRate != null && captureRate != 0F)
             {
-                if(influenceMap.get(influenceOwner) - captureRate <= 0)
+                if(influenceMap.get(influenceOwner) - captureRate <= 0F)
                 {
                     influenceMap.put(influenceOwner, 0F);
+                    influenceMap.put(majorityPopulation, 1F);
                 }
                 
                 else
@@ -120,35 +117,37 @@ public class ControlPoint {
         
         else if(influenceOwner == majorityPopulation)
         {
-            if(majorityPopulation != null && captureRate != null && captureRate != 0)
+            if(majorityPopulation != null && captureRate != null && captureRate != 0F)
             {
                 if(influenceMap.get(influenceOwner) + captureRate >= this.baseInfluence)
                 {
                     influenceMap.put(majorityPopulation, this.baseInfluence);
                     Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(region, influenceOwner, this));
+                    //TODO Migrate to listener.
+                    this.owner = influenceOwner;
                 }
                 
                 else
                 {
-                    influenceMap.put(majorityPopulation, influenceMap.get(influenceOwner) + captureRate);
+                    influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) + captureRate);
                 }
             }
         }
         
         if(influenceMap.get(influenceOwner) == this.baseInfluence && capturing == true)
         {
-            this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(this.owner.getFactionColor()).getDyeData(),false);
+            this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(this.owner.getFactionColor()).getWoolData(),false);
             capturing = false;
         }
         
         else if(influenceMap.get(influenceOwner) != this.baseInfluence && capturing == false)
         {
-            this.location.getBlock().setTypeId(Material.WOOL.getId(),false);
+            this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(Color.WHITE).getWoolData(),false);
             capturing = true;
         }
     }
     
-    private void CalculateMajorityPopulation()
+    private Faction CalculateMajorityPopulation()
     {
         /*
          * Majority Population on Point Calculations
@@ -166,20 +165,21 @@ public class ControlPoint {
         {
             if(player.getBukkitPlayer().getLocation().distanceSquared(location) <= captureRadius*captureRadius)
             {
-//                RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Player " + player.getBukkitPlayer().getName()
-//                        + " is in capture distance of ControlPoint " + this.identifier + " in region " + this.region.getDisplayName());
+                RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Player " + player.getBukkitPlayer().getName()
+                        + " is in capture distance of ControlPoint " + this.identifier + " in region " + this.region.getDisplayName());
                 Faction playersFaction = player.getFaction();
                 factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
             }
         }
         
-        Integer majorityPopulationAmount = 0;
+        int majorityPopulationAmount = 0;
         Faction majorityPopulation = null;
         for (Entry<Faction, Integer> faction : factionInfluence.entrySet())
         {
             if(faction.getValue() > majorityPopulationAmount)
             {
                 majorityPopulation = faction.getKey();
+                majorityPopulationAmount = faction.getValue().intValue();
             }
             
             else if(faction.getValue() == majorityPopulationAmount)
@@ -190,7 +190,7 @@ public class ControlPoint {
         
         if(majorityPopulation != null)
         {
-            Integer populationAgainstAmount = 0;
+            int populationAgainstAmount = 0;
             for (Entry<Faction, Integer> faction : factionInfluence.entrySet())
             {
                 if(faction.getKey() != majorityPopulation)
@@ -205,29 +205,32 @@ public class ControlPoint {
             }
         }
         
-        this.majorityPopulation = majorityPopulation;
+        if(majorityPopulation != null)
+        {
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Majority Population is: " + majorityPopulation.getName());
+        }
         
+        return majorityPopulation;
     }
     
 
-    private void CalculateInfluenceOwner()
+    private Faction CalculateInfluenceOwner()
     {
         /*
          * Influence Owner Calculations
          */
         
-        Map<Faction, Float> influenceMap = this.influenceMap;
         Faction influenceOwner = null;
         for(Entry<Faction, Float> influence : influenceMap.entrySet())
         {
-            if(influence.getValue() >= 0)
+            if(influence.getValue() > 0F)
             {
                 influenceOwner = influence.getKey();
                 break;
             }
         }
         
-        this.influenceOwner = influenceOwner;
+        return influenceOwner;
     }
 
     public Faction getOwner() {
@@ -284,5 +287,13 @@ public class ControlPoint {
 
     public void setBaseInfluence(Float baseInfluence) {
         this.baseInfluence = baseInfluence;
+    }
+
+    public Faction getMajorityPopulation() {
+        return majorityPopulation;
+    }
+
+    public void setMajorityPopulation(Faction majorityPopulation) {
+        this.majorityPopulation = majorityPopulation;
     }
 }

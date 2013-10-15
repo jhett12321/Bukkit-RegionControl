@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -51,7 +53,7 @@ public class ServerLogic {
         for(String faction : configfactions)
         {
             String permissionGroup = config.getMainConfig().getString("factions." + faction + ".permissiongroup");
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + faction + "'s Permission Group is: " + permissionGroup);
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + faction + "'s Permission Group is: " + permissionGroup);
             
             String configColor = config.getMainConfig().getString("factions." + faction + ".color");
             
@@ -74,7 +76,7 @@ public class ServerLogic {
         //Region Setup
         for(String configWorld : worlds)
         {
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Loading Regions for: " + configWorld);
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Loading Regions for: " + configWorld);
             Set<String> regions = config.getMainConfig().getConfigurationSection("worlds." + configWorld + ".regions").getKeys(false);
             for(String configRegion : regions)
             {
@@ -182,7 +184,7 @@ public class ServerLogic {
         Set<String> configFactions = config.getMainConfig().getConfigurationSection("factions").getKeys(false);
         for(String configFaction : configFactions)
         {
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Setting up Default Spawns for: " + configFaction);
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Setting up Default Spawns for: " + configFaction);
             Map<String, Object> regionWorlds = config.getMainConfig().getConfigurationSection("factions." + configFaction + ".defaultspawn").getValues(false);
             Map<World,CapturableRegion> spawnRegions = new HashMap<World,CapturableRegion>();
             Faction faction = factions.get(configFaction);

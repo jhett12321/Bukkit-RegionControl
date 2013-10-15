@@ -4,6 +4,8 @@ import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,13 +27,13 @@ public class ClientRunnables extends BukkitRunnable {
         this.player = player;
         
         World world = player.getBukkitPlayer().getWorld();
-//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current world is: " + world.getName());
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current world is: " + world.getName());
         
         Faction faction = player.getFaction();
-//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current faction is: " + faction.getName());
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the player's current faction is: " + faction.getName());
         
         CapturableRegion spawnRegion = faction.getFactionSpawnRegion(world);
-//        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the faction's spawn region is: " + spawnRegion.getDisplayName());
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: the faction's spawn region is: " + spawnRegion.getDisplayName());
 
         SpawnPoint spawnPoint = spawnRegion.getSpawnPoint();
         

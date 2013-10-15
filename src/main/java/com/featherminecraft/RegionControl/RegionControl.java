@@ -1,5 +1,7 @@
 package com.featherminecraft.RegionControl;
 
+import java.util.logging.Level;
+
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.plugin.PluginManager;
@@ -57,7 +59,7 @@ public static boolean isfirstrun;
         
         if(Utils.SpoutAvailable())
         {
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Beginning Spout Init");
+            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Beginning Spout Init");
             SpoutClientLogic.init();
             pm.registerEvents(new SpoutPlayerListener(), this);
         }
