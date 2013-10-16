@@ -1,70 +1,72 @@
-#Available Colors For Factions
-#black,blue,brown,cyan,gray,green,light_blue,lime,magenta,orange,pink,purple,red,silver,white,yellow
-
 factions:
   faction1:
-    displayname: 'The Elder Tyrants'
+    displayname: The Elder Tyrants
     permissiongroup: admin
     default: true
     defaultspawn:
       world: exampleregion
     color: red
-
+  faction2:
+    displayname: Isuren Forces
+    permissiongroup: admin2
+    default: false
+    defaultspawn:
+      world: exampleregion2
+    color: blue
 worlds:
   world:
     regions:
       exampleregion:
         world: world
-        displayname: 'Example Region Name'
+        displayname: Mekka Valley
         baseinfluence: 300
         adjacentregions:
-         - exampleregion2
+        - exampleregion2
         controlpoints:
           a:
-            x: 135
-            y: 45
-            z: 224
-            captureradius: 10
+            x: 179
+            y: 64
+            z: 62
+            captureradius: 5
             baseinfluence: 10
           b:
-            x: 192
-            y: 23
-            z: 224
-            captureradius: 10
+            x: 172
+            y: 64
+            z: 36
+            captureradius: 5
             baseinfluence: 10
           c:
-            x: 225
-            y: 42
-            z: 98
-            captureradius: 10
+            x: 159
+            y: 64
+            z: 56
+            captureradius: 5
             baseinfluence: 10
         spawnpoint:
-          x: 177
+          x: 172
           y: 64
-          z: 29
-
+          z: 51
       exampleregion2:
         world: world
-        displayname: 'Example Region Number 2'
+        displayname: Ishura Highlands
         baseinfluence: 300
         adjacentregions:
-         - exampleregion
+        - exampleregion
         controlpoints:
           a:
             x: 135
-            y: 45
+            y: 100
             z: 224
             captureradius: 10
             baseinfluence: 10
           b:
             x: 192
-            y: 23
+            y: 100
             z: 224
             captureradius: 10
             baseinfluence: 10
           c:
             x: 225
-            y: 42
+            y: 100
             z: 98
             captureradius: 10
             baseinfluence: 10
@@ -72,7 +74,6 @@ worlds:
           x: 177
           y: 64
           z: 29
-
 spout:
   enabled: true
   maxspawnpoints: 10

@@ -22,7 +22,7 @@ public class InfluenceManager {
     private CapturableRegion region;
     
     //Private Vars
-    private HashMap<Faction, Float> percentageOwned;
+//    private HashMap<Faction, Float> percentageOwned;
 
     public InfluenceManager(CapturableRegion cregion)
     {
@@ -32,25 +32,28 @@ public class InfluenceManager {
     
     public void Runnable()
     {
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Current Influence is: " + region.getInfluenceMap().get(region.getInfluenceOwner()));
         Faction majorityController = CalculateMajorityController();
-
+        region.setMajorityController(majorityController);
+        
         Faction influenceOwner = CalculateInfluenceOwner();
+        region.setInfluenceOwner(influenceOwner);
+        
         Float influenceRate = CalculateInfluenceRate();
+        region.setInfluenceRate(influenceRate);
         
-        Map<Faction, Float> influenceMap = region.getInfluenceMap();
-        
-        if(majorityController != null & influenceOwner != null && influenceRate != null)
-        {
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceOwner is: " + influenceOwner.getName());
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated Majority Controller is: " + majorityController.getName());
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceRate is: " + influenceRate.toString());
-        }
+//        if(majorityController != null & influenceOwner != null && influenceRate != null)
+//        {
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceOwner is: " + influenceOwner.getName());
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated Majority Controller is: " + majorityController.getName());
+//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceRate is: " + influenceRate.toString());
+//        }
         
         if(influenceOwner == null)
         {
             if(majorityController != null && influenceRate != null && influenceRate != 0F)
             {
-                influenceMap.put(majorityController, influenceRate);
+                region.getInfluenceMap().put(majorityController, influenceRate);
             }
         }
         
@@ -58,14 +61,14 @@ public class InfluenceManager {
         {
             if(majorityController != null && influenceRate != null && influenceRate != 0F)
             {
-                if(influenceMap.get(influenceOwner) - influenceRate <= 0F)
+                if(region.getInfluenceMap().get(influenceOwner) - influenceRate <= 0F)
                 {
-                    influenceMap.put(influenceOwner, 0F);
+                    region.getInfluenceMap().put(influenceOwner, 0F);
                 }
                 
                 else
                 {
-                    influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) - influenceRate);
+                    region.getInfluenceMap().put(influenceOwner, region.getInfluenceMap().get(influenceOwner) - influenceRate);
                 }
             }
         }
@@ -74,9 +77,9 @@ public class InfluenceManager {
         {
             if(majorityController != null && influenceRate != null && influenceRate != 0F)
             {
-                if(influenceMap.get(influenceOwner) + influenceRate >= region.getBaseInfluence())
+                if(region.getInfluenceMap().get(influenceOwner) + influenceRate >= region.getBaseInfluence())
                 {
-                    influenceMap.put(influenceOwner, region.getBaseInfluence());
+                    region.getInfluenceMap().put(influenceOwner, region.getBaseInfluence());
                     if(region.getOwner() == influenceOwner)
                     {
                         Bukkit.getServer().getPluginManager().callEvent(new RegionDefendEvent(region, influenceOwner));
@@ -90,15 +93,20 @@ public class InfluenceManager {
                 
                 else
                 {
-                    influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) + influenceRate);
+                    region.getInfluenceMap().put(influenceOwner, region.getInfluenceMap().get(influenceOwner) + influenceRate);
                 }
             }
         }
         
-        region.setInfluenceMap(influenceMap);
-        region.setInfluenceOwner(influenceOwner);
-        region.setMajorityController(majorityController);
-        region.setInfluenceRate(influenceRate);
+        if(region.getInfluenceMap().get(influenceOwner) != region.getBaseInfluence() && !region.isBeingCaptured() || region.getInfluenceRate() < 4F && !region.isBeingCaptured())
+        {
+            region.setBeingCaptured(true);
+        }
+        
+        else if(region.getInfluenceMap().get(influenceOwner) == region.getBaseInfluence() && region.getInfluenceRate() == 4F && region.isBeingCaptured())
+        {
+            region.setBeingCaptured(false);
+        }
     }
     
     public Faction CalculateMajorityController()
@@ -124,21 +132,10 @@ public class InfluenceManager {
             }
         }
         
-        Float totalOwnedControlPoints = ((Integer) ownedControlPoints.size()).floatValue();
-        percentageOwned = new HashMap<Faction,Float>();
-        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
-        {
-            if(faction.getValue() != null)
-            {
-                percentageOwned.put(faction.getValue(), 0F);
-            }
-        }
-        
         Faction majorityController = null;
         Float majorityAmount = 0F;
         for(Entry<Faction, Float> faction : ownedControlPoints.entrySet())
         {
-            percentageOwned.put(faction.getKey(), faction.getValue() / totalOwnedControlPoints);
             if(faction.getValue() > majorityAmount)
             {
                 majorityController = faction.getKey();
@@ -193,37 +190,41 @@ public class InfluenceManager {
          * Rate 3: 66% Diff. +
          * Rate 4: 100% Diff.
          */
-        
-        Float percentageAgainst = 0F;
-        
-        for(Entry<Faction, Float> faction : percentageOwned.entrySet())
+        List<ControlPoint> controlPoints = region.getControlPoints();
+        float effectiveControlPointCount = 0F;
+        for(ControlPoint controlPoint : controlPoints)
         {
-            if(faction.getKey() != region.getMajorityController())
+            if(controlPoint.getOwner() == region.getMajorityController() && !controlPoint.isCapturing())
             {
-                percentageAgainst += faction.getValue();
+                effectiveControlPointCount += 1F;
+            }
+            else if(controlPoint.getOwner() != region.getMajorityController() && !controlPoint.isCapturing())
+            {
+                effectiveControlPointCount -= 1F;
             }
         }
+        
+        float percentageOwned = effectiveControlPointCount / ((Integer) controlPoints.size()).floatValue();
         
         Float influenceRate = 0F;
         if(region.getMajorityController() != null)
         {
-            Float percentageDifference = percentageOwned.get(region.getMajorityController()) - percentageAgainst;
-            if(percentageDifference >= 1F)
+            if(percentageOwned >= 1F)
             {
                 influenceRate = 4F;
             }
             
-            else if(percentageDifference > 0.66)
+            else if(percentageOwned > 0.66)
             {
                 influenceRate = 3F;
             }
             
-            else if(percentageDifference > 0.33)
+            else if(percentageOwned > 0.33)
             {
                 influenceRate = 2F;
             }
             
-            else if(percentageDifference > 0.01F)
+            else if(percentageOwned > 0.01F)
             {
                 influenceRate = 1F;
             }

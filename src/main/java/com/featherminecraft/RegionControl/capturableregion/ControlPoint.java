@@ -91,7 +91,6 @@ public class ControlPoint {
         
         if(influenceOwner == null)
         {
-            Bukkit.getServer().getPluginManager().callEvent(new ControlPointNeutraliseEvent(region, influenceOwner, this));
             if(majorityPopulation != null && captureRate != null && captureRate != 0F)
             {
                 influenceMap.put(majorityPopulation, captureRate);
@@ -143,6 +142,7 @@ public class ControlPoint {
         else if(influenceMap.get(influenceOwner) != this.baseInfluence && capturing == false)
         {
             this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(Color.WHITE).getWoolData(),false);
+            Bukkit.getServer().getPluginManager().callEvent(new ControlPointNeutraliseEvent(region, influenceOwner, this));
             capturing = true;
         }
     }

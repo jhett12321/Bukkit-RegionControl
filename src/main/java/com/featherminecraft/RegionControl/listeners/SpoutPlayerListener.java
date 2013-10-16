@@ -15,6 +15,8 @@ import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
+import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
+import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.RegionControl.events.InfluenceRateChangeEvent;
 import com.featherminecraft.RegionControl.spout.RespawnScreen;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
@@ -56,7 +58,28 @@ public class SpoutPlayerListener implements Listener {
             RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: " + newRegion.getDisplayName() + "'s Base Influence is " + newRegion.getBaseInfluence());
             spoutClientLogic.updateRegion(newRegion);
         }
+    }
+    
+    @EventHandler
+    public void onControlPointNeutralise(ControlPointNeutraliseEvent event)
+    {
+        List<RCPlayer> playerList = event.getRegion().getPlayers();
         
+        for(RCPlayer player : playerList)
+        {
+            player.getSpoutClientLogic().updateControlPoints(event.getRegion());
+        }
+    }
+    
+    @EventHandler
+    public void onControlPointCapture(ControlPointCaptureEvent event)
+    {
+        List<RCPlayer> playerList = event.getRegion().getPlayers();
+        
+        for(RCPlayer player : playerList)
+        {
+            player.getSpoutClientLogic().updateControlPoints(event.getRegion());
+        }
     }
     
     @EventHandler

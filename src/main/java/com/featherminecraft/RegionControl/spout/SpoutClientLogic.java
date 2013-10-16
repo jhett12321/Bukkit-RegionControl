@@ -10,6 +10,7 @@ import org.getspout.spoutapi.gui.*;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 
@@ -45,6 +46,8 @@ public class SpoutClientLogic {
     private List<Widget> screenCaptureElements = new ArrayList<Widget>();
     private boolean allElementsHidden = false;
     private boolean captureElementsHidden = true;
+    private ArrayList<Label> controlPoints = new ArrayList<Label>();
+    private InGameHUD screen;
 
     public static void init()
     {
@@ -90,9 +93,7 @@ public class SpoutClientLogic {
     }
 
     public void setupClientElements(RCPlayer rcplayer) {
-        Screen screen = ((SpoutPlayer) rcplayer.getBukkitPlayer()).getMainScreen();
-        
-        Color factioncolor = new Color(1F, 0, 0, 0.8F);
+        screen = ((SpoutPlayer) rcplayer.getBukkitPlayer()).getMainScreen();
         
         //Background
         backgroundContainer = (Container) new GenericContainer()
@@ -100,7 +101,7 @@ public class SpoutClientLogic {
         .setAlign(WidgetAnchor.CENTER_LEFT)
         .setAnchor(WidgetAnchor.CENTER_LEFT)
         .setWidth(150)
-        .setHeight(80)
+        .setHeight(40)
         .setX(3)
         .setY(-5);
         
@@ -166,14 +167,25 @@ public class SpoutClientLogic {
         screenElements.add(controlPointsContainer);
         
         //TODO Iterate to display the amount of controlpoints in a region
-        Label controlPointA = (Label) new GenericLabel().setText("A").setTextColor(new Color(1F,0,0)).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5);
-        screenElements.add(controlPointA);
-        Label controlPointB = (Label) new GenericLabel().setText("B").setTextColor(new Color(1F,0,0)).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5);
-        screenElements.add(controlPointB);
-        Label controlPointC = (Label) new GenericLabel().setText("C").setTextColor(new Color(1F,0,0)).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5);
-        screenElements.add(controlPointC);
+        for(ControlPoint controlPoint : rcplayer.getCurrentRegion().getControlPoints())
+        {
+            Color spoutColor = new Color(255,255,255);
+            if(!controlPoint.isCapturing())
+            {
+                Integer red = controlPoint.getInfluenceOwner().getFactionColor().getRed();
+                Integer green = controlPoint.getInfluenceOwner().getFactionColor().getGreen();
+                Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getBlue();
+                
+                spoutColor.setRed(red).setGreen(green).setBlue(blue);
+            }
+            controlPoints.add((Label) new GenericLabel().setText(controlPoint.getIdentifier().toUpperCase()).setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5));
+        }
         
-        controlPointsContainer.addChildren(controlPointA, controlPointB, controlPointC);
+        for(Label controlPoint : controlPoints)
+        {
+            controlPointsContainer.addChild(controlPoint);
+            screenElements.add(controlPoint);
+        }
         
         //Capture Icons Goes here
         influenceOwnerIconContainer = (Container) new GenericContainer()
@@ -203,7 +215,13 @@ public class SpoutClientLogic {
         screenElements.add(captureBarContainer);
         screenCaptureElements.add(captureBarContainer);
         
-        captureBar = (Gradient) new GenericGradient(factioncolor).setWidth(100)
+//        Integer red = rcplayer.getCurrentRegion().getInfluenceOwner().getFactionColor().getRed();
+//        Integer green = rcplayer.getCurrentRegion().getInfluenceOwner().getFactionColor().getGreen();
+//        Integer blue = rcplayer.getCurrentRegion().getInfluenceOwner().getFactionColor().getBlue();
+        
+        Color spoutColor = new Color(255,0,0);
+        
+        captureBar = (Gradient) new GenericGradient(spoutColor).setWidth(100)
                 .setHeight(10).setMargin(0, 3).setFixed(true).setPriority(RenderPriority.High);
         
         screenElements.add(captureBar);
@@ -289,16 +307,34 @@ public class SpoutClientLogic {
         barAnimContainer.addChild(captureBarAnim);
         
         screen.attachWidgets(RegionControl.plugin, backgroundContainer, regionInfo,controlPointsContainer, influenceOwnerIconContainer, captureBarContainer, captureBarSpaceContainer, captureBarBackgroundContainer, timerContainer, barAnimContainer);
-        screen.attachWidgets(RegionControl.plugin, background , ownericon, regionname,controlPointA,controlPointB,controlPointC, influenceOwnerIcon , captureBarBackground,captureBar, captureBarSpace, captureTimer,captureBarAnim);
+        screen.attachWidgets(RegionControl.plugin, background , ownericon, regionname, influenceOwnerIcon , captureBarBackground,captureBar, captureBarSpace, captureTimer,captureBarAnim);
+        for(Label controlPoint : controlPoints)
+        {
+            screen.attachWidget(RegionControl.plugin, controlPoint);
+        }
         
     }
     
     public void updateRegion(final CapturableRegion updatedRegion)
     {
+        if(runnable != null)
+        {
+            runnable.cancel();
+        }
         if(updatedRegion == null)
         {
             if(allElementsHidden == false)
             {
+                for(Label controlPoint : controlPoints)
+                {
+                    if(controlPoint != null)
+                    {
+                        controlPointsContainer.removeChild(controlPoint);
+                        screenElements.remove(controlPoint);
+                        screen.removeWidget(controlPoint);
+                        controlPoint.setVisible(false);
+                    }
+                }
                 hideAllElements();
             }
             return;
@@ -306,6 +342,7 @@ public class SpoutClientLogic {
         
         else if(updatedRegion != null && allElementsHidden == true)
         {
+            updateControlPoints(updatedRegion);
             showNonCaptureElements();
         }
         
@@ -408,7 +445,7 @@ public class SpoutClientLogic {
                     Integer blue = updatedRegion.getInfluenceOwner().getFactionColor().getBlue();
                     
                     Color spoutColor = new Color(red,green,blue);
-                    captureBar.setColor(spoutColor).setVisible(true);
+                    captureBar.setColor(spoutColor);
                 }
                 
             }.runTaskTimer(RegionControl.plugin, 20, 20);
@@ -424,6 +461,41 @@ public class SpoutClientLogic {
             captureTimer.setVisible(false);
             influenceOwnerIcon.setVisible(false);
             background.setHeight(40);
+        }
+    }
+    
+    public void updateControlPoints(CapturableRegion region)
+    {
+        for(Label controlPoint : controlPoints)
+        {
+            if(controlPoint != null)
+            {
+                controlPointsContainer.removeChild(controlPoint);
+                screenElements.remove(controlPoint);
+                screen.removeWidget(controlPoint);
+                controlPoint.setVisible(false);
+            }
+        }
+        controlPoints = new ArrayList<Label>();
+        for(ControlPoint controlPoint : region.getControlPoints())
+        {
+            Color spoutColor = new Color(255,255,255);
+            if(!controlPoint.isCapturing())
+            {
+                Integer red = controlPoint.getOwner().getFactionColor().getRed();
+                Integer green = controlPoint.getOwner().getFactionColor().getGreen();
+                Integer blue = controlPoint.getOwner().getFactionColor().getBlue();
+                
+                spoutColor.setRed(red).setGreen(green).setBlue(blue);
+            }
+            controlPoints.add((Label) new GenericLabel().setText(controlPoint.getIdentifier().toUpperCase()).setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5));
+        }
+        
+        for(Label controlPoint : controlPoints)
+        {
+            controlPointsContainer.addChild(controlPoint);
+            screenElements.add(controlPoint);
+            screen.attachWidget(RegionControl.plugin, controlPoint);
         }
     }
     
