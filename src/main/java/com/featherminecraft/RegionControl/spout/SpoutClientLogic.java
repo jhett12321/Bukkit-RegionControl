@@ -3,16 +3,31 @@ package com.featherminecraft.RegionControl.spout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.gui.*;
+import org.getspout.spoutapi.gui.Color;
+import org.getspout.spoutapi.gui.Container;
+import org.getspout.spoutapi.gui.ContainerType;
+import org.getspout.spoutapi.gui.GenericContainer;
+import org.getspout.spoutapi.gui.GenericGradient;
+import org.getspout.spoutapi.gui.GenericLabel;
+import org.getspout.spoutapi.gui.GenericTexture;
+import org.getspout.spoutapi.gui.Gradient;
+import org.getspout.spoutapi.gui.InGameHUD;
+import org.getspout.spoutapi.gui.Label;
+import org.getspout.spoutapi.gui.RenderPriority;
+import org.getspout.spoutapi.gui.Texture;
+import org.getspout.spoutapi.gui.Widget;
+import org.getspout.spoutapi.gui.WidgetAnchor;
+import org.getspout.spoutapi.gui.WidgetAnim;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
+import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
 public class SpoutClientLogic {
     //Variables created from setup

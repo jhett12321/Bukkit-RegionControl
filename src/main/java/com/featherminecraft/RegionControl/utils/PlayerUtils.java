@@ -10,13 +10,13 @@ import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 
-import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
-import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
+import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
+import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;

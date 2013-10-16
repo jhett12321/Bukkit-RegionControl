@@ -1,10 +1,12 @@
 package com.featherminecraft.RegionControl.utils;
 
 import java.util.List;
+
 import org.bukkit.World;
-import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
+import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class RegionUtils {

@@ -4,10 +4,9 @@ import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-
+import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
-import com.featherminecraft.RegionControl.Faction;
 
 //This event is triggered upon a Control Point Capture.
 public class ControlPointCaptureEvent extends Event {

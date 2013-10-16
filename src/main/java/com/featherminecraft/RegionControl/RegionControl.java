@@ -8,7 +8,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-
 import com.featherminecraft.RegionControl.listeners.GenericListener;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
@@ -68,7 +67,8 @@ public static boolean isfirstrun;
     private boolean setupPermissions()
     {
         RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
-        if (permissionProvider != null) {
+        if (permissionProvider != null)
+        {
             permission = permissionProvider.getProvider();
         }
         return (permission != null);
@@ -77,6 +77,7 @@ public static boolean isfirstrun;
     @Override
     public void onDisable() 
     {
+        //TODO: Fix errors.
         //new Config().saveAll();
     }
 }

@@ -2,7 +2,6 @@ package com.featherminecraft.RegionControl.capturableregion;
 
 import org.bukkit.Location;
 
-
 public class SpawnPoint {
 
     private Location location;

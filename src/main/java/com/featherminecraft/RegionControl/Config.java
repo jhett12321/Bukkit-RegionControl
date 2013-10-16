@@ -1,12 +1,11 @@
 package com.featherminecraft.RegionControl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-
-import java.io.File;
-import java.io.IOException;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,7 +40,8 @@ public class Config {
         dataConfig = YamlConfiguration.loadConfiguration(dataFile);
     }
 
-    public FileConfiguration getDataConfig() {
+    public FileConfiguration getDataConfig()
+    {
         if ( dataConfig == null )
         {
             this.reloadDataFile();
@@ -49,7 +49,8 @@ public class Config {
         return dataConfig;
     }
 
-    public FileConfiguration getMainConfig() {
+    public FileConfiguration getMainConfig()
+    {
         if ( mainconfig == null )
         {
             this.reloadMainConfig();
@@ -59,12 +60,16 @@ public class Config {
 
     public Boolean saveDataFile()
     {
-        if (dataConfig == null || dataFile == null) {
+        if (dataConfig == null || dataFile == null)
+        {
             return false;
-            }
-        try {
+        }
+        try
+        {
             getDataConfig().save(dataFile);
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) 
+        {
             RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config", ex);
             return false;
         }
@@ -73,12 +78,16 @@ public class Config {
 
     public Boolean saveMainConfig()
     {
-        if (mainconfig == null || mainconfigfile == null) {
+        if (mainconfig == null || mainconfigfile == null)
+        {
             return false;
-            }
-        try {
+        }
+        try
+        {
             getMainConfig().save(mainconfigfile);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex)
+        {
             RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config", ex);
             return false;
         }
@@ -115,7 +124,7 @@ public class Config {
 //            Float baseInfluence = region.getBaseInfluence();
             Faction influenceOwner = region.getInfluenceOwner();
             String configInfluenceOwner = influenceOwner.getName();
-            float configInfluence = region.getInfluenceMap().get(influenceOwner);
+            int configInfluence = region.getInfluenceMap().get(influenceOwner).intValue();
             String configOwner = region.getOwner().getName();
             
             //Key location variables
@@ -136,7 +145,7 @@ public class Config {
             {
                 Faction controlPointInfluenceOwner = controlPoint.getInfluenceOwner();
                 String configControlPointInfluenceOwner = controlPointInfluenceOwner.getName();
-                Float configControlPointInfluence = controlPoint.getInfluenceMap().get(controlPointInfluenceOwner);
+                int configControlPointInfluence = controlPoint.getInfluenceMap().get(controlPointInfluenceOwner).intValue();
                 String configControlPointId = controlPoint.getIdentifier();
                 String configControlPointOwner = controlPoint.getOwner().getName();
                 

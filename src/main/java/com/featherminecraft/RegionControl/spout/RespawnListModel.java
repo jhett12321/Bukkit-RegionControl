@@ -1,6 +1,7 @@
 package com.featherminecraft.RegionControl.spout;
 
 import java.util.List;
+
 import org.getspout.spoutapi.gui.AbstractListModel;
 import org.getspout.spoutapi.gui.ListWidgetItem;
 import org.getspout.spoutapi.player.SpoutPlayer;

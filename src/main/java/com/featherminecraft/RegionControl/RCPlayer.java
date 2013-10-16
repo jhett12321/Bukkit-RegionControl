@@ -34,47 +34,58 @@ public class RCPlayer {
         return Bukkit.getPlayer(playerName);
     }
 
-    public CapturableRegion getCurrentRegion() {
+    public CapturableRegion getCurrentRegion()
+    {
         return currentRegion;
     }
 
-    public void setCurrentRegion(CapturableRegion currentRegion) {
+    public void setCurrentRegion(CapturableRegion currentRegion)
+    {
         this.currentRegion = currentRegion;
     }
 
-    public Faction getFaction() {
+    public Faction getFaction()
+    {
         return faction;
     }
 
-    public void setFaction(Faction faction) {
+    public void setFaction(Faction faction)
+    {
         this.faction = faction;
     }
 
-    public Boolean getHasSpout() {
+    public Boolean getHasSpout()
+    {
         return hasSpout;
     }
 
-    public void setHasSpout(Boolean hasSpout) {
+    public void setHasSpout(Boolean hasSpout)
+    {
         this.hasSpout = hasSpout;
     }
 
-    public SpoutClientLogic getSpoutClientLogic() {
+    public SpoutClientLogic getSpoutClientLogic()
+    {
         return spoutClientLogic;
     }
 
-    public void setSpoutClientLogic(SpoutClientLogic spoutClientLogic) {
+    public void setSpoutClientLogic(SpoutClientLogic spoutClientLogic)
+    {
         this.spoutClientLogic = spoutClientLogic;
     }
 
-    public Location getRespawnLocation() {
+    public Location getRespawnLocation()
+    {
         return respawnLocation;
     }
 
-    public void setRespawnLocation(Location respawnLocation) {
+    public void setRespawnLocation(Location respawnLocation)
+    {
         this.respawnLocation = respawnLocation;
     }
 
-    public BukkitTask getClientRunnables() {
+    public BukkitTask getClientRunnables()
+    {
         return clientRunnables;
     }
 }
