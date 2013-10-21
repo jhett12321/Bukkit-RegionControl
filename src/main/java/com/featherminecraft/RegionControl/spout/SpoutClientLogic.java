@@ -42,11 +42,6 @@ public class SpoutClientLogic {
     private Texture ownericon;
     private Texture influenceOwnerIcon;
     
-    //Bar Animation Info
-    private Short barAnimRate;
-    private Float barFloatValue;
-    private Short barShortValue;
-    
     //Misc
     private BukkitTask runnable;
     private Container influenceOwnerIconContainer;
@@ -61,8 +56,9 @@ public class SpoutClientLogic {
     private List<Widget> screenCaptureElements = new ArrayList<Widget>();
     private boolean allElementsHidden = false;
     private boolean captureElementsHidden = true;
-    private ArrayList<Label> controlPoints = new ArrayList<Label>();
+    private ArrayList<Label> controlPointLabels = new ArrayList<Label>();
     private InGameHUD screen;
+    protected CapturableRegion region;
 
     public static void init()
     {
@@ -109,6 +105,7 @@ public class SpoutClientLogic {
 
     public void setupClientElements(RCPlayer rcplayer) {
         screen = ((SpoutPlayer) rcplayer.getBukkitPlayer()).getMainScreen();
+        region = rcplayer.getCurrentRegion();
         
         //Background
         backgroundContainer = (Container) new GenericContainer()
@@ -152,7 +149,7 @@ public class SpoutClientLogic {
         
         screenElements.add(ownericon);
         
-        regionname = (Label) ((Label) new GenericLabel().setText(rcplayer.getCurrentRegion().getDisplayName()).
+        regionname = (Label) ((Label) new GenericLabel().setText(region.getDisplayName()).
                 setMargin(5, 5)).setShadow(false).setResize(true).setFixed(true);
         
         screenElements.add(regionname);
@@ -182,7 +179,7 @@ public class SpoutClientLogic {
         screenElements.add(controlPointsContainer);
         
         //TODO Iterate to display the amount of controlpoints in a region
-        for(ControlPoint controlPoint : rcplayer.getCurrentRegion().getControlPoints())
+        for(ControlPoint controlPoint : region.getControlPoints())
         {
             Color spoutColor = new Color(255,255,255);
             if(!controlPoint.isCapturing())
@@ -193,10 +190,10 @@ public class SpoutClientLogic {
                 
                 spoutColor.setRed(red).setGreen(green).setBlue(blue);
             }
-            controlPoints.add((Label) new GenericLabel().setText(controlPoint.getIdentifier().toUpperCase()).setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5));
+            controlPointLabels.add((Label) new GenericLabel().setText(controlPoint.getIdentifier().toUpperCase()).setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5));
         }
         
-        for(Label controlPoint : controlPoints)
+        for(Label controlPoint : controlPointLabels)
         {
             controlPointsContainer.addChild(controlPoint);
             screenElements.add(controlPoint);
@@ -323,24 +320,84 @@ public class SpoutClientLogic {
         
         screen.attachWidgets(RegionControl.plugin, backgroundContainer, regionInfo,controlPointsContainer, influenceOwnerIconContainer, captureBarContainer, captureBarSpaceContainer, captureBarBackgroundContainer, timerContainer, barAnimContainer);
         screen.attachWidgets(RegionControl.plugin, background , ownericon, regionname, influenceOwnerIcon , captureBarBackground,captureBar, captureBarSpace, captureTimer,captureBarAnim);
-        for(Label controlPoint : controlPoints)
+        for(Label controlPoint : controlPointLabels)
         {
             screen.attachWidget(RegionControl.plugin, controlPoint);
         }
         
+        runnable = new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                if(region != null && region.isBeingCaptured())
+                {
+                    if(captureElementsHidden)
+                    {
+                        showCaptureElements();
+                    }
+                    
+                    if(background.getHeight() != 70)
+                    {
+                        background.setHeight(70);
+                    }
+                    
+                    Integer seconds = region.getSecondsToCapture();
+                    Integer minutes = region.getMinutesToCapture();
+                    
+                    if(seconds == 0 && minutes == 0)
+                    {
+                        captureTimer.setVisible(false);
+                    }
+                    else
+                    {
+                        if(!captureTimer.isVisible())
+                        {
+                            captureTimer.setVisible(true);
+                        }
+                        
+                        String secondsString = seconds.toString();
+                        if(seconds < 10)
+                        {
+                            secondsString = "0" + secondsString;
+                        }
+                        captureTimer.setText(minutes.toString() + ":" + secondsString);
+                    }
+                    
+                    float influence = region.getInfluenceMap().get(region.getInfluenceOwner());
+                    float baseinfluence = region.getBaseInfluence();
+                    
+                    int barwidth = (int) (influence / baseinfluence * 100);
+                    captureBar.setWidth(barwidth);
+                    captureBarSpace.setWidth(100 - barwidth);
+                    
+                    Integer red = region.getInfluenceOwner().getFactionColor().getRed();
+                    Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
+                    Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
+                    
+                    Color spoutColor = new Color(red,green,blue);
+                    captureBar.setColor(spoutColor);
+                }
+                else if(!region.isBeingCaptured() && !captureElementsHidden)
+                {
+                    hideCaptureElements();
+                    if(background.getHeight() != 40)
+                    {
+                        background.setHeight(40);
+                    }
+                }
+            }
+        }.runTaskTimer(RegionControl.plugin, 20, 20);
     }
     
-    public void updateRegion(final CapturableRegion updatedRegion)
+    public void updateRegion(CapturableRegion updatedRegion)
     {
-        if(runnable != null)
-        {
-            runnable.cancel();
-        }
+        this.region = updatedRegion;
         if(updatedRegion == null)
         {
             if(allElementsHidden == false)
             {
-                for(Label controlPoint : controlPoints)
+                for(Label controlPoint : controlPointLabels)
                 {
                     if(controlPoint != null)
                     {
@@ -357,164 +414,187 @@ public class SpoutClientLogic {
         
         else if(updatedRegion != null && allElementsHidden == true)
         {
+            if(allElementsHidden == true)
+            {
+                showNonCaptureElements();
+            }
             updateControlPoints(updatedRegion);
-            showNonCaptureElements();
+            
+            //ownericon.setUrl(region.getOwner().getFactionIconUrl()); //TODO
+            ownericon.setUrl("faction.png");
+            regionname.setText(updatedRegion.getDisplayName());
+            
+            float currentscale = 1F;
+            while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 116)
+            {
+//                RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Text Width is currently: " + GenericLabel.getStringWidth(regionname.getText(), currentscale)); //Debug
+                currentscale -= 0.01F;
+            }
+            regionname.setScale(currentscale);
+            
+            if(updatedRegion.isBeingCaptured())
+            {
+                showCaptureElements();
+                background.setHeight(70);
+                
+                updateInfluenceRate(region.getInfluenceRate());
+            }
+            
+            else if(!updatedRegion.isBeingCaptured())
+            {
+                captureBarAnim.animateStop(false);
+                hideCaptureElements();
+                background.setHeight(40);
+            }
         }
-        
-        //ownericon.setUrl(region.getOwner().getFactionIconUrl()); //TODO
-        ownericon.setUrl("faction.png");
-        regionname.setText(updatedRegion.getDisplayName());
-        
-        float currentscale = 1F;
-        while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 116)
+    }
+    
+    public void updateInfluenceRate(Float influenceRate)
+    {
+        if(influenceRate != null && influenceRate != 0F)
         {
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Text Width is currently: " + GenericLabel.getStringWidth(regionname.getText(), currentscale)); //Debug
-            currentscale -= 0.01F;
-        }
-        regionname.setScale(currentscale);
-        
-        if(updatedRegion.isBeingCaptured())
-        {
-            showCaptureElements();
+            short barAnimRate = 0;
+            float barFloatValue = 0F;
+            short barShortValue = 0;
             
-            Integer red = updatedRegion.getInfluenceOwner().getFactionColor().getRed();
-            Integer green = updatedRegion.getInfluenceOwner().getFactionColor().getGreen();
-            Integer blue = updatedRegion.getInfluenceOwner().getFactionColor().getBlue();
-            
-            Color spoutColor = new Color(red,green,blue);
-            captureBar.setColor(spoutColor).setVisible(true);
-            captureBarSpace.setVisible(true);
-            captureBarBackground.setVisible(true);
-            captureTimer.setVisible(true);
-            influenceOwnerIcon.setVisible(true);
-            backgroundContainer.setHeight(70);
-            
-            Float influencerate = updatedRegion.getInfluenceRate();
-            
-            if(influencerate == 1)
+            if(influenceRate == 1F)
             {
                 barAnimRate = 7;
                 barFloatValue = 0.92F;
                 barShortValue = 100;
             }
             
-            else if(influencerate == 2)
+            else if(influenceRate == 2F)
             {
                 barAnimRate = 5;
                 barFloatValue = 1.15F;
-                barShortValue = 100;
+                barShortValue = 80;
             }
             
-            else if(influencerate == 3)
+            else if(influenceRate == 3F)
             {
                 barAnimRate = 3;
                 barFloatValue = 1.55F;
-                barShortValue = 100;
+                barShortValue = 60;
             }
             
-            else if(influencerate == 4)
+            else if(influenceRate == 4F)
             {
                 barAnimRate = 1;
                 barFloatValue = 2.35F;
-                barShortValue = 100;
+                barShortValue = 40;
             }
             
-            if(influencerate == 1 || influencerate == 2 || influencerate == 3 || influencerate == 4)
+            if(influenceRate == 1F || influenceRate == 2F || influenceRate == 3F || influenceRate == 4F)
             {
-                captureBarAnim.animateStop(true);
-                if(updatedRegion.getMajorityController() == updatedRegion.getInfluenceOwner())
+                captureBarAnim.animateStop(false).setVisible(true);
+                if(region.getMajorityController() == region.getInfluenceOwner())
                 {
                     captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
                     captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                 }
                 
-                else if (updatedRegion.getMajorityController() != updatedRegion.getInfluenceOwner())
+                else if (region.getMajorityController() != region.getInfluenceOwner())
                 {
                     captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
                     captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
                 }
             }
-            
-            runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Integer seconds = updatedRegion.getSecondsToCapture();
-                    Integer minutes = updatedRegion.getMinutesToCapture();
-                    
-                    String secondsString = seconds.toString();
-                    if(seconds < 10)
-                    {
-                        secondsString = "0" + secondsString;
-                    }
-                    captureTimer.setText(minutes.toString() + ":" + secondsString);
-                    
-                    float influence = updatedRegion.getInfluenceMap().get(updatedRegion.getInfluenceOwner());
-                    float baseinfluence = updatedRegion.getBaseInfluence();
-                    
-                    int barwidth = (int) (influence / baseinfluence * 100);
-                    captureBar.setWidth(barwidth);
-                    captureBarSpace.setWidth(100 - barwidth);
-                    
-                    Integer red = updatedRegion.getInfluenceOwner().getFactionColor().getRed();
-                    Integer green = updatedRegion.getInfluenceOwner().getFactionColor().getGreen();
-                    Integer blue = updatedRegion.getInfluenceOwner().getFactionColor().getBlue();
-                    
-                    Color spoutColor = new Color(red,green,blue);
-                    captureBar.setColor(spoutColor);
-                }
-                
-            }.runTaskTimer(RegionControl.plugin, 20, 20);
         }
         
-        else if(!updatedRegion.isBeingCaptured() && runnable != null)
+        else
         {
-            runnable.cancel();
             captureBarAnim.animateStop(false).setVisible(false);
-            captureBar.setVisible(false);
-            captureBarSpace.setVisible(false);
-            captureBarBackground.setVisible(false);
-            captureTimer.setVisible(false);
-            influenceOwnerIcon.setVisible(false);
-            background.setHeight(40);
         }
     }
     
     public void updateControlPoints(CapturableRegion region)
     {
-        for(Label controlPoint : controlPoints)
+        if(region != null && region.getControlPoints().size() == controlPointLabels.size())
         {
-            if(controlPoint != null)
+            for(ControlPoint controlPoint : region.getControlPoints())
             {
-                controlPointsContainer.removeChild(controlPoint);
-                screenElements.remove(controlPoint);
-                screen.removeWidget(controlPoint);
-                controlPoint.setVisible(false);
+                for(Label controlPointLabel : controlPointLabels)
+                {
+                    if(controlPointLabel.getText().equalsIgnoreCase(controlPoint.getIdentifier()))
+                    {
+                        Color spoutColor = new Color(255,255,255);
+                        if(!controlPoint.isCapturing())
+                        {
+                            Integer red = controlPoint.getOwner().getFactionColor().getRed();
+                            Integer green = controlPoint.getOwner().getFactionColor().getGreen();
+                            Integer blue = controlPoint.getOwner().getFactionColor().getBlue();
+                            
+                            spoutColor.setRed(red).setGreen(green).setBlue(blue);
+                        }
+                        controlPointLabel.setTextColor(spoutColor);
+                    }
+                }
             }
-        }
-        controlPoints = new ArrayList<Label>();
-        for(ControlPoint controlPoint : region.getControlPoints())
-        {
-            Color spoutColor = new Color(255,255,255);
-            if(!controlPoint.isCapturing())
-            {
-                Integer red = controlPoint.getOwner().getFactionColor().getRed();
-                Integer green = controlPoint.getOwner().getFactionColor().getGreen();
-                Integer blue = controlPoint.getOwner().getFactionColor().getBlue();
-                
-                spoutColor.setRed(red).setGreen(green).setBlue(blue);
-            }
-            controlPoints.add((Label) new GenericLabel().setText(controlPoint.getIdentifier().toUpperCase()).setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5));
         }
         
-        for(Label controlPoint : controlPoints)
+        else if(controlPointLabels != null && region != null)
         {
-            controlPointsContainer.addChild(controlPoint);
-            screenElements.add(controlPoint);
-            screen.attachWidget(RegionControl.plugin, controlPoint);
+            for(Label controlPoint : controlPointLabels)
+            {
+                if(controlPoint != null)
+                {
+                    controlPointsContainer.removeChild(controlPoint);
+                    screenElements.remove(controlPoint);
+                    screen.removeWidget(controlPoint);
+                    controlPoint.setVisible(false);
+                }
+            }
+            controlPointLabels = new ArrayList<Label>();
+            for(ControlPoint controlPoint : region.getControlPoints())
+            {
+                Color spoutColor = new Color(255,255,255);
+                if(!controlPoint.isCapturing())
+                {
+                    Integer red = controlPoint.getOwner().getFactionColor().getRed();
+                    Integer green = controlPoint.getOwner().getFactionColor().getGreen();
+                    Integer blue = controlPoint.getOwner().getFactionColor().getBlue();
+                    
+                    spoutColor.setRed(red).setGreen(green).setBlue(blue);
+                }
+                controlPointLabels.add((Label) new GenericLabel().setText(controlPoint.getIdentifier().toUpperCase()).setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5));
+            }
+            
+            for(Label controlPoint : controlPointLabels)
+            {
+                controlPointsContainer.addChild(controlPoint);
+                screenElements.add(controlPoint);
+                screen.attachWidget(RegionControl.plugin, controlPoint);
+            }
+        }
+        
+        else if (region != null)
+        {
+            controlPointLabels = new ArrayList<Label>();
+            for(ControlPoint controlPoint : region.getControlPoints())
+            {
+                Color spoutColor = new Color(255,255,255);
+                if(!controlPoint.isCapturing())
+                {
+                    Integer red = controlPoint.getOwner().getFactionColor().getRed();
+                    Integer green = controlPoint.getOwner().getFactionColor().getGreen();
+                    Integer blue = controlPoint.getOwner().getFactionColor().getBlue();
+                    
+                    spoutColor.setRed(red).setGreen(green).setBlue(blue);
+                }
+                controlPointLabels.add((Label) new GenericLabel().setText(controlPoint.getIdentifier().toUpperCase()).setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true).setMargin(5));
+            }
+            
+            for(Label controlPoint : controlPointLabels)
+            {
+                controlPointsContainer.addChild(controlPoint);
+                screenElements.add(controlPoint);
+                screen.attachWidget(RegionControl.plugin, controlPoint);
+            }
         }
     }
     
-    public void hideAllElements()
+    private void hideAllElements()
     {
         if(!allElementsHidden)
         {
@@ -526,8 +606,7 @@ public class SpoutClientLogic {
         }
     }
     
-    //TODO check if a hideCaptureElements and a showAllElements is needed.
-    public void showNonCaptureElements()
+    private void showNonCaptureElements()
     {
         if(allElementsHidden)
         {
@@ -542,7 +621,7 @@ public class SpoutClientLogic {
         }
     }
     
-    public void showCaptureElements()
+    private void showCaptureElements()
     {
         if(captureElementsHidden)
         {
@@ -551,6 +630,18 @@ public class SpoutClientLogic {
                 element.setVisible(true);
             }
             captureElementsHidden = false;
+        }
+    }
+    
+    private void hideCaptureElements()
+    {
+        if(!captureElementsHidden)
+        {
+            for(Widget element : screenElements)
+            {
+                element.setVisible(false);
+            }
+            captureElementsHidden = true;
         }
     }
 }

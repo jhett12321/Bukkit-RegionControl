@@ -32,7 +32,6 @@ public class InfluenceManager {
     
     public void Runnable()
     {
-        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Current Influence is: " + region.getInfluenceMap().get(region.getInfluenceOwner()));
         Faction majorityController = CalculateMajorityController();
         region.setMajorityController(majorityController);
         
@@ -41,13 +40,6 @@ public class InfluenceManager {
         
         Float influenceRate = CalculateInfluenceRate();
         region.setInfluenceRate(influenceRate);
-        
-//        if(majorityController != null & influenceOwner != null && influenceRate != null)
-//        {
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceOwner is: " + influenceOwner.getName());
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated Majority Controller is: " + majorityController.getName());
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Calculated InfluenceRate is: " + influenceRate.toString());
-//        }
         
         if(influenceOwner == null)
         {
@@ -239,7 +231,7 @@ public class InfluenceManager {
                 Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
             }
             
-            if(region.getInfluenceRate() != influenceRate)
+            if(!region.getInfluenceRate().equals(influenceRate))
             {
                 Bukkit.getServer().getPluginManager().callEvent(new InfluenceRateChangeEvent(region, region.getInfluenceRate(), influenceRate));
             }

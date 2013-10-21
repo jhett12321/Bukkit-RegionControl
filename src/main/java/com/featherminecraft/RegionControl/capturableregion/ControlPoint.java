@@ -165,8 +165,6 @@ public class ControlPoint {
         {
             if(player.getBukkitPlayer().getLocation().distanceSquared(location) <= captureRadius*captureRadius)
             {
-                RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Player " + player.getBukkitPlayer().getName()
-                        + " is in capture distance of ControlPoint " + this.identifier + " in region " + this.region.getDisplayName());
                 Faction playersFaction = player.getFaction();
                 factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
             }
@@ -203,11 +201,6 @@ public class ControlPoint {
             {
                 this.captureRate = ((Integer) (majorityPopulationAmount - populationAgainstAmount)).floatValue();
             }
-        }
-        
-        if(majorityPopulation != null)
-        {
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Majority Population is: " + majorityPopulation.getName());
         }
         
         return majorityPopulation;

@@ -102,5 +102,11 @@ public class CaptureTimer {
             region.setSecondsToCapture(seconds);
             region.setMinutesToCapture(minutes);
         }
+        
+        else
+        {
+            region.setSecondsToCapture(0);
+            region.setMinutesToCapture(0);
+        }
     }
 }

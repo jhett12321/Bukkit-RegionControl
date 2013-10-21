@@ -85,13 +85,14 @@ public class SpoutPlayerListener implements Listener {
     @EventHandler
     public void onInfluenceRateChange(InfluenceRateChangeEvent event)
     {
+        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Influence Rate Changed to: " + event.getNewInfluenceRate().toString());
         CapturableRegion region = event.getRegion();
         List<RCPlayer> affectedPlayers = region.getPlayers();
         
         for(RCPlayer player : affectedPlayers)
         {
             SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
-            spoutClientLogic.updateRegion(event.getRegion());
+            spoutClientLogic.updateInfluenceRate(event.getNewInfluenceRate());
         }
     }
     
