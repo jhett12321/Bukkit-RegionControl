@@ -135,15 +135,15 @@ public class ControlPoint {
         
         if(influenceMap.get(influenceOwner) == this.baseInfluence && capturing == true)
         {
-            this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(this.owner.getFactionColor()).getWoolData(),false);
             capturing = false;
+            this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(this.owner.getFactionColor()).getWoolData(),false);
         }
         
         else if(influenceMap.get(influenceOwner) != this.baseInfluence && capturing == false)
         {
+            capturing = true;
             this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(),DyeColor.getByColor(Color.WHITE).getWoolData(),false);
             Bukkit.getServer().getPluginManager().callEvent(new ControlPointNeutraliseEvent(region, influenceOwner, this));
-            capturing = true;
         }
     }
     

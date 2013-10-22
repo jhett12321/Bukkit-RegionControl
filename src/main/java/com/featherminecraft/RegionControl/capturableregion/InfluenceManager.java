@@ -39,6 +39,7 @@ public class InfluenceManager {
         region.setInfluenceOwner(influenceOwner);
         
         Float influenceRate = CalculateInfluenceRate();
+        Float oldInfluenceRate = region.getInfluenceRate();
         region.setInfluenceRate(influenceRate);
         
         if(influenceOwner == null)
@@ -46,6 +47,7 @@ public class InfluenceManager {
             if(majorityController != null && influenceRate != null && influenceRate != 0F)
             {
                 region.getInfluenceMap().put(majorityController, influenceRate);
+                Bukkit.getServer().getPluginManager().callEvent(new InfluenceRateChangeEvent(region, oldInfluenceRate, influenceRate));
             }
         }
         
@@ -90,6 +92,7 @@ public class InfluenceManager {
             }
         }
         
+        //Capture Status Change events run here.
         if(region.getInfluenceMap().get(influenceOwner) != region.getBaseInfluence() && !region.isBeingCaptured() || region.getInfluenceRate() < 4F && !region.isBeingCaptured())
         {
             region.setBeingCaptured(true);
@@ -98,6 +101,11 @@ public class InfluenceManager {
         else if(region.getInfluenceMap().get(influenceOwner) == region.getBaseInfluence() && region.getInfluenceRate() == 4F && region.isBeingCaptured())
         {
             region.setBeingCaptured(false);
+        }
+        
+        if(!region.getInfluenceRate().equals(oldInfluenceRate))
+        {
+            Bukkit.getServer().getPluginManager().callEvent(new InfluenceRateChangeEvent(region, oldInfluenceRate, influenceRate));
         }
     }
     
@@ -219,21 +227,6 @@ public class InfluenceManager {
             else if(percentageOwned > 0.01F)
             {
                 influenceRate = 1F;
-            }
-            
-            if(influenceRate > 0F && !region.isBeingCaptured())
-            {
-                Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, true));
-            }
-            
-            if(influenceRate == 0F && region.isBeingCaptured())
-            {
-                Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
-            }
-            
-            if(!region.getInfluenceRate().equals(influenceRate))
-            {
-                Bukkit.getServer().getPluginManager().callEvent(new InfluenceRateChangeEvent(region, region.getInfluenceRate(), influenceRate));
             }
         }
         return influenceRate;
