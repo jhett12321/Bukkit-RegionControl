@@ -132,7 +132,7 @@ public class Config {
             String configId = region.getRegionId();
             
             //Saving of data
-            //TODO Later Implementation: In-game setting of baseinfluence.
+            //TODO Later Implementation: In-game setting of config values.
             //mainconfig.set("worlds." + configWorld + ".regions." + configId + ".baseinfluence", baseInfluence.intValue());
             
             dataConfig.set("worlds." + configWorld + ".regions." + configId + ".influenceowner", configInfluenceOwner);

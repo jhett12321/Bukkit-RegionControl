@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
+import net.minecraft.server.v1_6_R2.Packet205ClientCommand;
+
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.featherminecraft.RegionControl.Faction;
@@ -26,7 +28,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class PlayerUtils {
     public Faction getPlayerFaction(Player player) {
         String group = RegionControl.permission.getPrimaryGroup(player);
-        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Group is: " + group);
         
         Faction playerFaction = null;
         
@@ -43,7 +44,6 @@ public class PlayerUtils {
             //TODO set player to use default faction, or kick player (possibly a config option?)
         }
         
-        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Connecting Player's Faction is: " + playerFaction.getName());
         return playerFaction;
     }
     
@@ -111,5 +111,12 @@ public class PlayerUtils {
     public RCPlayer getRCPlayerFromBukkitPlayer(Player player) {
         RCPlayer rcPlayer = ServerLogic.players.get(player.getName());
         return rcPlayer;
+    }
+    
+    public void respawnPlayer(RCPlayer player)
+    {
+        Packet205ClientCommand packet = new Packet205ClientCommand();
+        packet.a = 1;
+        ((CraftPlayer) player.getBukkitPlayer()).getHandle().playerConnection.a(packet);
     }
 }

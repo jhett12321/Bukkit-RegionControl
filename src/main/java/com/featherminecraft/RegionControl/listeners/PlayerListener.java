@@ -132,7 +132,7 @@ public class PlayerListener implements Listener {
         
         else
         {
-            event.setRespawnLocation(rcplayer.getFaction().getFactionSpawnRegion(player.getWorld()).getSpawnPoint().getLocation()); //TODO: Replace with config default value for per-faction spawn.
+            event.setRespawnLocation(rcplayer.getFaction().getFactionSpawnRegion(player.getWorld()).getSpawnPoint().getLocation());
         }
         
         rcplayer.setRespawnLocation(null);

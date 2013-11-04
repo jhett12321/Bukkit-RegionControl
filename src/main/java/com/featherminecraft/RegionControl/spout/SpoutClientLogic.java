@@ -3,7 +3,7 @@ package com.featherminecraft.RegionControl.spout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Map.Entry;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -25,8 +25,11 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.gui.WidgetAnim;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
+import com.featherminecraft.RegionControl.Config;
+import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
+import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
@@ -60,12 +63,12 @@ public class SpoutClientLogic {
     private ArrayList<Label> controlPointLabels = new ArrayList<Label>();
     private InGameHUD screen;
     protected CapturableRegion region;
+    private boolean musicPlaying;
+    private SpoutPlayer splayer;
 
     public static void init()
     {
-        //TODO check inside config what files have been defined for the faction icons.
-        //TODO Iterate over factions to find faction icon.
-        
+        //Precache Included Assets
         if (!new File(RegionControl.plugin.getDataFolder(), "background.png").exists())
             RegionControl.plugin.saveResource("background.png", false);
         
@@ -77,12 +80,6 @@ public class SpoutClientLogic {
 
         if (!new File(RegionControl.plugin.getDataFolder(), "null.png").exists())
             RegionControl.plugin.saveResource("null.png", false);
-        
-        if (!new File(RegionControl.plugin.getDataFolder(), "faction.png").exists())
-            RegionControl.plugin.saveResource("faction.png", false);
-        
-        if (!new File(RegionControl.plugin.getDataFolder(), "faction2.png").exists())
-            RegionControl.plugin.saveResource("faction2.png", false);
         
         if (!new File(RegionControl.plugin.getDataFolder(), "music.wav").exists())
             RegionControl.plugin.saveResource("music.wav", false);
@@ -97,15 +94,28 @@ public class SpoutClientLogic {
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Losing.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Capturing.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/null.png"));
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/faction.png"));
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/faction2.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/music.wav"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/captured.wav"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/captured2.wav"));
+        
+        //Precache Faction Icons
+        Config config = new Config();
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        {
+            String factionUrl = config.getMainConfig().getString("factions." + faction.getKey() + ".factionIcon");
+            faction.getValue().setFactionIconUrl(factionUrl);
+            if(faction.getValue().getFactionIconUrl() != null && faction.getValue().getFactionIconUrl() != "" && new File(RegionControl.plugin.getDataFolder(), faction.getValue().getFactionIconUrl()).exists())
+            {
+                SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/" + faction.getValue().getFactionIconUrl()));
+            }
+            //TODO Precache Faction Music/Voiceovers
+        }
     }
 
-    public void setupClientElements(RCPlayer rcplayer) {
-        screen = ((SpoutPlayer) rcplayer.getBukkitPlayer()).getMainScreen();
+    public void setupClientElements(RCPlayer rcplayer)
+    {
+        splayer = ((SpoutPlayer) rcplayer.getBukkitPlayer());
+        screen = splayer.getMainScreen();
         region = rcplayer.getCurrentRegion();
         
         //Background
@@ -145,7 +155,7 @@ public class SpoutClientLogic {
         
         screenElements.add(regionInfo);
         
-        ownericon = (Texture) new GenericTexture().setUrl("faction.png")
+        ownericon = (Texture) new GenericTexture().setUrl(region.getOwner().getFactionIconUrl())
         .setHeight(16).setWidth(16).setFixed(true);
         
         screenElements.add(ownericon);
@@ -158,7 +168,6 @@ public class SpoutClientLogic {
         float currentscale = 1F;
         while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 116)
         {
-//            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Text Width is currently: " + GenericLabel.getStringWidth(regionname.getText(), currentscale)); //Debug
             currentscale -= 0.01F;
         }
         regionname.setScale(currentscale);
@@ -179,7 +188,6 @@ public class SpoutClientLogic {
         
         screenElements.add(controlPointsContainer);
         
-        //TODO Iterate to display the amount of controlpoints in a region
         for(ControlPoint controlPoint : region.getControlPoints())
         {
             Color spoutColor = new Color(255,255,255);
@@ -210,7 +218,7 @@ public class SpoutClientLogic {
         screenElements.add(influenceOwnerIconContainer);
         screenCaptureElements.add(influenceOwnerIconContainer);
         
-        influenceOwnerIcon = (Texture) new GenericTexture("faction.png")
+        influenceOwnerIcon = (Texture) new GenericTexture(region.getInfluenceOwner().getFactionIconUrl())
         .setMargin(0, 0, 0, 3).setHeight(8).setWidth(8).setFixed(true);
         
         screenElements.add(influenceOwnerIcon);
@@ -228,11 +236,11 @@ public class SpoutClientLogic {
         screenElements.add(captureBarContainer);
         screenCaptureElements.add(captureBarContainer);
         
-//        Integer red = rcplayer.getCurrentRegion().getInfluenceOwner().getFactionColor().getRed();
-//        Integer green = rcplayer.getCurrentRegion().getInfluenceOwner().getFactionColor().getGreen();
-//        Integer blue = rcplayer.getCurrentRegion().getInfluenceOwner().getFactionColor().getBlue();
+        Integer red = region.getInfluenceOwner().getFactionColor().getRed();
+        Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
+        Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
         
-        Color spoutColor = new Color(255,0,0);
+        Color spoutColor = new Color(red,green,blue);
         
         captureBar = (Gradient) new GenericGradient(spoutColor).setWidth(100)
                 .setHeight(10).setMargin(0, 3).setFixed(true).setPriority(RenderPriority.High);
@@ -335,16 +343,6 @@ public class SpoutClientLogic {
             {
                 if(region != null && region.isBeingCaptured())
                 {
-                    if(captureElementsHidden)
-                    {
-                        showCaptureElements();
-                    }
-                    
-                    if(background.getHeight() != 70)
-                    {
-                        background.setHeight(70);
-                    }
-                    
                     Integer seconds = region.getSecondsToCapture();
                     Integer minutes = region.getMinutesToCapture();
                     
@@ -352,7 +350,7 @@ public class SpoutClientLogic {
                     {
                         captureTimer.setVisible(false);
                     }
-                    else
+                    else if(!captureElementsHidden)
                     {
                         if(!captureTimer.isVisible())
                         {
@@ -369,12 +367,32 @@ public class SpoutClientLogic {
                     
                     if(region.getInfluenceOwner() != null)
                     {
+                        if(captureElementsHidden && captureBar.getWidth() != 0)
+                        {
+                            showCaptureElements();
+                            if(background.getHeight() != 70)
+                            {
+                                background.setHeight(70);
+                            }
+                        }
+                        
                         float influence = region.getInfluenceMap().get(region.getInfluenceOwner());
                         float baseinfluence = region.getBaseInfluence();
                         
                         int barwidth = (int) (influence / baseinfluence * 100);
                         captureBar.setWidth(barwidth);
                         captureBarSpace.setWidth(100 - barwidth);
+                        
+                        if(barwidth > 75 && barwidth < 100 && musicPlaying == false && region.getInfluenceOwner() == region.getMajorityController())
+                        {
+                            SpoutManager.getSoundManager().playCustomMusic(RegionControl.plugin, splayer, "music.wav", false);
+                            musicPlaying = true;
+                        }
+                        else if(musicPlaying == true && (barwidth < 75 || barwidth == 100 || region.getInfluenceOwner() != region.getMajorityController()))
+                        {
+                            SpoutManager.getSoundManager().stopMusic(splayer, false, 1000);
+                            musicPlaying = false;
+                        }
                         
                         Integer red = region.getInfluenceOwner().getFactionColor().getRed();
                         Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
@@ -383,22 +401,26 @@ public class SpoutClientLogic {
                         Color spoutColor = new Color(red,green,blue);
                         captureBar.setColor(spoutColor);
                     }
-                }
-                else if(region != null && !region.isBeingCaptured() && !captureElementsHidden)
-                {
-                    hideCaptureElements();
-                    if(background.getHeight() != 40)
+                    
+                    if (captureBar.getWidth() == 0)
                     {
+                        hideCaptureElements();
                         background.setHeight(40);
                     }
                 }
             }
-        }.runTaskTimer(RegionControl.plugin, 20, 20);
+        }.runTaskTimer(RegionControl.plugin, 10, 10);
     }
     
     public void updateRegion(CapturableRegion updatedRegion)
     {
         this.region = updatedRegion;
+        if(musicPlaying)
+        {
+            SpoutManager.getSoundManager().stopMusic(splayer, false, 1000);
+            musicPlaying = false;
+        }
+        
         if(updatedRegion == null)
         {
             if(allElementsHidden == false)
@@ -420,9 +442,16 @@ public class SpoutClientLogic {
                 }
             }
             
-            //ownericon.setUrl(region.getOwner().getFactionIconUrl()); //TODO
-            ownericon.setUrl("faction.png");
+            ownericon.setUrl(region.getOwner().getFactionIconUrl());
+            influenceOwnerIcon.setUrl(region.getInfluenceOwner().getFactionIconUrl());
             regionname.setText(updatedRegion.getDisplayName());
+            
+            Integer red = updatedRegion.getInfluenceOwner().getFactionColor().getRed();
+            Integer green = updatedRegion.getInfluenceOwner().getFactionColor().getGreen();
+            Integer blue = updatedRegion.getInfluenceOwner().getFactionColor().getBlue();
+            
+            Color spoutColor = new Color(red,green,blue);
+            captureBar.setColor(spoutColor);
             
             float currentscale = 1F;
             while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 116)
@@ -450,6 +479,7 @@ public class SpoutClientLogic {
     
     public void updateInfluenceRate(Float influenceRate)
     {
+        captureBarAnim.animateStop(false);
         if(influenceRate != null && influenceRate != 0F && region.isBeingCaptured())
         {
             short barAnimRate = 0;
@@ -486,17 +516,28 @@ public class SpoutClientLogic {
             
             if(influenceRate == 1F || influenceRate == 2F || influenceRate == 3F || influenceRate == 4F)
             {
-                captureBarAnim.animateStop(false).setVisible(true);
-                if(region.getMajorityController() == region.getInfluenceOwner())
+                if(region.getInfluenceOwner() == null)
                 {
                     captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
-                    captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
+                    captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart().setDirty(true);
+                    influenceOwnerIcon.setUrl(region.getMajorityController().getFactionIconUrl());
+                }
+                
+                else if(region.getMajorityController() == region.getInfluenceOwner())
+                {
+                    captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
+                    captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart().setDirty(true);
                 }
                 
                 else if (region.getMajorityController() != region.getInfluenceOwner())
                 {
                     captureBarAnim.setUrl("Capture_Anim_Losing.png").setWidth(125);
-                    captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart();
+                    captureBarAnim.animate(WidgetAnim.POS_X, -barFloatValue, barShortValue, barAnimRate, true, true).animateStart().setDirty(true);
+                }
+                
+                if(!captureBarAnim.isVisible() && !captureElementsHidden)
+                {
+                    captureBarAnim.setVisible(true);
                 }
             }
         }
@@ -509,10 +550,8 @@ public class SpoutClientLogic {
     
     public void updateControlPoints(CapturableRegion region)
     {
-        RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Control Point Label Size is: " + String.valueOf(controlPointLabels.size()));
         if(region != null && controlPointLabels.size() == 0)
         {
-            RegionControl.plugin.getLogger().log(Level.INFO, "DEBUG: Method Triggered.");
             for(ControlPoint controlPoint : region.getControlPoints())
             {
                 Color spoutColor = new Color(255,255,255);
@@ -657,6 +696,33 @@ public class SpoutClientLogic {
                 element.setVisible(false);
             }
             captureElementsHidden = true;
+        }
+    }
+
+    public BukkitTask getRunnable() {
+        return runnable;
+    }
+
+    public void setRegionCaptureStatus(Boolean captureStatus)
+    {
+        if(captureStatus == false)
+        {
+            hideCaptureElements();
+            if(background.getHeight() != 40)
+            {
+                background.setHeight(40);
+            }
+            captureBarAnim.animateStop(false);
+            SpoutManager.getSoundManager().stopMusic(splayer, false, 1000);
+        }
+        
+        else if(captureStatus == true)
+        {
+            showCaptureElements();
+            if(background.getHeight() != 70)
+            {
+                background.setHeight(70);
+            }
         }
     }
 }

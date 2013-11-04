@@ -6,6 +6,7 @@ factions:
     defaultspawn:
       world: exampleregion
     color: red
+    factionIcon: "faction.png"
   faction2:
     displayname: Isuren Forces
     permissiongroup: admin2
@@ -13,6 +14,7 @@ factions:
     defaultspawn:
       world: exampleregion2
     color: blue
+    factionIcon: "faction2.png"
 worlds:
   world:
     regions:
