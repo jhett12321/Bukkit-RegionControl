@@ -10,41 +10,43 @@ import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
 //This event is triggered upon a Control Point Capture.
 public class ControlPointCaptureEvent extends Event {
-
     private static final HandlerList handlers = new HandlerList();
-    private CapturableRegion region;
-    private World world;
-    private Faction owner;
-    private ControlPoint controlpoint;
-
-    public ControlPointCaptureEvent(CapturableRegion region, Faction owner, ControlPoint controlpoint) {
-        this.region = region;
-        this.owner = owner;
-        this.controlpoint = controlpoint;
-    }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
+    private CapturableRegion region;
+    private World world;
+    private Faction owner;
+
+    private ControlPoint controlpoint;
+
+    public ControlPointCaptureEvent(CapturableRegion region, Faction owner,
+            ControlPoint controlpoint) {
+        this.region = region;
+        this.owner = owner;
+        this.controlpoint = controlpoint;
+    }
+
+    public ControlPoint getControlpoint() {
+        return this.controlpoint;
+    }
+
+    @Override
     public HandlerList getHandlers() {
         return handlers;
     }
 
-    public CapturableRegion getRegion()
-    {
-        return region;
+    public Faction getOwner() {
+        return this.owner;
+    }
+
+    public CapturableRegion getRegion() {
+        return this.region;
     }
 
     public World getWorld() {
-        return world;
-    }
-
-    public Faction getOwner() {
-        return owner;
-    }
-
-    public ControlPoint getControlpoint() {
-        return controlpoint;
+        return this.world;
     }
 }

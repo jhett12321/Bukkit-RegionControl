@@ -9,83 +9,72 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 
 public class RCPlayer {
-    
+
     private String playerName;
     private CapturableRegion currentRegion;
     private Faction faction;
     private Boolean hasSpout = false;
     private Location respawnLocation;
     private BukkitTask clientRunnables;
-    
-    //Player Classes/Runnables
+
+    // Player Classes/Runnables
     private SpoutClientLogic spoutClientLogic;
 
-    public RCPlayer(Player player,Faction faction, CapturableRegion currentRegion)
-    {
+    public RCPlayer(Player player, Faction faction,
+            CapturableRegion currentRegion) {
         this.playerName = player.getName();
         this.faction = faction;
         this.currentRegion = currentRegion;
-        
-        clientRunnables = new ClientRunnables(this).runTaskTimer(RegionControl.plugin, 20, 20);
-    }
-    
-    public Player getBukkitPlayer()
-    {
-        return Bukkit.getPlayer(playerName);
+
+        this.clientRunnables = new ClientRunnables(this).runTaskTimer(
+                RegionControl.plugin, 20, 20);
     }
 
-    public CapturableRegion getCurrentRegion()
-    {
-        return currentRegion;
+    public Player getBukkitPlayer() {
+        return Bukkit.getPlayer(this.playerName);
     }
 
-    public void setCurrentRegion(CapturableRegion currentRegion)
-    {
+    public BukkitTask getClientRunnables() {
+        return this.clientRunnables;
+    }
+
+    public CapturableRegion getCurrentRegion() {
+        return this.currentRegion;
+    }
+
+    public Faction getFaction() {
+        return this.faction;
+    }
+
+    public Boolean getHasSpout() {
+        return this.hasSpout;
+    }
+
+    public Location getRespawnLocation() {
+        return this.respawnLocation;
+    }
+
+    public SpoutClientLogic getSpoutClientLogic() {
+        return this.spoutClientLogic;
+    }
+
+    public void setCurrentRegion(CapturableRegion currentRegion) {
         this.currentRegion = currentRegion;
     }
 
-    public Faction getFaction()
-    {
-        return faction;
-    }
-
-    public void setFaction(Faction faction)
-    {
+    public void setFaction(Faction faction) {
         this.faction = faction;
     }
 
-    public Boolean getHasSpout()
-    {
-        return hasSpout;
-    }
-
-    public void setHasSpout(Boolean hasSpout)
-    {
+    public void setHasSpout(Boolean hasSpout) {
         this.hasSpout = hasSpout;
     }
 
-    public SpoutClientLogic getSpoutClientLogic()
-    {
-        return spoutClientLogic;
-    }
-
-    public void setSpoutClientLogic(SpoutClientLogic spoutClientLogic)
-    {
-        this.spoutClientLogic = spoutClientLogic;
-    }
-
-    public Location getRespawnLocation()
-    {
-        return respawnLocation;
-    }
-
-    public void setRespawnLocation(Location respawnLocation)
-    {
+    public void setRespawnLocation(Location respawnLocation) {
         this.respawnLocation = respawnLocation;
     }
 
-    public BukkitTask getClientRunnables()
-    {
-        return clientRunnables;
+    public void setSpoutClientLogic(SpoutClientLogic spoutClientLogic) {
+        this.spoutClientLogic = spoutClientLogic;
     }
 }

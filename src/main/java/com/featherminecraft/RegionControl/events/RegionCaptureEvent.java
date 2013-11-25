@@ -14,41 +14,45 @@ import com.featherminecraft.RegionControl.utils.RegionUtils;
 public class RegionCaptureEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
-    private CapturableRegion region;
-    private List<RCPlayer> players;
-    private Faction oldowner;
-    private Faction newowner;
-
-    public RegionCaptureEvent(CapturableRegion region, Faction oldowner, Faction newowner) {
-        this.region = region;
-        this.players = new RegionUtils().getRegionPlayerList(region);
-        this.oldowner = oldowner;
-        this.newowner = newowner;
-        
-        region.setOwner(newowner);
-    }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
-    
-    public List<RCPlayer> getPlayers() {
-        return players;
+
+    private CapturableRegion region;
+    private List<RCPlayer> players;
+    private Faction oldowner;
+
+    private Faction newowner;
+
+    public RegionCaptureEvent(CapturableRegion region, Faction oldowner,
+            Faction newowner) {
+        this.region = region;
+        this.players = new RegionUtils().getRegionPlayerList(region);
+        this.oldowner = oldowner;
+        this.newowner = newowner;
+
+        region.setOwner(newowner);
     }
 
     public CapturableRegion getCapturableRegion() {
-        return region;
+        return this.region;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public Faction getNewOwner() {
+        return this.newowner;
     }
 
     public Faction getOldOwner() {
-        return oldowner;
-    }
-    
-    public Faction getNewOwner() {
-        return newowner;
+        return this.oldowner;
     }
 
-    public HandlerList getHandlers() {
-        return handlers;
+    public List<RCPlayer> getPlayers() {
+        return this.players;
     }
 }

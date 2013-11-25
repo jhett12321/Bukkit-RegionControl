@@ -26,97 +26,97 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class PlayerUtils {
-    public Faction getPlayerFaction(Player player) {
-        String group = RegionControl.permission.getPrimaryGroup(player);
-        
-        Faction playerFaction = null;
-        
-        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
-        {
-            if(faction.getValue().getPermissionGroup().equals(group))
-            {
-                playerFaction = faction.getValue();
-            }
-        }
-        
-        if(playerFaction == null)
-        {
-            //TODO set player to use default faction, or kick player (possibly a config option?)
-        }
-        
-        return playerFaction;
-    }
-    
-    public List<SpawnPoint> getAvailableSpawnPoints(Player player)
-    {
-        Map<String,CapturableRegion> capturableregions = ServerLogic.capturableRegions;
-        List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
-        
-        for(Entry<String, CapturableRegion> capturableregion : capturableregions.entrySet())
-        {
-            if(capturableregion.getValue().getOwner() == getPlayerFaction(player))
-            {
-                availablespawnpoints.add(capturableregion.getValue().getSpawnPoint());
-            }
-        }
-        
-        return availablespawnpoints;
-    }
-    
     /**
      * Checks whether a player can capture the selected ControlPoint.
-     * @param controlpoint - A ControlPoint.
-     * @param player - The Player to be checked
+     * 
+     * @param controlpoint
+     *            - A ControlPoint.
+     * @param player
+     *            - The Player to be checked
      * @return Boolean whether a player can capture the ControlPoint
      */
-    public Boolean canCapture(ControlPoint controlpoint, Player player)
-    {
-        if(controlpoint.getRegion().getOwner() == getPlayerFaction(player))
-        {
+    public Boolean canCapture(ControlPoint controlpoint, Player player) {
+        if (controlpoint.getRegion().getOwner() == getPlayerFaction(player)) {
             return true;
         }
-        
-        for(CapturableRegion adjacentregion : controlpoint.getRegion().getAdjacentRegions())
-        {
-            if(adjacentregion.getOwner() == getPlayerFaction(player))
-            {
+
+        for (CapturableRegion adjacentregion : controlpoint.getRegion()
+                .getAdjacentRegions()) {
+            if (adjacentregion.getOwner() == getPlayerFaction(player)) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
-    public CapturableRegion getCurrentRegion(Player player)
-    {
-        CapturableRegion playerRegion = null;
-        
-        WorldGuardPlugin worldguard = Utils.getWorldGuard();
-        RegionManager regionmanager = worldguard.getRegionManager(player.getWorld());
-        Vector location = toVector(player.getLocation());
-        ApplicableRegionSet currentregions = regionmanager.getApplicableRegions(location);
-        
-        if(currentregions != null && currentregions.size() == 1) {
-            for(ProtectedRegion region : currentregions)
-            {
-                CapturableRegion capturableregion = new RegionUtils().getCapturableRegionFromWorldGuardRegion(region, player.getWorld());
-                if(capturableregion.getRegion().contains(location))
-                    playerRegion = capturableregion;
+
+    public List<SpawnPoint> getAvailableSpawnPoints(Player player) {
+        Map<String, CapturableRegion> capturableregions = ServerLogic.capturableRegions;
+        List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
+
+        for (Entry<String, CapturableRegion> capturableregion : capturableregions
+                .entrySet()) {
+            if (capturableregion.getValue().getOwner() == getPlayerFaction(player)) {
+                availablespawnpoints.add(capturableregion.getValue()
+                        .getSpawnPoint());
             }
         }
-        
+
+        return availablespawnpoints;
+    }
+
+    public CapturableRegion getCurrentRegion(Player player) {
+        CapturableRegion playerRegion = null;
+
+        WorldGuardPlugin worldguard = Utils.getWorldGuard();
+        RegionManager regionmanager = worldguard.getRegionManager(player
+                .getWorld());
+        Vector location = toVector(player.getLocation());
+        ApplicableRegionSet currentregions = regionmanager
+                .getApplicableRegions(location);
+
+        if (currentregions != null && currentregions.size() == 1) {
+            for (ProtectedRegion region : currentregions) {
+                CapturableRegion capturableregion = new RegionUtils()
+                        .getCapturableRegionFromWorldGuardRegion(region,
+                                player.getWorld());
+                if (capturableregion.getRegion().contains(location)) {
+                    playerRegion = capturableregion;
+                }
+            }
+        }
+
         return playerRegion;
+    }
+
+    public Faction getPlayerFaction(Player player) {
+        String group = RegionControl.permission.getPrimaryGroup(player);
+
+        Faction playerFaction = null;
+
+        for (Entry<String, Faction> faction : ServerLogic.factions.entrySet()) {
+            if (faction.getValue().getPermissionGroup().equals(group)) {
+                playerFaction = faction.getValue();
+            }
+        }
+
+        if (playerFaction == null) {
+            // TODO set player to use default faction, or kick player (possibly
+            // a config option?)
+        }
+
+        return playerFaction;
     }
 
     public RCPlayer getRCPlayerFromBukkitPlayer(Player player) {
         RCPlayer rcPlayer = ServerLogic.players.get(player.getName());
         return rcPlayer;
     }
-    
-    public void respawnPlayer(RCPlayer player)
-    {
+
+    public void respawnPlayer(RCPlayer player) {
         Packet205ClientCommand packet = new Packet205ClientCommand();
         packet.a = 1;
-        ((CraftPlayer) player.getBukkitPlayer()).getHandle().playerConnection.a(packet);
+        ((CraftPlayer) player.getBukkitPlayer()).getHandle().playerConnection
+                .a(packet);
     }
 }

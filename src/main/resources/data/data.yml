@@ -1,7 +1,24 @@
 worlds:
   world:
     regions:
-      exampleregion:
+      spawnregion1:
+        owner: faction1
+        influence: 3000
+        influenceowner: faction1
+      spawnregion2:
+        owner: faction2
+        influence: 3000
+        influenceowner: faction2
+      smallbase1:
+        owner: faction2
+        influence: 200
+        influenceowner: faction2
+        controlpoints:
+          a:
+            owner: faction2
+            influence: 10
+            influenceowner: faction2
+      largebase1:
         owner: faction2
         influence: 300
         influenceowner: faction2
@@ -18,23 +35,6 @@ worlds:
             owner: faction2
             influence: 10
             influenceowner: faction2
-      exampleregion2:
-        owner: faction1
-        influence: 300.0
-        influenceowner: faction1
-        controlpoints:
-          a:
-            owner: faction1
-            influence: 10.0
-            influenceowner: faction1
-          b:
-            owner: faction1
-            influence: 10.0
-            influenceowner: faction1
-          c:
-            owner: faction1
-            influence: 10.0
-            influenceowner: faction1
 players:
   jhett12321:
     faction: faction1

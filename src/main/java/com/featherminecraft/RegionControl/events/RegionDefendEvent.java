@@ -13,8 +13,14 @@ import com.featherminecraft.RegionControl.utils.RegionUtils;
 public class RegionDefendEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     private CapturableRegion region;
     private List<RCPlayer> players;
+
     private Faction defender;
 
     public RegionDefendEvent(CapturableRegion region, Faction defender) {
@@ -23,23 +29,20 @@ public class RegionDefendEvent extends Event {
         this.defender = defender;
     }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-    
-    public List<RCPlayer> getPlayers() {
-        return players;
-    }
-
     public CapturableRegion getCapturableRegion() {
-        return region;
-    }
-    
-    public Faction getDefender() {
-        return defender;
+        return this.region;
     }
 
+    public Faction getDefender() {
+        return this.defender;
+    }
+
+    @Override
     public HandlerList getHandlers() {
         return handlers;
+    }
+
+    public List<RCPlayer> getPlayers() {
+        return this.players;
     }
 }

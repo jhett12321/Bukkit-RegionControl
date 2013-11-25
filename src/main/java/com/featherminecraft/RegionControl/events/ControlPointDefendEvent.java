@@ -1,5 +1,6 @@
 package com.featherminecraft.RegionControl.events;
 
+import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -7,8 +8,8 @@ import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
-public class ControlPointNeutraliseEvent extends Event {
-
+//This event is triggered upon a Successful ControlPoint Defense.
+public class ControlPointDefendEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlerList() {
@@ -16,19 +17,20 @@ public class ControlPointNeutraliseEvent extends Event {
     }
 
     private CapturableRegion region;
-    private Faction oldOwner;
+    private World world;
+    private Faction owner;
 
-    private ControlPoint controlPoint;
+    private ControlPoint controlpoint;
 
-    public ControlPointNeutraliseEvent(CapturableRegion region,
-            Faction oldowner, ControlPoint controlpoint) {
+    public ControlPointDefendEvent(CapturableRegion region, Faction owner,
+            ControlPoint controlpoint) {
         this.region = region;
-        this.oldOwner = oldowner;
-        this.controlPoint = controlpoint;
+        this.owner = owner;
+        this.controlpoint = controlpoint;
     }
 
-    public ControlPoint getControlPoint() {
-        return this.controlPoint;
+    public ControlPoint getControlpoint() {
+        return this.controlpoint;
     }
 
     @Override
@@ -36,11 +38,15 @@ public class ControlPointNeutraliseEvent extends Event {
         return handlers;
     }
 
-    public Faction getOldOwner() {
-        return this.oldOwner;
+    public Faction getOwner() {
+        return this.owner;
     }
 
     public CapturableRegion getRegion() {
         return this.region;
+    }
+
+    public World getWorld() {
+        return this.world;
     }
 }

@@ -10,33 +10,37 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 public class ChangeRegionEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
-    private CapturableRegion oldregion;
-    private CapturableRegion newregion;
-    private RCPlayer player;
-
-    public ChangeRegionEvent(CapturableRegion newregion, CapturableRegion oldregion, RCPlayer player) {
-        this.oldregion = oldregion;
-        this.newregion = newregion;
-        this.player = player;
-    }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public CapturableRegion getOldRegion() {
-        return oldregion;
+    private CapturableRegion oldregion;
+    private CapturableRegion newregion;
+
+    private RCPlayer player;
+
+    public ChangeRegionEvent(CapturableRegion newregion,
+            CapturableRegion oldregion, RCPlayer player) {
+        this.oldregion = oldregion;
+        this.newregion = newregion;
+        this.player = player;
     }
-    
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
     public CapturableRegion getNewRegion() {
-        return newregion;
+        return this.newregion;
+    }
+
+    public CapturableRegion getOldRegion() {
+        return this.oldregion;
     }
 
     public RCPlayer getPlayer() {
-        return player;
-    }
-
-    public HandlerList getHandlers() {
-        return handlers;
+        return this.player;
     }
 }
