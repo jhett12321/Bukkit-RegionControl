@@ -6,19 +6,23 @@ import org.getspout.spoutapi.gui.Widget;
 
 import com.featherminecraft.RegionControl.Config;
 
-public class SpoutUtils {
-    public int getMaxSpawnButtons() {
+public class SpoutUtils
+{
+    public int getMaxSpawnButtons()
+    {
         return new Config().getMainConfig().getInt("spout.maxspawnbuttons");
     }
-
-    public Widget updateLabelText(Label widget, String text) {
+    
+    public Widget updateLabelText(Label widget, String text)
+    {
         widget = widget.setText(text);
         return widget;
     }
-
-    public Widget updateTexture(Texture widget, String newtexture) {
+    
+    public Widget updateTexture(Texture widget, String newtexture)
+    {
         widget = widget.setUrl(newtexture);
         return widget;
     }
-
+    
 }

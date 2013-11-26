@@ -10,17 +10,19 @@ import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-public class CapturableRegion {
-
+public class CapturableRegion
+{
+    
     // RegionControl Object
     private final CapturableRegion cregion = this;
-
+    
     // Region Info
     private String displayName;
     private String regionId;
@@ -28,33 +30,33 @@ public class CapturableRegion {
     private List<CapturableRegion> adjacentRegions;
     private boolean isBeingCaptured;
     private boolean isSpawnRegion;
-
+    
     // WorldGuard Region Info
     private ProtectedRegion region;
     private World world;
-
+    
     // Region Objects
     private List<ControlPoint> controlPoints;
     private SpawnPoint spawnPoint;
     private List<RCPlayer> players = new ArrayList<RCPlayer>();
-
+    
     // Runnable
     private BukkitTask runnable;
-
+    
     // Influence
     private Float baseInfluence;
     private InfluenceManager influenceManager;
     private Map<Faction, Float> influenceMap = new HashMap<Faction, Float>();
     private Float influenceRate = 0F;
-
+    
     private Faction influenceOwner;
     private Faction majorityController;
-
+    
     // Capture Timer
     private CaptureTimer captureTimer;
     private int minutesToCapture;
     private int secondsToCapture;
-
+    
     /**
      * The CapturableRegion Constructor
      * 
@@ -82,246 +84,291 @@ public class CapturableRegion {
      *            region.
      * @param isSpawnRegion
      */
-    public CapturableRegion(String displayName, String regionId, Faction owner,
-            ProtectedRegion region, World world,
-            List<ControlPoint> controlpoints, SpawnPoint spawnPoint,
-            Float baseInfluence, Float influence, Faction influenceOwner,
-            boolean isSpawnRegion) {
-
+    public CapturableRegion(String displayName, String regionId, Faction owner, ProtectedRegion region, World world, List<ControlPoint> controlpoints, SpawnPoint spawnPoint, Float baseInfluence, Float influence, Faction influenceOwner, boolean isSpawnRegion)
+    {
+        
         this.displayName = displayName;
         this.regionId = regionId;
         this.owner = owner;
         this.region = region;
         this.world = world;
-        this.controlPoints = controlpoints;
+        controlPoints = controlpoints;
         this.spawnPoint = spawnPoint;
         this.baseInfluence = baseInfluence;
         this.isSpawnRegion = isSpawnRegion;
-
-        if (!isSpawnRegion) {
-            for (Entry<String, Faction> faction : ServerLogic.factions
-                    .entrySet()) {
-                if (faction.getValue() != null) {
-                    this.influenceMap.put(faction.getValue(), 0F);
+        
+        if(!isSpawnRegion)
+        {
+            for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+            {
+                if(faction.getValue() != null)
+                {
+                    influenceMap.put(faction.getValue(), 0F);
                 }
             }
-
-            this.influenceMap.put(influenceOwner, influence);
-            this.captureTimer = new CaptureTimer(this);
-            this.influenceManager = new InfluenceManager(this);
-
+            
+            influenceMap.put(influenceOwner, influence);
+            captureTimer = new CaptureTimer(this);
+            influenceManager = new InfluenceManager(this);
+            
             this.baseInfluence = baseInfluence;
-
-            for (ControlPoint controlPoint : this.controlPoints) {
+            
+            for(ControlPoint controlPoint : controlPoints)
+            {
                 controlPoint.setRegion(this);
             }
-
-            this.runnable = new BukkitRunnable() {
-
+            
+            runnable = new BukkitRunnable()
+            {
+                
                 @Override
-                public void run() {
-                    for (ControlPoint controlPoint : CapturableRegion.this.controlPoints) {
+                public void run()
+                {
+                    for(ControlPoint controlPoint : controlPoints)
+                    {
                         controlPoint.Runnable();
                     }
-                    CapturableRegion.this.influenceManager.Runnable();
-                    CapturableRegion.this.captureTimer.Runnable();
+                    influenceManager.Runnable();
+                    captureTimer.Runnable();
                 }
             }.runTaskTimer(RegionControl.plugin, 20, 20);
         }
-
-        else {
-            this.isBeingCaptured = false;
+        
+        else
+        {
+            isBeingCaptured = false;
         }
     }
-
-    public List<CapturableRegion> getAdjacentRegions() {
-        return this.adjacentRegions;
+    
+    public List<CapturableRegion> getAdjacentRegions()
+    {
+        return adjacentRegions;
     }
-
-    public Float getBaseInfluence() {
-        return this.baseInfluence;
+    
+    public Float getBaseInfluence()
+    {
+        return baseInfluence;
     }
-
+    
     /*
      * Region Info Begin
      */
-    public CapturableRegion getCapturableRegion() {
-        return this.cregion;
+    public CapturableRegion getCapturableRegion()
+    {
+        return cregion;
     }
-
-    public List<ControlPoint> getControlPoints() {
-        return this.controlPoints;
+    
+    public List<ControlPoint> getControlPoints()
+    {
+        return controlPoints;
     }
-
-    public String getDisplayName() {
-        return this.displayName;
+    
+    public String getDisplayName()
+    {
+        return displayName;
     }
-
-    public InfluenceManager getInfluenceManager() {
-        return this.influenceManager;
+    
+    public InfluenceManager getInfluenceManager()
+    {
+        return influenceManager;
     }
-
-    public Map<Faction, Float> getInfluenceMap() {
-        return this.influenceMap;
+    
+    public Map<Faction, Float> getInfluenceMap()
+    {
+        return influenceMap;
     }
-
-    public Faction getInfluenceOwner() {
-        return this.influenceOwner;
+    
+    public Faction getInfluenceOwner()
+    {
+        return influenceOwner;
     }
-
-    public Float getInfluenceRate() {
-        return this.influenceRate;
+    
+    public Float getInfluenceRate()
+    {
+        return influenceRate;
     }
-
-    public Faction getMajorityController() {
-        return this.majorityController;
+    
+    public Faction getMajorityController()
+    {
+        return majorityController;
     }
-
-    public int getMinutesToCapture() {
-        return this.minutesToCapture;
+    
+    public int getMinutesToCapture()
+    {
+        return minutesToCapture;
     }
-
-    public Faction getOwner() {
-        return this.owner;
+    
+    public Faction getOwner()
+    {
+        return owner;
     }
-
-    public List<RCPlayer> getPlayers() {
-        return this.players;
+    
+    public List<RCPlayer> getPlayers()
+    {
+        return players;
     }
-
-    public ProtectedRegion getRegion() {
-        return this.region;
+    
+    public ProtectedRegion getRegion()
+    {
+        return region;
     }
-
-    public String getRegionId() {
-        return this.regionId;
+    
+    public String getRegionId()
+    {
+        return regionId;
     }
-
+    
     /*
      * Region Info End
      */
-
+    
     /*
      * Region Objects Begin
      */
-
+    
     // Runnable
-    public BukkitTask getRunnable() {
-        return this.runnable;
+    public BukkitTask getRunnable()
+    {
+        return runnable;
     }
-
-    public int getSecondsToCapture() {
-        return this.secondsToCapture;
+    
+    public int getSecondsToCapture()
+    {
+        return secondsToCapture;
     }
-
-    public SpawnPoint getSpawnPoint() {
-        return this.spawnPoint;
+    
+    public SpawnPoint getSpawnPoint()
+    {
+        return spawnPoint;
     }
-
-    public World getWorld() {
-        return this.world;
+    
+    public World getWorld()
+    {
+        return world;
     }
-
+    
     /*
      * Region Objects End
      */
-
-    public boolean isBeingCaptured() {
-        if (isSpawnRegion()) {
+    
+    public boolean isBeingCaptured()
+    {
+        if(isSpawnRegion())
+        {
             return false;
         }
-        return this.isBeingCaptured;
+        return isBeingCaptured;
     }
-
+    
     /*
      * Influence Manager Begin
      */
-
-    public boolean isSpawnRegion() {
-        return this.isSpawnRegion;
+    
+    public boolean isSpawnRegion()
+    {
+        return isSpawnRegion;
     }
-
-    public void setAdjacentRegions(List<CapturableRegion> adjacentRegions) {
+    
+    public void setAdjacentRegions(List<CapturableRegion> adjacentRegions)
+    {
         this.adjacentRegions = adjacentRegions;
     }
-
-    public void setBaseInfluence(Float baseInfluence) {
+    
+    public void setBaseInfluence(Float baseInfluence)
+    {
         this.baseInfluence = baseInfluence;
     }
-
-    public void setBeingCaptured(boolean isBeingCaptured) {
+    
+    public void setBeingCaptured(boolean isBeingCaptured)
+    {
         this.isBeingCaptured = isBeingCaptured;
     }
-
-    public void setControlPoints(List<ControlPoint> controlPoints) {
+    
+    public void setControlPoints(List<ControlPoint> controlPoints)
+    {
         this.controlPoints = controlPoints;
     }
-
-    public void setDisplayName(String displayName) {
+    
+    public void setDisplayName(String displayName)
+    {
         this.displayName = displayName;
     }
-
-    public void setInfluenceManager(InfluenceManager influenceManager) {
+    
+    public void setInfluenceManager(InfluenceManager influenceManager)
+    {
         this.influenceManager = influenceManager;
     }
-
-    public void setInfluenceMap(Map<Faction, Float> influenceMap) {
+    
+    public void setInfluenceMap(Map<Faction, Float> influenceMap)
+    {
         this.influenceMap = influenceMap;
     }
-
-    public void setInfluenceOwner(Faction influenceOwner) {
+    
+    public void setInfluenceOwner(Faction influenceOwner)
+    {
         this.influenceOwner = influenceOwner;
     }
-
-    public void setInfluenceRate(Float influenceRate) {
+    
+    public void setInfluenceRate(Float influenceRate)
+    {
         this.influenceRate = influenceRate;
     }
-
+    
     /*
      * Influence End
      */
-
+    
     /*
      * Capture Timer Begin
      */
-
-    public void setMajorityController(Faction majorityController) {
+    
+    public void setMajorityController(Faction majorityController)
+    {
         this.majorityController = majorityController;
     }
-
-    public void setMinutesToCapture(int minutesToCapture) {
+    
+    public void setMinutesToCapture(int minutesToCapture)
+    {
         this.minutesToCapture = minutesToCapture;
     }
-
-    public void setOwner(Faction owner) {
+    
+    public void setOwner(Faction owner)
+    {
         this.owner = owner;
     }
-
-    public void setPlayers(List<RCPlayer> players) {
+    
+    public void setPlayers(List<RCPlayer> players)
+    {
         this.players = players;
     }
-
-    public void setRegion(ProtectedRegion region) {
+    
+    public void setRegion(ProtectedRegion region)
+    {
         this.region = region;
     }
-
-    public void setRegionId(String regionId) {
+    
+    public void setRegionId(String regionId)
+    {
         this.regionId = regionId;
     }
-
-    public void setSecondsToCapture(int secondsToCapture) {
+    
+    public void setSecondsToCapture(int secondsToCapture)
+    {
         this.secondsToCapture = secondsToCapture;
     }
-
-    public void setSpawnPoint(SpawnPoint spawnPoint) {
+    
+    public void setSpawnPoint(SpawnPoint spawnPoint)
+    {
         this.spawnPoint = spawnPoint;
     }
-
-    public void setSpawnRegion(boolean isSpawnRegion) {
+    
+    public void setSpawnRegion(boolean isSpawnRegion)
+    {
         this.isSpawnRegion = isSpawnRegion;
     }
-
-    public void setWorld(World world) {
+    
+    public void setWorld(World world)
+    {
         this.world = world;
     }
 }

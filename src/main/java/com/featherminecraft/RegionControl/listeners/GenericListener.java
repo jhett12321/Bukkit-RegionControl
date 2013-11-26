@@ -10,30 +10,36 @@ import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.events.RegionDefendEvent;
 
-public class GenericListener implements Listener {
-
+public class GenericListener implements Listener
+{
+    
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onChangeRegion(ChangeRegionEvent event) {
-
+    public void onChangeRegion(ChangeRegionEvent event)
+    {
+        
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onControlPointCapture(ControlPointCaptureEvent event) {
-
+    public void onControlPointCapture(ControlPointCaptureEvent event)
+    {
+        
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onControlPointNeutralise(ControlPointNeutraliseEvent event) {
-
+    public void onControlPointNeutralise(ControlPointNeutraliseEvent event)
+    {
+        
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onRegionCapture(RegionCaptureEvent event) {
-
+    public void onRegionCapture(RegionCaptureEvent event)
+    {
+        
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onRegionDefend(RegionDefendEvent event) {
-
+    public void onRegionDefend(RegionDefendEvent event)
+    {
+        
     }
 }

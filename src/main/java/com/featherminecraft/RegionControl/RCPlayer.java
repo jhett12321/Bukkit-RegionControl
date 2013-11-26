@@ -8,73 +8,85 @@ import org.bukkit.scheduler.BukkitTask;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 
-public class RCPlayer {
-
+public class RCPlayer
+{
+    
     private String playerName;
     private CapturableRegion currentRegion;
     private Faction faction;
     private Boolean hasSpout = false;
     private Location respawnLocation;
     private BukkitTask clientRunnables;
-
+    
     // Player Classes/Runnables
     private SpoutClientLogic spoutClientLogic;
-
-    public RCPlayer(Player player, Faction faction,
-            CapturableRegion currentRegion) {
-        this.playerName = player.getName();
+    
+    public RCPlayer(Player player, Faction faction, CapturableRegion currentRegion)
+    {
+        playerName = player.getName();
         this.faction = faction;
         this.currentRegion = currentRegion;
-
-        this.clientRunnables = new ClientRunnables(this).runTaskTimer(
-                RegionControl.plugin, 20, 20);
+        
+        clientRunnables = new ClientRunnables(this).runTaskTimer(RegionControl.plugin, 20, 20);
     }
-
-    public Player getBukkitPlayer() {
-        return Bukkit.getPlayer(this.playerName);
+    
+    public Player getBukkitPlayer()
+    {
+        return Bukkit.getPlayer(playerName);
     }
-
-    public BukkitTask getClientRunnables() {
-        return this.clientRunnables;
+    
+    public BukkitTask getClientRunnables()
+    {
+        return clientRunnables;
     }
-
-    public CapturableRegion getCurrentRegion() {
-        return this.currentRegion;
+    
+    public CapturableRegion getCurrentRegion()
+    {
+        return currentRegion;
     }
-
-    public Faction getFaction() {
-        return this.faction;
+    
+    public Faction getFaction()
+    {
+        return faction;
     }
-
-    public Boolean getHasSpout() {
-        return this.hasSpout;
+    
+    public Boolean getHasSpout()
+    {
+        return hasSpout;
     }
-
-    public Location getRespawnLocation() {
-        return this.respawnLocation;
+    
+    public Location getRespawnLocation()
+    {
+        return respawnLocation;
     }
-
-    public SpoutClientLogic getSpoutClientLogic() {
-        return this.spoutClientLogic;
+    
+    public SpoutClientLogic getSpoutClientLogic()
+    {
+        return spoutClientLogic;
     }
-
-    public void setCurrentRegion(CapturableRegion currentRegion) {
+    
+    public void setCurrentRegion(CapturableRegion currentRegion)
+    {
         this.currentRegion = currentRegion;
     }
-
-    public void setFaction(Faction faction) {
+    
+    public void setFaction(Faction faction)
+    {
         this.faction = faction;
     }
-
-    public void setHasSpout(Boolean hasSpout) {
+    
+    public void setHasSpout(Boolean hasSpout)
+    {
         this.hasSpout = hasSpout;
     }
-
-    public void setRespawnLocation(Location respawnLocation) {
+    
+    public void setRespawnLocation(Location respawnLocation)
+    {
         this.respawnLocation = respawnLocation;
     }
-
-    public void setSpoutClientLogic(SpoutClientLogic spoutClientLogic) {
+    
+    public void setSpoutClientLogic(SpoutClientLogic spoutClientLogic)
+    {
         this.spoutClientLogic = spoutClientLogic;
     }
 }

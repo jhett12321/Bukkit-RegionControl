@@ -7,17 +7,18 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.utils.RegionUtils;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-public class ClientRunnables extends BukkitRunnable {
-
+public class ClientRunnables extends BukkitRunnable
+{
     private RCPlayer player;
-
+    
     public ClientRunnables(RCPlayer player)
     {
         this.player = player;
@@ -36,16 +37,16 @@ public class ClientRunnables extends BukkitRunnable {
     @Override
     public void run()
     {
-        //Utilities Begin
+        // Utilities Begin
         RegionUtils regionUtils = new RegionUtils();
-        //Utilities End
+        // Utilities End
         
         CapturableRegion currentRegion = player.getCurrentRegion();
         CapturableRegion newRegion = null;
         
         Vector newlocation = toVector(player.getBukkitPlayer().getLocation());
         
-        for(Entry<String, CapturableRegion> capturableRegion: ServerLogic.capturableRegions.entrySet())
+        for(Entry<String, CapturableRegion> capturableRegion : ServerLogic.capturableRegions.entrySet())
         {
             ProtectedRegion region = capturableRegion.getValue().getRegion();
             if(region.contains(newlocation))

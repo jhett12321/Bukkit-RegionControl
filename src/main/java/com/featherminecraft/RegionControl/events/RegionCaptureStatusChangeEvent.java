@@ -5,34 +5,39 @@ import org.bukkit.event.HandlerList;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
-public class RegionCaptureStatusChangeEvent extends Event {
-
+public class RegionCaptureStatusChangeEvent extends Event
+{
+    
     private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlerList() {
+    
+    public static HandlerList getHandlerList()
+    {
         return handlers;
     }
-
+    
     private CapturableRegion region;
-
+    
     private Boolean isBeingCaptured;
-
-    public RegionCaptureStatusChangeEvent(CapturableRegion region,
-            Boolean isbeingCaptured) {
+    
+    public RegionCaptureStatusChangeEvent(CapturableRegion region, Boolean isbeingCaptured)
+    {
         this.region = region;
-        this.isBeingCaptured = isbeingCaptured;
+        isBeingCaptured = isbeingCaptured;
     }
-
-    public Boolean getCaptureStatus() {
-        return this.isBeingCaptured;
+    
+    public Boolean getCaptureStatus()
+    {
+        return isBeingCaptured;
     }
-
+    
     @Override
-    public HandlerList getHandlers() {
+    public HandlerList getHandlers()
+    {
         return handlers;
     }
-
-    public CapturableRegion getRegion() {
-        return this.region;
+    
+    public CapturableRegion getRegion()
+    {
+        return region;
     }
 }
