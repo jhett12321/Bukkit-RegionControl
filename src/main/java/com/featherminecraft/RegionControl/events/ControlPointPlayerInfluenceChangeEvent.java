@@ -1,13 +1,11 @@
 package com.featherminecraft.RegionControl.events;
 
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.featherminecraft.RegionControl.RCPlayer;
-import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 

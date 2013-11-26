@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -136,6 +137,11 @@ public class SpoutClientLogic
     private SpoutPlayer splayer;
     private List<Widget> controlPointScreenElements = new ArrayList<Widget>();
     
+    public ControlPoint getControlPoint()
+    {
+        return controlPoint;
+    }
+    
     public BukkitTask getRunnable()
     {
         return runnable;
@@ -164,6 +170,22 @@ public class SpoutClientLogic
             }
             captureElementsHidden = true;
         }
+    }
+    
+    public void hideControlPointCaptureBar()
+    {
+        if(controlPointCaptureBar.isVisible())
+        {
+            for(Widget element : controlPointScreenElements)
+            {
+                element.setVisible(false);
+            }
+        }
+    }
+    
+    public void setControlPoint(ControlPoint controlPoint)
+    {
+        this.controlPoint = controlPoint;
     }
     
     public void setRegionCaptureStatus(Boolean captureStatus)
@@ -488,21 +510,6 @@ public class SpoutClientLogic
         }
     }
     
-    private void showNonCaptureElements()
-    {
-        if(allElementsHidden)
-        {
-            for(Widget element : screenElements)
-            {
-                if(!screenCaptureElements.contains(element))
-                {
-                    element.setVisible(true);
-                }
-            }
-            allElementsHidden = false;
-        }
-    }
-    
     public void showControlPointCaptureBar()
     {
         if(!controlPointCaptureBar.isVisible())
@@ -527,14 +534,18 @@ public class SpoutClientLogic
         }
     }
     
-    public void hideControlPointCaptureBar()
+    private void showNonCaptureElements()
     {
-        if(controlPointCaptureBar.isVisible())
+        if(allElementsHidden)
         {
-            for(Widget element : controlPointScreenElements)
+            for(Widget element : screenElements)
             {
-                element.setVisible(false);
+                if(!screenCaptureElements.contains(element))
+                {
+                    element.setVisible(true);
+                }
             }
+            allElementsHidden = false;
         }
     }
     
@@ -787,15 +798,5 @@ public class SpoutClientLogic
                 }
             }
         }
-    }
-
-    public ControlPoint getControlPoint()
-    {
-        return controlPoint;
-    }
-
-    public void setControlPoint(ControlPoint controlPoint)
-    {
-        this.controlPoint = controlPoint;
     }
 }

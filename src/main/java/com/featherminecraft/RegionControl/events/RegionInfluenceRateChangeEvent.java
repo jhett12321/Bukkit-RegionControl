@@ -1,11 +1,8 @@
 package com.featherminecraft.RegionControl.events;
 
-import java.util.logging.Level;
-
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
 // This event is triggered upon a change in influence rate, or influence
