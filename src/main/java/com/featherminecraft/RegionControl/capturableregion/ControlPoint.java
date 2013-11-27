@@ -121,7 +121,7 @@ public class ControlPoint
         
         for(RCPlayer player : players)
         {
-            if(player.getBukkitPlayer().getLocation().distanceSquared(location) <= captureRadius * captureRadius)
+            if(!player.getBukkitPlayer().isDead() && player.getBukkitPlayer().getLocation().distanceSquared(location) <= captureRadius * captureRadius)
             {
                 influentialPlayers.add(player);
                 Faction playersFaction = player.getFaction();

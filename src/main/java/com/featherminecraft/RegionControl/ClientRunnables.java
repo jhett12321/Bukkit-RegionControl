@@ -59,21 +59,21 @@ public class ClientRunnables extends BukkitRunnable
         {
             if(newRegion == null)
             {
-                Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(null, currentRegion, player));
                 regionUtils.removePlayerFromRegion(player, currentRegion);
+                Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(null, currentRegion, player));
             }
             
             else if(newRegion != null && currentRegion != null)
             {
-                Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(newRegion, currentRegion, player));
                 regionUtils.removePlayerFromRegion(player, currentRegion);
                 regionUtils.addPlayerToRegion(player, newRegion);
+                Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(newRegion, currentRegion, player));
             }
             
             else if(currentRegion == null)
             {
-                Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(newRegion, null, player));
                 regionUtils.addPlayerToRegion(player, newRegion);
+                Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(newRegion, null, player));
             }
             
             player.setCurrentRegion(newRegion);

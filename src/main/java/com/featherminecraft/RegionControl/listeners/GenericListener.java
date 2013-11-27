@@ -1,5 +1,6 @@
 package com.featherminecraft.RegionControl.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -34,7 +35,7 @@ public class GenericListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRegionCapture(RegionCaptureEvent event)
     {
-        
+        Bukkit.getServer().broadcastMessage(event.getNewOwner().getName() + " have captured " + event.getCapturableRegion().getDisplayName() + "!");
     }
     
     @EventHandler(priority = EventPriority.MONITOR)

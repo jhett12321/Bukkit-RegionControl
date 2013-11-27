@@ -55,6 +55,26 @@ public class SpoutPlayerListener implements Listener
         SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
         CapturableRegion newRegion = event.getNewRegion();
         spoutClientLogic.updateRegion(newRegion);
+        
+        if(event.getOldRegion() != null)
+        {
+            List<RCPlayer> oldPlayerList = event.getOldRegion().getPlayers();
+            
+            for(RCPlayer rcPlayer : oldPlayerList)
+            {
+                rcPlayer.getSpoutClientLogic().updatePlayersDetected();
+            }
+        }
+        
+        if(event.getNewRegion() != null)
+        {
+            List<RCPlayer> newPlayerList = event.getNewRegion().getPlayers();
+            
+            for(RCPlayer rcPlayer : newPlayerList)
+            {
+                rcPlayer.getSpoutClientLogic().updatePlayersDetected();
+            }
+        }
     }
     
     @EventHandler

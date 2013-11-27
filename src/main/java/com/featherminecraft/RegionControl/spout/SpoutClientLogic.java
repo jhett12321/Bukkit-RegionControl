@@ -2,7 +2,9 @@ package com.featherminecraft.RegionControl.spout;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.scheduler.BukkitRunnable;
@@ -59,28 +61,10 @@ public class SpoutClientLogic
             RegionControl.plugin.saveResource("null.png", false);
         }
         
-        if(!new File(RegionControl.plugin.getDataFolder(), "music.wav").exists())
-        {
-            RegionControl.plugin.saveResource("music.wav", false);
-        }
-        
-        if(!new File(RegionControl.plugin.getDataFolder(), "captured.wav").exists())
-        {
-            RegionControl.plugin.saveResource("captured.wav", false);
-        }
-        
-        if(!new File(RegionControl.plugin.getDataFolder(), "captured2.wav").exists())
-        {
-            RegionControl.plugin.saveResource("captured2.wav", false);
-        }
-        
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/background.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Losing.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Capturing.png"));
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/null.png"));
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/music.wav"));
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/captured.wav"));
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/captured2.wav"));
         
         // Precache Faction Icons
         Config config = new Config();
@@ -132,10 +116,17 @@ public class SpoutClientLogic
     private InGameHUD screen;
     private CapturableRegion region;
     private ControlPoint controlPoint;
-    private boolean musicPlaying;
+    // private boolean musicPlaying;
     
     private SpoutPlayer splayer;
     private List<Widget> controlPointScreenElements = new ArrayList<Widget>();
+    private RCPlayer rcplayer;
+    private Container regionStatusContainer;
+    private Label alliesDetectedText;
+    private Gradient alliesDetectedBar;
+    private Label enemiesDetectedText;
+    private Gradient enemiesDetectedBar;
+    private Container regionStatusBarContainer;
     
     public ControlPoint getControlPoint()
     {
@@ -198,7 +189,7 @@ public class SpoutClientLogic
                 background.setHeight(40);
             }
             captureBarAnim.animateStop(false);
-            SpoutManager.getSoundManager().stopMusic(splayer, false, 1000);
+            // SpoutManager.getSoundManager().stopMusic(splayer, false, 1000);
         }
         
         else if(captureStatus == true)
@@ -214,15 +205,18 @@ public class SpoutClientLogic
     public void setupClientElements(RCPlayer rcplayer)
     {
         splayer = ((SpoutPlayer) rcplayer.getBukkitPlayer());
+        this.rcplayer = rcplayer;
         screen = splayer.getMainScreen();
         region = rcplayer.getCurrentRegion();
         
+        // Enemies/Allies Detected Bar
+        
         // Background
-        backgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(150).setHeight(23).setX(3).setY(-5);
+        backgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(150).setHeight(40).setX(3).setY(-5);
         
         screenElements.add(backgroundContainer);
         
-        background = (Texture) new GenericTexture("background.png").setDrawAlphaChannel(true).setWidth(150).setHeight(23).setPriority(RenderPriority.Highest);
+        background = (Texture) new GenericTexture("background.png").setDrawAlphaChannel(true).setWidth(150).setHeight(40).setPriority(RenderPriority.Highest);
         
         screenElements.add(background);
         
@@ -250,8 +244,26 @@ public class SpoutClientLogic
         
         regionInfo.addChildren(ownericon, regionname);
         
+        // Region Status
+        regionStatusContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(12).setX(45).setY(18);
+        regionStatusBarContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(12).setX(45).setY(17);
+        alliesDetectedText = (Label) new GenericLabel("DEBUG").setShadow(false).setScale(0.5F).setResize(true).setFixed(true);
+        alliesDetectedBar = (Gradient) new GenericGradient(new Color(0, 0, 255)).setWidth(65).setHeight(5).setFixed(true).setPriority(RenderPriority.High);
+        
+        enemiesDetectedText = (Label) new GenericLabel().setShadow(false).setScale(0.5F).setResize(true).setFixed(true);
+        enemiesDetectedBar = (Gradient) new GenericGradient(new Color(255, 0, 0)).setWidth(65).setHeight(5).setFixed(true).setPriority(RenderPriority.High);
+        
+        regionStatusContainer.addChildren(alliesDetectedText, enemiesDetectedText);
+        regionStatusBarContainer.addChildren(alliesDetectedBar, enemiesDetectedBar);
+        
+        screenElements.add(regionStatusContainer);
+        screenElements.add(regionStatusBarContainer);
+        screenElements.add(alliesDetectedText);
+        screenElements.add(alliesDetectedBar);
+        screenElements.add(enemiesDetectedBar);
+        
         // Control Points
-        controlPointsContainer = (Container) new GenericContainer().setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(50).setHeight(10).setX(50).setY(25).setMarginRight(1);
+        controlPointsContainer = (Container) new GenericContainer().setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(50).setHeight(10).setX(25).setY(25).setMarginRight(1);
         
         screenElements.add(controlPointsContainer);
         
@@ -379,8 +391,8 @@ public class SpoutClientLogic
         
         barAnimContainer.addChild(captureBarAnim);
         
-        screen.attachWidgets(RegionControl.plugin, backgroundContainer, regionInfo, controlPointsContainer, controlPointCaptureBarContainer, controlPointCaptureBarBackgroundContainer, influenceOwnerIconContainer, captureBarContainer, captureBarSpaceContainer, captureBarBackgroundContainer, timerContainer, barAnimContainer);
-        screen.attachWidgets(RegionControl.plugin, background, ownericon, regionname, controlPointCaptureBar, controlPointCaptureBarBackground, influenceOwnerIcon, captureBarBackground, captureBar, captureBarSpace, captureTimer, captureBarAnim);
+        screen.attachWidgets(RegionControl.plugin, backgroundContainer, regionInfo, regionStatusContainer, regionStatusBarContainer, controlPointsContainer, controlPointCaptureBarContainer, controlPointCaptureBarBackgroundContainer, influenceOwnerIconContainer, captureBarContainer, captureBarSpaceContainer, captureBarBackgroundContainer, timerContainer, barAnimContainer);
+        screen.attachWidgets(RegionControl.plugin, background, ownericon, regionname, alliesDetectedText, alliesDetectedBar, enemiesDetectedText, enemiesDetectedBar, controlPointCaptureBar, controlPointCaptureBarBackground, influenceOwnerIcon, captureBarBackground, captureBar, captureBarSpace, captureTimer, captureBarAnim);
         
         for(Label controlPoint : controlPointLabels)
         {
@@ -390,6 +402,7 @@ public class SpoutClientLogic
         hideControlPointCaptureBar();
         
         updateRegion(rcplayer.getCurrentRegion());
+        updatePlayersDetected();
         
         runnable = new BukkitRunnable()
         {
@@ -465,16 +478,25 @@ public class SpoutClientLogic
                             captureBar.setWidth(barwidth);
                             captureBarSpace.setWidth(100 - barwidth);
                             
-                            if(barwidth > 75 && barwidth < 100 && musicPlaying == false && region.getInfluenceOwner() == region.getMajorityController())
-                            {
-                                SpoutManager.getSoundManager().playCustomMusic(RegionControl.plugin, splayer, "music.wav", false);
-                                musicPlaying = true;
-                            }
-                            else if(musicPlaying == true && (barwidth < 75 || barwidth == 100))
-                            {
-                                SpoutManager.getSoundManager().stopMusic(splayer, false, 1000);
-                                musicPlaying = false;
-                            }
+                            /*
+                             * if(barwidth > 75 && barwidth < 100 &&
+                             * musicPlaying == false &&
+                             * region.getInfluenceOwner() ==
+                             * region.getMajorityController())
+                             * {
+                             * SpoutManager.getSoundManager().playCustomMusic(
+                             * RegionControl.plugin, splayer, "music.wav",
+                             * false);
+                             * musicPlaying = true;
+                             * }
+                             * else if(musicPlaying == true && (barwidth < 75 ||
+                             * barwidth == 100))
+                             * {
+                             * SpoutManager.getSoundManager().stopMusic(splayer,
+                             * false, 1000);
+                             * musicPlaying = false;
+                             * }
+                             */
                             
                             Integer red = region.getInfluenceOwner().getFactionColor().getRed();
                             Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
@@ -721,14 +743,84 @@ public class SpoutClientLogic
         }
     }
     
+    public void updatePlayersDetected()
+    {
+        Map<Faction, Integer> factionPlayers = new HashMap<Faction, Integer>();
+        
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        {
+            factionPlayers.put(faction.getValue(), 0);
+        }
+        
+        for(RCPlayer player : region.getPlayers())
+        {
+            factionPlayers.put(player.getFaction(), factionPlayers.get(player.getFaction()) + 1);
+        }
+        
+        Integer friendliesDetected = factionPlayers.get(rcplayer.getFaction());
+        Integer enemiesDetected = 0;
+        
+        for(Entry<Faction, Integer> faction : factionPlayers.entrySet())
+        {
+            if(faction.getKey() != rcplayer.getFaction())
+            {
+                enemiesDetected += faction.getValue();
+            }
+        }
+        
+        if(friendliesDetected == 0)
+        {
+            alliesDetectedText.setText("Allies Detected: None");
+        }
+        else if(friendliesDetected <= 12)
+        {
+            alliesDetectedText.setText("Allies Detected: 1-12");
+        }
+        else if(friendliesDetected <= 24)
+        {
+            alliesDetectedText.setText("Allies Detected: 13-24");
+        }
+        else if(friendliesDetected <= 48)
+        {
+            alliesDetectedText.setText("Allies Detected: 25-48");
+        }
+        else
+        {
+            alliesDetectedText.setText("Allies Detected: 48+");
+        }
+        
+        if(enemiesDetected == 0)
+        {
+            enemiesDetectedText.setText("Enemies Detected: None");
+        }
+        else if(enemiesDetected <= 12)
+        {
+            enemiesDetectedText.setText("Enemies Detected: 1-12");
+        }
+        else if(enemiesDetected <= 24)
+        {
+            enemiesDetectedText.setText("Enemies Detected: 13-24");
+        }
+        else if(enemiesDetected <= 48)
+        {
+            enemiesDetectedText.setText("Enemies Detected: 25-48");
+        }
+        else
+        {
+            enemiesDetectedText.setText("Enemies Detected: 48+");
+        }
+    }
+    
     public void updateRegion(CapturableRegion updatedRegion)
     {
         region = updatedRegion;
-        if(musicPlaying)
-        {
-            SpoutManager.getSoundManager().stopMusic(splayer, false, 1000);
-            musicPlaying = false;
-        }
+        /*
+         * if(musicPlaying)
+         * {
+         * SpoutManager.getSoundManager().stopMusic(splayer, false, 1000);
+         * musicPlaying = false;
+         * }
+         */
         
         if(updatedRegion == null)
         {
@@ -788,11 +880,7 @@ public class SpoutClientLogic
                     captureBarAnim.animateStop(false);
                 }
                 hideCaptureElements();
-                if(region.isSpawnRegion() && background.getHeight() != 23)
-                {
-                    background.setHeight(23);
-                }
-                else if(!region.isSpawnRegion() && background.getHeight() != 40)
+                if(!region.isSpawnRegion() && background.getHeight() != 40)
                 {
                     background.setHeight(40);
                 }
