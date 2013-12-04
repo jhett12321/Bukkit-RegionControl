@@ -52,19 +52,19 @@ public class ServerLogic
         Config config = new Config();
         // Utilities End
         Set<String> configfactions = config.getMainConfig().getConfigurationSection("factions").getKeys(false);
-        for(String faction : configfactions)
+        for(String factionId : configfactions)
         {
-            String permissionGroup = config.getMainConfig().getString("factions." + faction + ".permissiongroup");
+            String permissionGroup = config.getMainConfig().getString("factions." + factionId + ".permissiongroup");
             
-            String configColor = config.getMainConfig().getString("factions." + faction + ".color");
+            String configColor = config.getMainConfig().getString("factions." + factionId + ".color");
             
-            String name = config.getMainConfig().getString("factions." + faction + ".displayname");
+            String displayName = config.getMainConfig().getString("factions." + factionId + ".displayname");
             
             Color factioncolor = DyeColor.valueOf(configColor.toUpperCase()).getColor();
             
-            Faction factionObject = new Faction(name, permissionGroup, factioncolor);
+            Faction factionObject = new Faction(factionId, displayName, permissionGroup, factioncolor);
             
-            factions.put(faction, factionObject);
+            factions.put(factionId, factionObject);
         }
     }
     
@@ -167,7 +167,6 @@ public class ServerLogic
                     
                     CapturableRegion adjacentRegion = capturableRegions.get(configWorld + "_" + configAdjacentRegion);
                     adjacentregions.add(adjacentRegion);
-                    adjacentRegion.getAdjacentRegions().add(capturableRegions.get(configWorld + "_" + configRegion));
                 }
                 capturableRegions.get(configWorld + "_" + configRegion).setAdjacentRegions(adjacentregions);
             }

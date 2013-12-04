@@ -90,9 +90,9 @@ public class Config
                 // Variables being set
                 // Float baseInfluence = region.getBaseInfluence();
                 Faction influenceOwner = region.getInfluenceOwner();
-                String configInfluenceOwner = influenceOwner.getName();
+                String configInfluenceOwner = influenceOwner.getId();
                 int configInfluence = region.getInfluenceMap().get(influenceOwner).intValue();
-                String configOwner = region.getOwner().getName();
+                String configOwner = region.getOwner().getId();
                 
                 // Key location variables
                 String configWorld = region.getWorld().getName();
@@ -112,10 +112,10 @@ public class Config
                 for(ControlPoint controlPoint : controlPoints)
                 {
                     Faction controlPointInfluenceOwner = controlPoint.getInfluenceOwner();
-                    String configControlPointInfluenceOwner = controlPointInfluenceOwner.getName();
+                    String configControlPointInfluenceOwner = controlPointInfluenceOwner.getId();
                     int configControlPointInfluence = controlPoint.getInfluenceMap().get(controlPointInfluenceOwner).intValue();
                     String configControlPointId = controlPoint.getIdentifier();
-                    String configControlPointOwner = controlPoint.getOwner().getName();
+                    String configControlPointOwner = controlPoint.getOwner().getId();
                     
                     dataConfig.set("worlds." + configWorld + ".regions." + configId + ".controlpoints." + configControlPointId + ".influenceowner", configControlPointInfluenceOwner);
                     dataConfig.set("worlds." + configWorld + ".regions." + configId + ".controlpoints." + configControlPointId + ".influence", configControlPointInfluence);
@@ -124,7 +124,7 @@ public class Config
             }
             else
             {
-                String configOwner = region.getOwner().getName();
+                String configOwner = region.getOwner().getId();
                 String configWorld = region.getWorld().getName();
                 String configId = region.getRegionId();
                 
