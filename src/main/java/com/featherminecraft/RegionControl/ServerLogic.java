@@ -58,9 +58,11 @@ public class ServerLogic
             
             String configColor = config.getMainConfig().getString("factions." + faction + ".color");
             
+            String name = config.getMainConfig().getString("factions." + faction + ".displayname");
+            
             Color factioncolor = DyeColor.valueOf(configColor.toUpperCase()).getColor();
             
-            Faction factionObject = new Faction(faction, permissionGroup, factioncolor);
+            Faction factionObject = new Faction(name, permissionGroup, factioncolor);
             
             factions.put(faction, factionObject);
         }
@@ -165,6 +167,7 @@ public class ServerLogic
                     
                     CapturableRegion adjacentRegion = capturableRegions.get(configWorld + "_" + configAdjacentRegion);
                     adjacentregions.add(adjacentRegion);
+                    adjacentRegion.getAdjacentRegions().add(capturableRegions.get(configWorld + "_" + configRegion));
                 }
                 capturableRegions.get(configWorld + "_" + configRegion).setAdjacentRegions(adjacentregions);
             }
@@ -193,5 +196,34 @@ public class ServerLogic
             }
         }
     }
+    
+    //WIP - TODO for commands.
+/*    public static void createRegion(String worldGuardId, String worldId, String regionDisplayName, Float baseInfluence,Float influence, Faction influenceOwner, List<ControlPoint> controlPoints, String ownerId, List<String> adjacentRegionIds, Location spawnPointLocation,Boolean isSpawnRegion)
+    {
+        // Region Setup
+        Faction owner = factions.get(ownerId);
+        
+        World world = Bukkit.getWorld(worldId); // World
+        ProtectedRegion worldGuardRegion = Utils.getWorldGuard().getRegionManager(world).getRegion(worldGuardId); // Region
+        SpawnPoint spawnPoint = new SpawnPoint(spawnPointLocation);
+        
+        CapturableRegion capturableregion = new CapturableRegion(regionDisplayName, worldGuardId, owner, worldGuardRegion, world, controlPoints, spawnPoint, baseInfluence, influence, influenceOwner, isSpawnRegion);
+        
+        capturableRegions.put(worldId + "_" + worldGuardId, capturableregion);
+        
+        List<CapturableRegion> adjacentregions = new ArrayList<CapturableRegion>();
+        // Adjacent Region Setup
+        for(String adjacentRegionId : adjacentRegionIds)
+        {
+                // TODO Future Implementation: Cross-world adjacent regions.
+                // World world = Bukkit.getWorld(configWorld);
+                
+                CapturableRegion adjacentRegion = capturableRegions.get(worldId + "_" + adjacentRegionId);
+                adjacentregions.add(adjacentRegion);
+                adjacentRegion.getAdjacentRegions().add(capturableregion);
+        }
+        
+        capturableRegions.get(worldId + "_" + worldId).setAdjacentRegions(adjacentregions);
+    }*/
     
 }

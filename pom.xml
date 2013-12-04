@@ -6,9 +6,8 @@
 	<name>RegionControl</name>
 	<properties>
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
-		<!-- Bukkit/Minecraft Versions -->
+		<!-- Bukkit Version -->
 		<craftbukkitVersion>1.6.4-R2.0</craftbukkitVersion>
-		<minecraftVersion>1.6.4</minecraftVersion>
 		
 		<!-- Plugin Versions -->
 		<vaultVersion>1.2.27</vaultVersion>

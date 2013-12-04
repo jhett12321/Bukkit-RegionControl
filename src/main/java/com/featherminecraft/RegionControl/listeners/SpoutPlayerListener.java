@@ -24,6 +24,7 @@ import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.RegionControl.events.ControlPointPlayerInfluenceChangeEvent;
 import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.events.RegionCaptureStatusChangeEvent;
+import com.featherminecraft.RegionControl.events.RegionDefendEvent;
 import com.featherminecraft.RegionControl.events.RegionInfluenceRateChangeEvent;
 import com.featherminecraft.RegionControl.spout.RespawnScreen;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
@@ -195,6 +196,17 @@ public class SpoutPlayerListener implements Listener
         {
             player.getSpoutClientLogic().updateRegion(event.getCapturableRegion());
             // TODO Play Capture Sounds/Music
+        }
+    }
+    
+    @EventHandler
+    public void onRegionDefend(RegionDefendEvent event)
+    {
+        List<RCPlayer> playerList = event.getCapturableRegion().getPlayers();
+        
+        for(RCPlayer player : playerList)
+        {
+            player.getSpoutClientLogic().updateRegion(event.getCapturableRegion());
         }
     }
     

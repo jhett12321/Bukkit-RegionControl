@@ -46,19 +46,6 @@ public class InfluenceManager
             }
         }
         
-        // if(region.getInfluenceOwner() != influenceOwner && influenceOwner !=
-        // null)
-        // {
-        // Bukkit.getServer().getPluginManager().callEvent(new
-        // InfluenceRateChangeEvent(region, region.getInfluenceRate(),
-        // region.getInfluenceRate()));
-        // }
-        //
-        // if(region.getInfluenceOwner() != influenceOwner)
-        // {
-        // region.setInfluenceOwner(influenceOwner); //Migrate to Event
-        // }
-        
         return influenceOwner;
     }
     

@@ -1,15 +1,19 @@
 package com.featherminecraft.RegionControl;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.milkbowl.vault.permission.Permission;
 
+import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.listeners.GenericListener;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
+import com.featherminecraft.RegionControl.utils.PlayerUtils;
+import com.featherminecraft.RegionControl.utils.RegionUtils;
 import com.featherminecraft.RegionControl.utils.Utils;
 
 public final class RegionControl extends JavaPlugin
@@ -28,6 +32,11 @@ public final class RegionControl extends JavaPlugin
     @Override
     public void onEnable()
     {
+        // Utilities Begin
+        PlayerUtils playerUtils = new PlayerUtils();
+        RegionUtils regionUtils = new RegionUtils();
+        // Utilities End
+        
         RegionControl.plugin = this;
         
         // TODO: Migrate from spout to client mod.
@@ -68,6 +77,24 @@ public final class RegionControl extends JavaPlugin
         {
             SpoutClientLogic.init();
             pm.registerEvents(new SpoutPlayerListener(), this);
+        }
+        
+        //Register Command Handler (NYI - TODO)
+        //getCommand("regioncontrol").setExecutor(new CommandHandler(isfirstrun));
+        
+        //Server may have been reloaded, so setup all current online players.
+        if(!Utils.SpoutAvailable())
+        {
+            for(Player player : this.getServer().getOnlinePlayers())
+            {
+                Faction faction = playerUtils.getPlayerFaction(player);
+                CapturableRegion currentRegion = faction.getFactionSpawnRegion(player.getWorld());
+                
+                RCPlayer rcPlayer = new RCPlayer(player, faction, currentRegion);
+                
+                ServerLogic.players.put(player.getName(), rcPlayer);
+                regionUtils.addPlayerToRegion(rcPlayer, currentRegion);
+            }
         }
     }
     
