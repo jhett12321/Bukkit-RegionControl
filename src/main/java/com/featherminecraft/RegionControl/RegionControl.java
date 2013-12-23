@@ -7,6 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.milkbowl.vault.permission.Permission;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.listeners.GenericListener;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
@@ -18,7 +21,7 @@ import com.featherminecraft.RegionControl.utils.Utils;
 
 public final class RegionControl extends JavaPlugin
 {
-    
+    public static ProtocolManager protocolManager;
     public static Permission permission;
     public static RegionControl plugin;
     public static boolean isfirstrun;
@@ -52,10 +55,14 @@ public final class RegionControl extends JavaPlugin
         if(!Utils.WorldGuardAvailable())
         {
             setEnabled(false);
-            // Disable plugin due to missing dependency.
         }
         
         if(!Utils.VaultAvailable())
+        {
+            setEnabled(false);
+        }
+        
+        if(!Utils.ProtocolLibAvailable())
         {
             setEnabled(false);
         }
@@ -65,6 +72,7 @@ public final class RegionControl extends JavaPlugin
         config.reloadMainConfig();
         config.reloadDataFile();
         setupPermissions();
+        setupProtocolManager();
         if(!ServerLogic.init())
         {
             setEnabled(false);
@@ -98,6 +106,11 @@ public final class RegionControl extends JavaPlugin
         }
     }
     
+    private void setupProtocolManager()
+    {
+        protocolManager = ProtocolLibrary.getProtocolManager();
+    }
+
     private boolean setupPermissions()
     {
         RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);

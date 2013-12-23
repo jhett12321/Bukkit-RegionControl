@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.featherminecraft</groupId>
 	<artifactId>RegionControl</artifactId>
-	<version>0.8-B2</version>
+	<version>0.8-D8</version>
 	<name>RegionControl</name>
 	<properties>
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
@@ -16,18 +16,9 @@
 		<spoutVersion>1.5.2-R1.0-SNAPSHOT</spoutVersion>
 	</properties>
 	<repositories>
-	<!-- Bukkit can be found at the following repository -->
 		<repository>
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
-		</repository>
-		<repository>
-			<id>vault-repo</id>
-			<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
-		</repository>
-		<repository>
-			<id>sk89q-repo</id>
-			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
 			<id>sonatype-nexus-releases</id>
@@ -41,6 +32,19 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>vault-repo</id>
+			<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+		</repository>
+		<repository>
+			<id>sk89q-repo</id>
+			<url>http://maven.sk89q.com/repo/</url>
+		</repository>
+		<repository>
+			<id>comphenix-rep</id>
+			<name>Comphenix Repository</name>
+			<url>http://repo.comphenix.net/content/groups/public</url>
+		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -49,7 +53,6 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-	
 		<!-- Bukkit -->
 		<dependency>
 			<groupId>org.bukkit</groupId>
@@ -62,7 +65,6 @@
 			<!-- Bukkit API Version, change if necessary -->
 			<version>${craftbukkitVersion}</version>
 		</dependency>
-		
 		<!--  Plugin Dependencies -->
 		<!--  Vault -->
 		<dependency>
@@ -90,6 +92,12 @@
 			<artifactId>spoutcraftplugin</artifactId>
 			<version>${spoutVersion}</version>
 			<scope>provided</scope>
+		</dependency>
+		<!-- ProtocolLib -->
+		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 	</dependencies>
 	<build>

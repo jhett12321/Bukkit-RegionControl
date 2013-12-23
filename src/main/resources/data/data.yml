@@ -1,40 +1,102 @@
 worlds:
   world:
     regions:
-      spawnregion1:
-        owner: faction1
+      elderTyrantsNetherGate:
+        owner: elderTyrants
         influence: 3000
-        influenceowner: faction1
-      spawnregion2:
-        owner: faction2
+        influenceowner: elderTyrants
+      relkanaForcesNetherGate:
+        owner: relkanaForces
         influence: 3000
-        influenceowner: faction2
-      smallbase1:
-        owner: faction2
-        influence: 200
-        influenceowner: faction2
-        controlpoints:
-          a:
-            owner: faction2
-            influence: 10
-            influenceowner: faction2
-      largebase1:
-        owner: faction2
+        influenceowner: relkanaForces
+      ishuraHighlands:
+        owner: elderTyrants
         influence: 300
-        influenceowner: faction2
+        influenceowner: elderTyrants
         controlpoints:
           a:
-            owner: faction2
+            owner: elderTyrants
             influence: 10
-            influenceowner: faction2
+            influenceowner: elderTyrants
+      mekkaLake:
+        owner: elderTyrants
+        influence: 750
+        influenceowner: elderTyrants
+        controlpoints:
+          a:
+            owner: elderTyrants
+            influence: 10
+            influenceowner: elderTyrants
           b:
-            owner: faction2
+            owner: elderTyrants
             influence: 10
-            influenceowner: faction2
+            influenceowner: elderTyrants
           c:
-            owner: faction2
+            owner: elderTyrants
             influence: 10
-            influenceowner: faction2
-players:
-  jhett12321:
-    faction: faction1
+            influenceowner: elderTyrants
+          d:
+            owner: elderTyrants
+            influence: 10
+            influenceowner: elderTyrants
+      mekkaValley:
+        owner: elderTyrants
+        influence: 500
+        influenceowner: elderTyrants
+        controlpoints:
+          a:
+            owner: elderTyrants
+            influence: 10
+            influenceowner: elderTyrants
+          b:
+            owner: elderTyrants
+            influence: 10
+            influenceowner: elderTyrants
+          c:
+            owner: elderTyrants
+            influence: 10
+            influenceowner: elderTyrants
+      torasaurPlains:
+        owner: elderTyrants
+        influence: 300
+        influenceowner: elderTyrants
+        controlpoints:
+          a:
+            owner: elderTyrants
+            influence: 10
+            influenceowner: elderTyrants
+      norakDesert:
+        owner: relkanaForces
+        influence: 500
+        influenceowner: relkanaForces
+        controlpoints:
+          a:
+            owner: relkanaForces
+            influence: 10
+            influenceowner: relkanaForces
+          b:
+            owner: relkanaForces
+            influence: 10
+            influenceowner: relkanaForces
+          c:
+            owner: relkanaForces
+            influence: 10
+            influenceowner: relkanaForces
+      twilightForest:
+        owner: elderTyrants
+        influence: 300
+        influenceowner: elderTyrants
+        controlpoints:
+          a:
+            owner: elderTyrants
+            influence: 10
+            influenceowner: elderTyrants
+      kurrishSludgeMine:
+        owner: elderTyrants
+        influence: 300
+        influenceowner: elderTyrants
+        controlpoints:
+          a:
+            owner: elderTyrants
+            influence: 10
+            influenceowner: elderTyrants

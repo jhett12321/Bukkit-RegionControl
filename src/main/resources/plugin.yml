@@ -5,8 +5,7 @@ author: Jhett12321
 website: http://featherminecraft.com
 
 main: com.featherminecraft.RegionControl.RegionControl
-depend: [WorldGuard, WorldEdit]
-softdepend: [SpoutPlugin]
+depend: [WorldGuard, WorldEdit, Spout, Vault, ProtocolLib]
 
 commands:
 

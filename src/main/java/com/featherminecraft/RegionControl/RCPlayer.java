@@ -50,7 +50,7 @@ public class RCPlayer
         return faction;
     }
     
-    public Boolean getHasSpout()
+    public Boolean hasSpout()
     {
         return hasSpout;
     }

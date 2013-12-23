@@ -3,6 +3,7 @@ package com.featherminecraft.RegionControl.spout;
 import java.util.List;
 
 import org.getspout.spoutapi.gui.AbstractListModel;
+import org.getspout.spoutapi.gui.GenericLabel;
 import org.getspout.spoutapi.gui.ListWidgetItem;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -75,6 +76,13 @@ public class RespawnListModel extends AbstractListModel
         if(!doubleClicked)
         {
             respawnScreen.getRedeployButton().setText("Redeploy: " + regionSelected.getDisplayName()).setDirty(true);
+            float currentscale = 1F;
+            while(GenericLabel.getStringWidth(respawnScreen.getRedeployButton().getText(), currentscale) > 190)
+            {
+                currentscale -= 0.01F;
+            }
+            
+            respawnScreen.getRedeployButton().setScale(currentscale);
             return;
         }
         

@@ -22,7 +22,7 @@ import com.featherminecraft.RegionControl.utils.RegionUtils;
 public class PlayerListener implements Listener
 {
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDamage(EntityDamageByEntityEvent event)
     {
         Player playerdamager = null;
@@ -63,7 +63,7 @@ public class PlayerListener implements Listener
         }
     }
     
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         // Utilities Begin
@@ -120,7 +120,7 @@ public class PlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event)
     {
         PlayerUtils playerUtils = new PlayerUtils();

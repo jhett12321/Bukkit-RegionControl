@@ -35,6 +35,7 @@ import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
+import com.featherminecraft.RegionControl.utils.PlayerUtils;
 
 public class SpoutClientLogic
 {
@@ -127,6 +128,7 @@ public class SpoutClientLogic
     private Label enemiesDetectedText;
     private Gradient enemiesDetectedBar;
     private Container regionStatusBarContainer;
+    private ArrayList<Label> reasonWidgetList;
     
     public ControlPoint getControlPoint()
     {
@@ -170,6 +172,15 @@ public class SpoutClientLogic
             for(Widget element : controlPointScreenElements)
             {
                 element.setVisible(false);
+            }
+            
+            if(reasonWidgetList != null && reasonWidgetList.size() > 0)
+            {
+                for(Label widget : reasonWidgetList)
+                {
+                    screen.removeWidget(widget);
+                    reasonWidgetList.remove(widget);
+                }
             }
         }
     }
@@ -401,8 +412,15 @@ public class SpoutClientLogic
         
         hideControlPointCaptureBar();
         
-        updateRegion(rcplayer.getCurrentRegion());
-        updatePlayersDetected();
+        CapturableRegion currentRegion = rcplayer.getCurrentRegion();
+        List<RCPlayer> newPlayerList = currentRegion.getPlayers();
+        for(RCPlayer rPlayer : newPlayerList)
+        {
+            if(rPlayer.hasSpout())
+            {
+                rPlayer.getSpoutClientLogic().updatePlayersDetected();
+            }
+        }
         
         runnable = new BukkitRunnable()
         {
@@ -553,6 +571,28 @@ public class SpoutClientLogic
             
             Color spoutColor = new Color(red, green, blue);
             controlPointCaptureBar.setColor(spoutColor);
+            
+            PlayerUtils playerUtils = new PlayerUtils();
+            
+            if(!playerUtils.canCapture(region, rcplayer));
+            {
+                Container reasonContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.TOP_CENTER).setHeight(7).shiftYPos(50);
+                reasonWidgetList = new ArrayList<Label>();
+                for(String reason : playerUtils.getCannotCaptureReasons(region, rcplayer))
+                {
+                    reasonWidgetList.add((Label) new GenericLabel(reason).setShadow(false).setScale(0.5F).setMargin(5));
+                }
+                
+                for(Label widget : reasonWidgetList)
+                {
+                    reasonContainer.addChild(widget);
+                }
+                screen.attachWidget(RegionControl.plugin, reasonContainer);
+                for(Label widget: reasonWidgetList)
+                {
+                    screen.attachWidget(RegionControl.plugin, widget);
+                }
+            }
         }
     }
     
@@ -770,44 +810,54 @@ public class SpoutClientLogic
         
         if(friendliesDetected == 0)
         {
-            alliesDetectedText.setText("Allies Detected: None");
+            alliesDetectedText.setText("Allies Detected: None").setTextColor(new Color(200,200,200));
+            alliesDetectedBar.setColor(new Color(0,0,0));
         }
         else if(friendliesDetected <= 12)
         {
-            alliesDetectedText.setText("Allies Detected: 1-12");
+            alliesDetectedText.setText("Allies Detected: 1-12").setTextColor(new Color(150,150,150));
+            alliesDetectedBar.setColor(new Color(0,0,100));
         }
         else if(friendliesDetected <= 24)
         {
-            alliesDetectedText.setText("Allies Detected: 13-24");
+            alliesDetectedText.setText("Allies Detected: 13-24").setTextColor(new Color(100,100,100));
+            alliesDetectedBar.setColor(new Color(0,0,150));
         }
         else if(friendliesDetected <= 48)
         {
-            alliesDetectedText.setText("Allies Detected: 25-48");
+            alliesDetectedText.setText("Allies Detected: 25-48").setTextColor(new Color(75,75,75));
+            alliesDetectedBar.setColor(new Color(0,0,200));
         }
         else
         {
-            alliesDetectedText.setText("Allies Detected: 48+");
+            alliesDetectedText.setText("Allies Detected: 48+").setTextColor(new Color(255,255,255));
+            alliesDetectedBar.setColor(new Color(0,0,255));
         }
         
         if(enemiesDetected == 0)
         {
-            enemiesDetectedText.setText("Enemies Detected: None");
+            enemiesDetectedText.setText("Enemies Detected: None").setTextColor(new Color(200,200,200));
+            enemiesDetectedBar.setColor(new Color(0,0,0));
         }
         else if(enemiesDetected <= 12)
         {
-            enemiesDetectedText.setText("Enemies Detected: 1-12");
+            enemiesDetectedText.setText("Enemies Detected: 1-12").setTextColor(new Color(150,150,150));
+            enemiesDetectedBar.setColor(new Color(100,0,0));
         }
         else if(enemiesDetected <= 24)
         {
-            enemiesDetectedText.setText("Enemies Detected: 13-24");
+            enemiesDetectedText.setText("Enemies Detected: 13-24").setTextColor(new Color(100,100,100));
+            enemiesDetectedBar.setColor(new Color(150,0,0));
         }
         else if(enemiesDetected <= 48)
         {
-            enemiesDetectedText.setText("Enemies Detected: 25-48");
+            enemiesDetectedText.setText("Enemies Detected: 25-48").setTextColor(new Color(75,75,75));
+            enemiesDetectedBar.setColor(new Color(200,0,0));
         }
         else
         {
-            enemiesDetectedText.setText("Enemies Detected: 48+");
+            enemiesDetectedText.setText("Enemies Detected: 48+").setTextColor(new Color(255,255,255));
+            enemiesDetectedBar.setColor(new Color(255,0,0));
         }
     }
     

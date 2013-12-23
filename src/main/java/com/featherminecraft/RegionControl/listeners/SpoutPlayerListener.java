@@ -6,7 +6,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import org.getspout.spoutapi.event.input.KeyPressedEvent;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
@@ -16,6 +18,7 @@ import org.getspout.spoutapi.keyboard.Keyboard;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.RegionControl.RCPlayer;
+import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
@@ -29,13 +32,26 @@ import com.featherminecraft.RegionControl.events.RegionInfluenceRateChangeEvent;
 import com.featherminecraft.RegionControl.spout.RespawnScreen;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
+import com.featherminecraft.RegionControl.utils.Utils;
 
 public class SpoutPlayerListener implements Listener
 {
     
     private RespawnScreen respawnScreen;
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onSpoutcraftEnable(SpoutCraftEnableEvent event)
+    {
+        SpoutPlayer splayer = event.getPlayer();
+        
+        RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer.getPlayer());
+        rcPlayer.setHasSpout(true);
+        
+        rcPlayer.setSpoutClientLogic(new SpoutClientLogic());
+        rcPlayer.getSpoutClientLogic().setupClientElements(rcPlayer);
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onButtonClick(ButtonClickEvent event)
     {
         // Utilities
@@ -53,9 +69,13 @@ public class SpoutPlayerListener implements Listener
     public void onChangeRegion(ChangeRegionEvent event)
     {
         RCPlayer player = event.getPlayer();
-        SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
+        
         CapturableRegion newRegion = event.getNewRegion();
-        spoutClientLogic.updateRegion(newRegion);
+        if(player.hasSpout())
+        {
+            SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
+            spoutClientLogic.updateRegion(newRegion);
+        }
         
         if(event.getOldRegion() != null)
         {
@@ -63,7 +83,10 @@ public class SpoutPlayerListener implements Listener
             
             for(RCPlayer rcPlayer : oldPlayerList)
             {
-                rcPlayer.getSpoutClientLogic().updatePlayersDetected();
+                if(rcPlayer.hasSpout())
+                {
+                    rcPlayer.getSpoutClientLogic().updatePlayersDetected();
+                }
             }
         }
         
@@ -73,7 +96,10 @@ public class SpoutPlayerListener implements Listener
             
             for(RCPlayer rcPlayer : newPlayerList)
             {
-                rcPlayer.getSpoutClientLogic().updatePlayersDetected();
+                if(rcPlayer.hasSpout())
+                {
+                    rcPlayer.getSpoutClientLogic().updatePlayersDetected();
+                }
             }
         }
     }
@@ -85,7 +111,10 @@ public class SpoutPlayerListener implements Listener
         
         for(RCPlayer player : playerList)
         {
-            player.getSpoutClientLogic().updateControlPoints(event.getRegion());
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().updateControlPoints(event.getRegion());
+            }
         }
     }
     
@@ -96,7 +125,10 @@ public class SpoutPlayerListener implements Listener
         
         for(RCPlayer player : playerList)
         {
-            player.getSpoutClientLogic().updateControlPoints(event.getRegion());
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().updateControlPoints(event.getRegion());
+            }
         }
     }
     
@@ -107,7 +139,10 @@ public class SpoutPlayerListener implements Listener
         
         for(RCPlayer player : playerList)
         {
-            player.getSpoutClientLogic().updateControlPoints(event.getRegion());
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().updateControlPoints(event.getRegion());
+            }
         }
     }
     
@@ -119,14 +154,20 @@ public class SpoutPlayerListener implements Listener
         
         for(RCPlayer player : addedPlayers)
         {
-            player.getSpoutClientLogic().setControlPoint(event.getControlPoint());
-            player.getSpoutClientLogic().showControlPointCaptureBar();
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().setControlPoint(event.getControlPoint());
+                player.getSpoutClientLogic().showControlPointCaptureBar();
+            }
         }
         
         for(RCPlayer player : removedPlayers)
         {
-            player.getSpoutClientLogic().setControlPoint(null);
-            player.getSpoutClientLogic().hideControlPointCaptureBar();
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().setControlPoint(null);
+                player.getSpoutClientLogic().hideControlPointCaptureBar();
+            }
         }
     }
     
@@ -138,12 +179,15 @@ public class SpoutPlayerListener implements Listener
         
         for(RCPlayer player : affectedPlayers)
         {
-            SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
-            spoutClientLogic.updateInfluenceRate(event.getNewInfluenceRate());
+            if(player.hasSpout())
+            {
+                SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
+                spoutClientLogic.updateInfluenceRate(event.getNewInfluenceRate());
+            }
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onKeyPressed(KeyPressedEvent event)
     {
         if(event.getKey().equals(Keyboard.KEY_ESCAPE))
@@ -157,14 +201,20 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event)
     {
         final SpoutPlayer splayer = (SpoutPlayer) event.getEntity();
         RCPlayer rcplayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer);
-        
-        InGameHUD mainscreen = splayer.getMainScreen();
-        respawnScreen = new RespawnScreen(mainscreen, rcplayer);
+        if(rcplayer.hasSpout())
+        {
+            InGameHUD mainscreen = splayer.getMainScreen();
+            respawnScreen = new RespawnScreen(mainscreen, rcplayer);
+        }
+        else
+        {
+            //TODO
+        }
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -179,7 +229,10 @@ public class SpoutPlayerListener implements Listener
         try
         {
             RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
-            player.getSpoutClientLogic().getRunnable().cancel();
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().getRunnable().cancel();
+            }
         }
         catch(NullPointerException e)
         {
@@ -194,7 +247,10 @@ public class SpoutPlayerListener implements Listener
         
         for(RCPlayer player : playerList)
         {
-            player.getSpoutClientLogic().updateRegion(event.getCapturableRegion());
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().updateRegion(event.getCapturableRegion());
+            }
             // TODO Play Capture Sounds/Music
         }
     }
@@ -206,7 +262,10 @@ public class SpoutPlayerListener implements Listener
         
         for(RCPlayer player : playerList)
         {
-            player.getSpoutClientLogic().updateRegion(event.getCapturableRegion());
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().updateRegion(event.getCapturableRegion());
+            }
         }
     }
     
@@ -217,19 +276,10 @@ public class SpoutPlayerListener implements Listener
         
         for(RCPlayer player : playerList)
         {
-            player.getSpoutClientLogic().setRegionCaptureStatus(event.getCaptureStatus());
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().setRegionCaptureStatus(event.getCaptureStatus());
+            }
         }
-    }
-    
-    @EventHandler
-    public void onSpoutcraftEnable(SpoutCraftEnableEvent event)
-    {
-        SpoutPlayer splayer = event.getPlayer();
-        
-        RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer.getPlayer());
-        rcPlayer.setHasSpout(true);
-        
-        rcPlayer.setSpoutClientLogic(new SpoutClientLogic());
-        rcPlayer.getSpoutClientLogic().setupClientElements(rcPlayer);
     }
 }

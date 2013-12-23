@@ -22,7 +22,6 @@ import com.featherminecraft.RegionControl.utils.Utils;
 
 public class ServerLogic
 {
-    
     // Temp Variable. Can be removed on plugin disable.
     public static Map<String, RCPlayer> players = new HashMap<String, RCPlayer>();
     
@@ -79,18 +78,34 @@ public class ServerLogic
         // Region Setup
         for(String configWorld : worlds)
         {
-            Set<String> regions = config.getMainConfig().getConfigurationSection("worlds." + configWorld + ".regions").getKeys(false);
-            for(String configRegion : regions)
+            Set<String> configRegions = config.getMainConfig().getConfigurationSection("worlds." + configWorld + ".regions").getKeys(false);
+            Map<String,Boolean> regions = new HashMap<String,Boolean>();
+            
+            for(String configRegion : configRegions)
             {
-                if(configRegion == null)
+                try
                 {
-                    continue;
+                    if(config.getMainConfig().getBoolean("worlds." + configWorld + ".regions." + configRegion + ".spawnRegion"))
+                    {
+                        regions.put(configRegion, true);
+                    }
+                    else
+                    {
+                        regions.put(configRegion, false);
+                    }
                 }
-                String regionDisplayname = config.getMainConfig().getString("worlds." + configWorld + ".regions." + configRegion + ".displayname"); // Display
-                                                                                                                                                    // Name
+                catch (NullPointerException e)
+                {
+                    regions.put(configRegion, false);
+                }
+            }
+            
+            for(Entry<String, Boolean> configRegion : regions.entrySet())
+            {
+                String regionDisplayname = config.getMainConfig().getString("worlds." + configWorld + ".regions." + configRegion.getKey() + ".displayname"); // Display Name
                 
                 // Owner Begin
-                String configOwner = config.getDataConfig().getString("worlds." + configWorld + ".regions." + configRegion + ".owner");
+                String configOwner = config.getDataConfig().getString("worlds." + configWorld + ".regions." + configRegion.getKey() + ".owner");
                 if(configOwner == null)
                 {
                     configOwner = config.getDefaultFaction();
@@ -99,55 +114,50 @@ public class ServerLogic
                 // Owner End
                 
                 World world = Bukkit.getWorld(configWorld); // World
-                ProtectedRegion region = Utils.getWorldGuard().getRegionManager(world).getRegion(configRegion); // Region
+                ProtectedRegion region = Utils.getWorldGuard().getRegionManager(world).getRegion(configRegion.getKey()); // WorldGuard Region
                 
                 // ControlPoint List Begin
                 List<ControlPoint> controlPoints = new ArrayList<ControlPoint>();
-                boolean isSpawnRegion = false;
-                try
+                if(!configRegion.getValue())
                 {
-                    Set<String> configControlPoints = config.getMainConfig().getConfigurationSection("worlds." + configWorld + ".regions." + configRegion + ".controlpoints").getKeys(false);
+                    Set<String> configControlPoints = config.getMainConfig().getConfigurationSection("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints").getKeys(false);
                     for(String configControlPoint : configControlPoints)
                     {
-                        int x = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".x");
-                        int y = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".y");
-                        int z = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".z");
+                        int x = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints." + configControlPoint + ".x");
+                        int y = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints." + configControlPoint + ".y");
+                        int z = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints." + configControlPoint + ".z");
                         Location controlpointlocation = new Location(world, x, y, z);
                         
-                        Double captureRadius = ((Integer) config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".captureradius")).doubleValue();
-                        Float baseInfluence = ((Integer) config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".baseinfluence")).floatValue();
-                        Float influence = ((Integer) config.getDataConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".influence")).floatValue();
+                        Double captureRadius = ((Integer) config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints." + configControlPoint + ".captureradius")).doubleValue();
+                        Float baseInfluence = ((Integer) config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints." + configControlPoint + ".baseinfluence")).floatValue();
+                        Float influence = ((Integer) config.getDataConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints." + configControlPoint + ".influence")).floatValue();
                         
-                        Faction controlPointOwner = factions.get(config.getDataConfig().get("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".owner"));
-                        Faction influenceOwner = factions.get(config.getDataConfig().get("worlds." + configWorld + ".regions." + configRegion + ".controlpoints." + configControlPoint + ".influenceowner"));
+                        Faction controlPointOwner = factions.get(config.getDataConfig().get("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints." + configControlPoint + ".owner"));
+                        Faction influenceOwner = factions.get(config.getDataConfig().get("worlds." + configWorld + ".regions." + configRegion.getKey() + ".controlpoints." + configControlPoint + ".influenceowner"));
                         
                         ControlPoint controlPoint = new ControlPoint(configControlPoint, controlPointOwner, controlpointlocation, captureRadius, baseInfluence, influence, influenceOwner);
                         controlPoints.add(controlPoint);
                     }
                 }
-                catch(NullPointerException e)
-                {
-                    isSpawnRegion = true;
-                }
                 // ControlPoint List End
                 
                 // SpawnPoint Begin
-                int x = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".spawnpoint" + ".x");
-                int y = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".spawnpoint" + ".y");
-                int z = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".spawnpoint" + ".z");
+                int x = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".spawnpoint" + ".x");
+                int y = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".spawnpoint" + ".y");
+                int z = config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".spawnpoint" + ".z");
                 Location spawnpointlocation = new Location(world, x, y, z);
                 SpawnPoint spawnPoint = new SpawnPoint(spawnpointlocation);
                 // SpawnPoint End
                 
-                Float baseInfluence = ((Integer) config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".baseinfluence")).floatValue(); // Base
+                Float baseInfluence = ((Integer) config.getMainConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".baseinfluence")).floatValue(); // Base
                                                                                                                                                                        // Influence
-                Float influence = ((Integer) config.getDataConfig().getInt("worlds." + configWorld + ".regions." + configRegion + ".influence")).floatValue(); // Influence
-                Faction influenceOwner = factions.get(config.getDataConfig().get("worlds." + configWorld + ".regions." + configRegion + ".influenceowner")); // Influence
+                Float influence = ((Integer) config.getDataConfig().getInt("worlds." + configWorld + ".regions." + configRegion.getKey() + ".influence")).floatValue(); // Influence
+                Faction influenceOwner = factions.get(config.getDataConfig().get("worlds." + configWorld + ".regions." + configRegion.getKey() + ".influenceowner")); // Influence
                                                                                                                                                              // Owner
                 
-                CapturableRegion capturableregion = new CapturableRegion(regionDisplayname, configRegion, owner, region, world, controlPoints, spawnPoint, baseInfluence, influence, influenceOwner, isSpawnRegion);
+                CapturableRegion capturableregion = new CapturableRegion(regionDisplayname, configRegion.getKey(), owner, region, world, controlPoints, spawnPoint, baseInfluence, influence, influenceOwner, configRegion.getValue());
                 
-                capturableRegions.put(configWorld + "_" + configRegion, capturableregion);
+                capturableRegions.put(configWorld + "_" + configRegion.getKey(), capturableregion);
             }
         }
         

@@ -19,6 +19,7 @@ import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
 import com.featherminecraft.RegionControl.events.ControlPointDefendEvent;
 import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.RegionControl.events.ControlPointPlayerInfluenceChangeEvent;
+import com.featherminecraft.RegionControl.utils.PlayerUtils;
 
 public class ControlPoint
 {
@@ -108,6 +109,7 @@ public class ControlPoint
         /*
          * Majority Population on Point Calculations
          */
+        PlayerUtils playerUtils = new PlayerUtils();
         
         List<RCPlayer> players = region.getPlayers();
         Map<Faction, Integer> factionInfluence = new HashMap<Faction, Integer>();
@@ -125,7 +127,10 @@ public class ControlPoint
             {
                 influentialPlayers.add(player);
                 Faction playersFaction = player.getFaction();
-                factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
+                if(playerUtils.canCapture(region, player))
+                {
+                    factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
+                }
             }
         }
         

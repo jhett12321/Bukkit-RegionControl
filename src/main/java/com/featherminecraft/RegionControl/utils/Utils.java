@@ -27,17 +27,14 @@ public class Utils
         Plugin spoutplugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("Spout");
         if(!new Config().getMainConfig().getBoolean("spout.enabled"))
         {
-            // Spout is not enabled in the config
             return false;
         }
         else if(spoutplugin == null)
         {
-            // Spout is not installed
             return false;
         }
         else if(!spoutplugin.isEnabled())
         {
-            // Spout is not enabled
             return false;
         }
         else
@@ -52,12 +49,10 @@ public class Utils
         
         if(vault == null)
         {
-            // Worldguard is not installed
             return false;
         }
         else if(!vault.isEnabled())
         {
-            // Worldguard is not enabled
             return false;
         }
         else
@@ -72,12 +67,28 @@ public class Utils
         
         if(worldguard == null)
         {
-            // Worldguard is not installed
             return false;
         }
         else if(!worldguard.isEnabled())
         {
-            // Worldguard is not enabled
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static boolean ProtocolLibAvailable()
+    {
+        Plugin protocolLib = RegionControl.plugin.getServer().getPluginManager().getPlugin("ProtocolLib");
+        
+        if(protocolLib == null)
+        {
+            return false;
+        }
+        else if(!protocolLib.isEnabled())
+        {
             return false;
         }
         else
