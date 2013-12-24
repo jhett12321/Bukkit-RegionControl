@@ -6,19 +6,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import org.getspout.spoutapi.event.input.KeyPressedEvent;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
+import org.getspout.spoutapi.event.spout.SpoutcraftFailedEvent;
 import org.getspout.spoutapi.gui.InGameHUD;
 import org.getspout.spoutapi.keyboard.Keyboard;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.RegionControl.RCPlayer;
-import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
@@ -32,24 +30,11 @@ import com.featherminecraft.RegionControl.events.RegionInfluenceRateChangeEvent;
 import com.featherminecraft.RegionControl.spout.RespawnScreen;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
-import com.featherminecraft.RegionControl.utils.Utils;
 
 public class SpoutPlayerListener implements Listener
 {
     
     private RespawnScreen respawnScreen;
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onSpoutcraftEnable(SpoutCraftEnableEvent event)
-    {
-        SpoutPlayer splayer = event.getPlayer();
-        
-        RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer.getPlayer());
-        rcPlayer.setHasSpout(true);
-        
-        rcPlayer.setSpoutClientLogic(new SpoutClientLogic());
-        rcPlayer.getSpoutClientLogic().setupClientElements(rcPlayer);
-    }
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onButtonClick(ButtonClickEvent event)
@@ -213,7 +198,7 @@ public class SpoutPlayerListener implements Listener
         }
         else
         {
-            //TODO
+            // TODO
         }
     }
     
@@ -256,6 +241,20 @@ public class SpoutPlayerListener implements Listener
     }
     
     @EventHandler
+    public void onRegionCaptureStatusChange(RegionCaptureStatusChangeEvent event)
+    {
+        List<RCPlayer> playerList = event.getRegion().getPlayers();
+        
+        for(RCPlayer player : playerList)
+        {
+            if(player.hasSpout())
+            {
+                player.getSpoutClientLogic().setRegionCaptureStatus(event.getCaptureStatus());
+            }
+        }
+    }
+    
+    @EventHandler
     public void onRegionDefend(RegionDefendEvent event)
     {
         List<RCPlayer> playerList = event.getCapturableRegion().getPlayers();
@@ -269,16 +268,29 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
-    public void onRegionCaptureStatusChange(RegionCaptureStatusChangeEvent event)
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onSpoutcraftEnable(SpoutCraftEnableEvent event)
     {
-        List<RCPlayer> playerList = event.getRegion().getPlayers();
+        SpoutPlayer splayer = event.getPlayer();
         
-        for(RCPlayer player : playerList)
+        RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer.getPlayer());
+        rcPlayer.setHasSpout(true);
+        
+        rcPlayer.setSpoutClientLogic(new SpoutClientLogic());
+        rcPlayer.getSpoutClientLogic().setupClientElements(rcPlayer);
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onSpoutCraftFailedEvent(SpoutcraftFailedEvent event)
+    {
+        RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(event.getPlayer().getPlayer());
+        CapturableRegion currentRegion = rcPlayer.getCurrentRegion();
+        List<RCPlayer> playerList = currentRegion.getPlayers();
+        for(RCPlayer rPlayer : playerList)
         {
-            if(player.hasSpout())
+            if(rPlayer.hasSpout())
             {
-                player.getSpoutClientLogic().setRegionCaptureStatus(event.getCaptureStatus());
+                rPlayer.getSpoutClientLogic().updatePlayersDetected();
             }
         }
     }

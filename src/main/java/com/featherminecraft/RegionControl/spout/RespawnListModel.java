@@ -89,5 +89,4 @@ public class RespawnListModel extends AbstractListModel
         new PlayerUtils().respawnPlayer(rcplayer);
         splayer.getMainScreen().closePopup();
     }
-    
 }

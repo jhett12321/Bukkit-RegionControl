@@ -1,5 +1,6 @@
 package com.featherminecraft.RegionControl.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
 import com.featherminecraft.RegionControl.utils.RegionUtils;
 
@@ -109,10 +111,12 @@ public class PlayerListener implements Listener
             if(currentRegion != null)
             {
                 regionUtils.removePlayerFromRegion(player, currentRegion);
+                Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(null, currentRegion, player));
             }
             
             player.getClientRunnables().cancel();
             ServerLogic.players.remove(event.getPlayer().getName());
+            
         }
         catch(NullPointerException e)
         {

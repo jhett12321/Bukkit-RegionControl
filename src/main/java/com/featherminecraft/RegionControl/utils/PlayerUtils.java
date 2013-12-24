@@ -40,7 +40,7 @@ public class PlayerUtils
      */
     public boolean canCapture(CapturableRegion region, RCPlayer player)
     {
-        if(getCannotCaptureReasons(region,player).size() > 0)
+        if(getCannotCaptureReasons(region, player).size() > 0)
         {
             return false;
         }
@@ -48,15 +48,31 @@ public class PlayerUtils
         return true;
     }
     
+    public List<SpawnPoint> getAvailableSpawnPoints(Player player)
+    {
+        Map<String, CapturableRegion> capturableregions = ServerLogic.capturableRegions;
+        List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
+        
+        for(Entry<String, CapturableRegion> capturableregion : capturableregions.entrySet())
+        {
+            if(capturableregion.getValue().getOwner() == getPlayerFaction(player))
+            {
+                availablespawnpoints.add(capturableregion.getValue().getSpawnPoint());
+            }
+        }
+        
+        return availablespawnpoints;
+    }
+    
     public List<String> getCannotCaptureReasons(CapturableRegion region, RCPlayer player)
     {
-        Map<String,Boolean> checks = new HashMap<String,Boolean>();
+        Map<String, Boolean> checks = new HashMap<String, Boolean>();
         checks.put("NO_CONNECTION", true);
         checks.put("CONNECTION_NOT_SECURE", true);
         checks.put("MOUNTED", true);
-        //checks.put("INVALID_CLASS", true); //TODO
+        // checks.put("INVALID_CLASS", true); //TODO
         
-        //No Connection Check
+        // No Connection Check
         if(region.getOwner() == getPlayerFaction(player.getBukkitPlayer()))
         {
             checks.put("NO_CONNECTION", false);
@@ -73,7 +89,7 @@ public class PlayerUtils
             }
         }
         
-        //Connection Not Secure Check
+        // Connection Not Secure Check
         if(!checks.get("NO_CONNECTION"))
         {
             for(CapturableRegion adjacentregion : region.getAdjacentRegions())
@@ -88,15 +104,19 @@ public class PlayerUtils
                 }
             }
         }
+        else
+        {
+            checks.put("CONNECTION_NOT_SECURE", false);
+        }
         
-        //Player is Mounted Check
+        // Player is Mounted Check
         if(!player.getBukkitPlayer().isInsideVehicle())
         {
             checks.put("MOUNTED", false);
         }
         
         List<String> reasons = new ArrayList<String>();
-        for(Entry<String,Boolean> check : checks.entrySet())
+        for(Entry<String, Boolean> check : checks.entrySet())
         {
             if(check.getValue())
             {
@@ -105,23 +125,6 @@ public class PlayerUtils
         }
         
         return reasons;
-    }
-    
-    
-    public List<SpawnPoint> getAvailableSpawnPoints(Player player)
-    {
-        Map<String, CapturableRegion> capturableregions = ServerLogic.capturableRegions;
-        List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
-        
-        for(Entry<String, CapturableRegion> capturableregion : capturableregions.entrySet())
-        {
-            if(capturableregion.getValue().getOwner() == getPlayerFaction(player))
-            {
-                availablespawnpoints.add(capturableregion.getValue().getSpawnPoint());
-            }
-        }
-        
-        return availablespawnpoints;
     }
     
     public CapturableRegion getCurrentRegion(Player player)
@@ -164,7 +167,7 @@ public class PlayerUtils
         
         if(playerFaction == null)
         {
-            playerFaction = ServerLogic.factions.get("relkanaForces"); //For Test Clients TODO REMOVE!!
+            playerFaction = ServerLogic.factions.get("relkanaForces"); // For Test Clients TODO REMOVE!!
             // TODO set player to use default faction, or kick player (possibly
             // a config option?)
         }
@@ -194,8 +197,7 @@ public class PlayerUtils
         
         if(respawn != null)
         {
-            respawn.getIntegers().
-                write(0, 1);
+            respawn.getIntegers().write(0, 1);
             
             try
             {

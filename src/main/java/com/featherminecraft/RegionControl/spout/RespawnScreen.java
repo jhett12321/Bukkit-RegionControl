@@ -7,7 +7,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import org.getspout.spoutapi.gui.Button;
@@ -39,7 +38,7 @@ public class RespawnScreen
     
     public RespawnScreen(InGameHUD mainscreen, RCPlayer player)
     {
-        //Container
+        // Container
         Container respawnContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAnchor(WidgetAnchor.TOP_LEFT).setX(5).setY(40);
         
         // Respawn Button
@@ -78,10 +77,10 @@ public class RespawnScreen
         }
         
         ListModel = new RespawnListModel(this, player, respawnList);
-        //GenericContainer listContainer = new GenericContainer();
+        // GenericContainer listContainer = new GenericContainer();
         listWidget = new GenericListView(ListModel);
-        listWidget.setAnchor(WidgetAnchor.TOP_LEFT).setWidth(200).setHeight(200).setFixed(true).setPriority(RenderPriority.Lowest);
-        respawnContainer.addChildren(deploymentTitle,listWidget,respawnButton);
+        listWidget.setAnchor(WidgetAnchor.TOP_LEFT).setWidth(200).setHeight(200).setFixed(true).setPriority(RenderPriority.Lowest).setTooltip("TODO: Information about Region: Capture Statuses, etc.");
+        respawnContainer.addChildren(deploymentTitle, listWidget, respawnButton);
         
         popup = new GenericPopup();
         

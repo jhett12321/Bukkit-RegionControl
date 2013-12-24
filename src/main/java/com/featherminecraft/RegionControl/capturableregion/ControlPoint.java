@@ -85,134 +85,6 @@ public class ControlPoint
         }
     }
     
-    private Faction CalculateInfluenceOwner()
-    {
-        /*
-         * Influence Owner Calculations
-         */
-        
-        Faction influenceOwner = null;
-        for(Entry<Faction, Float> influence : influenceMap.entrySet())
-        {
-            if(influence.getValue() > 0F)
-            {
-                influenceOwner = influence.getKey();
-                break;
-            }
-        }
-        
-        return influenceOwner;
-    }
-    
-    private Faction CalculateMajorityPopulation()
-    {
-        /*
-         * Majority Population on Point Calculations
-         */
-        PlayerUtils playerUtils = new PlayerUtils();
-        
-        List<RCPlayer> players = region.getPlayers();
-        Map<Faction, Integer> factionInfluence = new HashMap<Faction, Integer>();
-        
-        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
-        {
-            factionInfluence.put(faction.getValue(), 0);
-        }
-        
-        List<RCPlayer> influentialPlayers = new ArrayList<RCPlayer>();
-        
-        for(RCPlayer player : players)
-        {
-            if(!player.getBukkitPlayer().isDead() && player.getBukkitPlayer().getLocation().distanceSquared(location) <= captureRadius * captureRadius)
-            {
-                influentialPlayers.add(player);
-                Faction playersFaction = player.getFaction();
-                if(playerUtils.canCapture(region, player))
-                {
-                    factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
-                }
-            }
-        }
-        
-        if(influentialPlayers != this.influentialPlayers)
-        {
-            List<RCPlayer> playersRemoved = new ArrayList<RCPlayer>();
-            List<RCPlayer> playersAdded = new ArrayList<RCPlayer>();
-            
-            for(RCPlayer player : this.influentialPlayers)
-            {
-                if(!influentialPlayers.contains(player))
-                {
-                    playersRemoved.add(player);
-                }
-            }
-            
-            for(RCPlayer player : influentialPlayers)
-            {
-                if(!this.influentialPlayers.contains(player))
-                {
-                    playersAdded.add(player);
-                }
-            }
-            
-            if(playersRemoved.size() > 0 || playersAdded.size() > 0)
-            {
-                if(playersAdded.size() > 0)
-                {
-                    for(RCPlayer player : playersAdded)
-                    {
-                        this.influentialPlayers.add(player);
-                    }
-                }
-                
-                if(playersRemoved.size() > 0)
-                {
-                    for(RCPlayer player : playersRemoved)
-                    {
-                        this.influentialPlayers.remove(player);
-                    }
-                }
-                
-                Bukkit.getServer().getPluginManager().callEvent(new ControlPointPlayerInfluenceChangeEvent(region, this, this.influentialPlayers, playersAdded, playersRemoved));
-            }
-        }
-        
-        int majorityPopulationAmount = 0;
-        Faction majorityPopulation = null;
-        for(Entry<Faction, Integer> faction : factionInfluence.entrySet())
-        {
-            if(faction.getValue() > majorityPopulationAmount)
-            {
-                majorityPopulation = faction.getKey();
-                majorityPopulationAmount = faction.getValue().intValue();
-            }
-            
-            else if(faction.getValue() == majorityPopulationAmount)
-            {
-                majorityPopulation = null;
-            }
-        }
-        
-        if(majorityPopulation != null)
-        {
-            int populationAgainstAmount = 0;
-            for(Entry<Faction, Integer> faction : factionInfluence.entrySet())
-            {
-                if(faction.getKey() != majorityPopulation)
-                {
-                    populationAgainstAmount += faction.getValue();
-                }
-            }
-            
-            if(majorityPopulationAmount - populationAgainstAmount > 0)
-            {
-                captureRate = ((Integer) (majorityPopulationAmount - populationAgainstAmount)).floatValue();
-            }
-        }
-        
-        return majorityPopulation;
-    }
-    
     public Float getBaseInfluence()
     {
         return baseInfluence;
@@ -373,5 +245,133 @@ public class ControlPoint
     public void setRegion(CapturableRegion region)
     {
         this.region = region;
+    }
+    
+    private Faction CalculateInfluenceOwner()
+    {
+        /*
+         * Influence Owner Calculations
+         */
+        
+        Faction influenceOwner = null;
+        for(Entry<Faction, Float> influence : influenceMap.entrySet())
+        {
+            if(influence.getValue() > 0F)
+            {
+                influenceOwner = influence.getKey();
+                break;
+            }
+        }
+        
+        return influenceOwner;
+    }
+    
+    private Faction CalculateMajorityPopulation()
+    {
+        /*
+         * Majority Population on Point Calculations
+         */
+        PlayerUtils playerUtils = new PlayerUtils();
+        
+        List<RCPlayer> players = region.getPlayers();
+        Map<Faction, Integer> factionInfluence = new HashMap<Faction, Integer>();
+        
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        {
+            factionInfluence.put(faction.getValue(), 0);
+        }
+        
+        List<RCPlayer> influentialPlayers = new ArrayList<RCPlayer>();
+        
+        for(RCPlayer player : players)
+        {
+            if(!player.getBukkitPlayer().isDead() && player.getBukkitPlayer().getLocation().distanceSquared(location) <= captureRadius * captureRadius)
+            {
+                influentialPlayers.add(player);
+                Faction playersFaction = player.getFaction();
+                if(playerUtils.canCapture(region, player))
+                {
+                    factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
+                }
+            }
+        }
+        
+        if(influentialPlayers != this.influentialPlayers)
+        {
+            List<RCPlayer> playersRemoved = new ArrayList<RCPlayer>();
+            List<RCPlayer> playersAdded = new ArrayList<RCPlayer>();
+            
+            for(RCPlayer player : this.influentialPlayers)
+            {
+                if(!influentialPlayers.contains(player))
+                {
+                    playersRemoved.add(player);
+                }
+            }
+            
+            for(RCPlayer player : influentialPlayers)
+            {
+                if(!this.influentialPlayers.contains(player))
+                {
+                    playersAdded.add(player);
+                }
+            }
+            
+            if(playersRemoved.size() > 0 || playersAdded.size() > 0)
+            {
+                if(playersAdded.size() > 0)
+                {
+                    for(RCPlayer player : playersAdded)
+                    {
+                        this.influentialPlayers.add(player);
+                    }
+                }
+                
+                if(playersRemoved.size() > 0)
+                {
+                    for(RCPlayer player : playersRemoved)
+                    {
+                        this.influentialPlayers.remove(player);
+                    }
+                }
+                
+                Bukkit.getServer().getPluginManager().callEvent(new ControlPointPlayerInfluenceChangeEvent(region, this, this.influentialPlayers, playersAdded, playersRemoved));
+            }
+        }
+        
+        int majorityPopulationAmount = 0;
+        Faction majorityPopulation = null;
+        for(Entry<Faction, Integer> faction : factionInfluence.entrySet())
+        {
+            if(faction.getValue() > majorityPopulationAmount)
+            {
+                majorityPopulation = faction.getKey();
+                majorityPopulationAmount = faction.getValue().intValue();
+            }
+            
+            else if(faction.getValue() == majorityPopulationAmount)
+            {
+                majorityPopulation = null;
+            }
+        }
+        
+        if(majorityPopulation != null)
+        {
+            int populationAgainstAmount = 0;
+            for(Entry<Faction, Integer> faction : factionInfluence.entrySet())
+            {
+                if(faction.getKey() != majorityPopulation)
+                {
+                    populationAgainstAmount += faction.getValue();
+                }
+            }
+            
+            if(majorityPopulationAmount - populationAgainstAmount > 0)
+            {
+                captureRate = ((Integer) (majorityPopulationAmount - populationAgainstAmount)).floatValue();
+            }
+        }
+        
+        return majorityPopulation;
     }
 }

@@ -22,6 +22,24 @@ public class Utils
         }
     }
     
+    public static boolean ProtocolLibAvailable()
+    {
+        Plugin protocolLib = RegionControl.plugin.getServer().getPluginManager().getPlugin("ProtocolLib");
+        
+        if(protocolLib == null)
+        {
+            return false;
+        }
+        else if(!protocolLib.isEnabled())
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
     public static boolean SpoutAvailable()
     {
         Plugin spoutplugin = RegionControl.plugin.getServer().getPluginManager().getPlugin("Spout");
@@ -70,24 +88,6 @@ public class Utils
             return false;
         }
         else if(!worldguard.isEnabled())
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    public static boolean ProtocolLibAvailable()
-    {
-        Plugin protocolLib = RegionControl.plugin.getServer().getPluginManager().getPlugin("ProtocolLib");
-        
-        if(protocolLib == null)
-        {
-            return false;
-        }
-        else if(!protocolLib.isEnabled())
         {
             return false;
         }

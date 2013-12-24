@@ -31,6 +31,11 @@ public class Faction
         this.spawnRegion.put(spawnRegion.getWorld(), spawnRegion);
     }
     
+    public String getDisplayName()
+    {
+        return displayName;
+    }
+    
     public Color getFactionColor()
     {
         return factionColor;
@@ -49,11 +54,6 @@ public class Faction
     public String getId()
     {
         return id;
-    }
-    
-    public String getDisplayName()
-    {
-        return displayName;
     }
     
     public String getPermissionGroup()

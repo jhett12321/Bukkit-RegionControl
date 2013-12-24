@@ -50,11 +50,6 @@ public class RCPlayer
         return faction;
     }
     
-    public Boolean hasSpout()
-    {
-        return hasSpout;
-    }
-    
     public Location getRespawnLocation()
     {
         return respawnLocation;
@@ -63,6 +58,11 @@ public class RCPlayer
     public SpoutClientLogic getSpoutClientLogic()
     {
         return spoutClientLogic;
+    }
+    
+    public Boolean hasSpout()
+    {
+        return hasSpout;
     }
     
     public void setCurrentRegion(CapturableRegion currentRegion)

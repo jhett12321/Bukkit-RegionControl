@@ -87,13 +87,13 @@ public final class RegionControl extends JavaPlugin
             pm.registerEvents(new SpoutPlayerListener(), this);
         }
         
-        //Register Command Handler (NYI - TODO)
-        //getCommand("regioncontrol").setExecutor(new CommandHandler(isfirstrun));
+        // Register Command Handler (NYI - TODO)
+        // getCommand("regioncontrol").setExecutor(new CommandHandler(isfirstrun));
         
-        //Server may have been reloaded, so setup all current online players.
+        // Server may have been reloaded, so setup all current online players.
         if(!Utils.SpoutAvailable())
         {
-            for(Player player : this.getServer().getOnlinePlayers())
+            for(Player player : getServer().getOnlinePlayers())
             {
                 Faction faction = playerUtils.getPlayerFaction(player);
                 CapturableRegion currentRegion = faction.getFactionSpawnRegion(player.getWorld());
@@ -106,11 +106,6 @@ public final class RegionControl extends JavaPlugin
         }
     }
     
-    private void setupProtocolManager()
-    {
-        protocolManager = ProtocolLibrary.getProtocolManager();
-    }
-
     private boolean setupPermissions()
     {
         RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
@@ -119,5 +114,10 @@ public final class RegionControl extends JavaPlugin
             permission = permissionProvider.getProvider();
         }
         return(permission != null);
+    }
+    
+    private void setupProtocolManager()
+    {
+        protocolManager = ProtocolLibrary.getProtocolManager();
     }
 }

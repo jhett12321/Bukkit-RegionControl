@@ -81,54 +81,76 @@ public class SpoutClientLogic
         }
     }
     
-    // Variables created from setup
-    private Container controlPointsContainer;
-    private Container backgroundContainer;
-    private Label regionname;
-    private Label captureTimer;
-    private Gradient captureBar;
-    private Texture captureBarAnim;
-    private Gradient captureBarSpace;
-    private Gradient captureBarBackground;
-    
-    private Container controlPointCaptureBarContainer;
-    private Container controlPointCaptureBarBackgroundContainer;
-    private Gradient controlPointCaptureBar;
-    private Gradient controlPointCaptureBarBackground;
-    
-    private Texture ownericon;
-    
-    private Texture influenceOwnerIcon;
-    // Misc
+    // Player Variables
+    private RCPlayer rcplayer;
+    private SpoutPlayer splayer;
+    private InGameHUD screen;
+    private CapturableRegion region;
+    private ControlPoint controlPoint;
     private BukkitTask runnable;
-    private Container influenceOwnerIconContainer;
-    private Container captureBarContainer;
-    private Container captureBarSpaceContainer;
-    private Container captureBarBackgroundContainer;
-    private Container timerContainer;
-    private Container barAnimContainer;
-    private Container regionInfo;
-    private Texture background;
+    
+    // GUI
     private List<Widget> screenElements = new ArrayList<Widget>();
     private List<Widget> screenCaptureElements = new ArrayList<Widget>();
     private boolean allElementsHidden = false;
     private boolean captureElementsHidden = true;
-    private ArrayList<Label> controlPointLabels = new ArrayList<Label>();
-    private InGameHUD screen;
-    private CapturableRegion region;
-    private ControlPoint controlPoint;
-    // private boolean musicPlaying;
     
-    private SpoutPlayer splayer;
+    // Region Info Background
+    private Container backgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(150).setHeight(40).setX(3).setY(-5);
+    private Texture background = (Texture) new GenericTexture("background.png").setDrawAlphaChannel(true).setWidth(150).setHeight(40).setPriority(RenderPriority.Highest);
+    
+    // Region Info
+    private Container regionInfo = (Container) new GenericContainer().setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(10).setX(10).setY(3).setMargin(3);
+    private Texture ownericon = (Texture) new GenericTexture("null.png").setHeight(16).setWidth(16).setFixed(true).setMargin(-5, 6, 0, 0);
+    private Label regionname = (Label) new GenericLabel().setShadow(false).setResize(true).setFixed(true);
+    
+    // Region Status (Enemies/Allies Detected)
+    private Container regionStatusContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(12).setX(45).setY(18);
+    private Container regionStatusBarContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(12).setX(45).setY(17);
+    private Label alliesDetectedText = (Label) new GenericLabel().setShadow(false).setScale(0.5F).setResize(true).setFixed(true);
+    private Gradient alliesDetectedBar = (Gradient) new GenericGradient(new Color(0, 0, 255)).setWidth(65).setHeight(5).setFixed(true).setPriority(RenderPriority.High);
+    private Label enemiesDetectedText = (Label) new GenericLabel().setShadow(false).setScale(0.5F).setResize(true).setFixed(true);
+    private Gradient enemiesDetectedBar = (Gradient) new GenericGradient(new Color(255, 0, 0)).setWidth(65).setHeight(5).setFixed(true).setPriority(RenderPriority.High);
+    
+    // Control Points
+    private ArrayList<Label> controlPointLabels = new ArrayList<Label>();
     private List<Widget> controlPointScreenElements = new ArrayList<Widget>();
-    private RCPlayer rcplayer;
-    private Container regionStatusContainer;
-    private Label alliesDetectedText;
-    private Gradient alliesDetectedBar;
-    private Label enemiesDetectedText;
-    private Gradient enemiesDetectedBar;
-    private Container regionStatusBarContainer;
+    
+    private Container controlPointsContainer = (Container) new GenericContainer().setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(50).setHeight(10).setX(25).setY(25).setMarginRight(1);
+    
+    // Control Point Capture Bar
+    private Container controlPointCaptureBarContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(427).setHeight(10).shiftXPos(-75).shiftYPos(30);
+    private Gradient controlPointCaptureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255)).setWidth(150).setHeight(5).setMargin(0, 3).setFixed(true).setPriority(RenderPriority.High);
+    
+    // Cannot Capture Control Point Indicator
     private ArrayList<Label> reasonWidgetList;
+    private Map<String, String> reasonLocalisations = new HashMap<String, String>();
+    
+    private Container reasonContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(170).shiftXPos(-85).shiftYPos(40);
+    
+    // Capture Bar Background
+    private Container controlPointCaptureBarBackgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(427).setHeight(7).shiftXPos(-74).shiftYPos(31);
+    private Gradient controlPointCaptureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(154).setHeight(7).setFixed(true).setPriority(RenderPriority.Highest);
+    
+    // Influence Owner Icon
+    private Container influenceOwnerIconContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(10).setX(5).setY(40);
+    private Texture influenceOwnerIcon = (Texture) new GenericTexture("null.png").setMargin(0, 0, 0, 3).setHeight(8).setWidth(8).setFixed(true);
+    
+    // Capture Bar
+    private Container captureBarContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(10).setX(20).setY(40);
+    private Gradient captureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255)).setWidth(100).setHeight(10).setMargin(0, 3).setFixed(true).setPriority(RenderPriority.High);
+    private Container captureBarSpaceContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_RIGHT).setAnchor(WidgetAnchor.CENTER_LEFT).setHeight(10).setX(73).setY(40);
+    private Gradient captureBarSpace = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(0).setHeight(10).setFixed(true).setPriority(RenderPriority.Low);
+    private Container captureBarBackgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(12).setX(21).setY(39);
+    private Gradient captureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(104).setHeight(12).setFixed(true).setPriority(RenderPriority.Highest);
+    
+    // Timer
+    private Container timerContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(10).setX(60).setY(41);
+    private Label captureTimer = (Label) new GenericLabel().setText(" ").setResize(true).setFixed(true).setPriority(RenderPriority.Lowest);
+    
+    // Capture Bar Animation
+    private Container barAnimContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(10).setMarginLeft(100).setY(40);
+    private Texture captureBarAnim = (Texture) new GenericTexture().setDrawAlphaChannel(true).setHeight(10).setFixed(true).setPriority(RenderPriority.Normal).setVisible(false);
     
     public ControlPoint getControlPoint()
     {
@@ -138,31 +160,6 @@ public class SpoutClientLogic
     public BukkitTask getRunnable()
     {
         return runnable;
-    }
-    
-    private void hideAllElements()
-    {
-        if(!allElementsHidden)
-        {
-            for(Widget element : screenElements)
-            {
-                element.setVisible(false);
-            }
-            allElementsHidden = true;
-            captureElementsHidden = true;
-        }
-    }
-    
-    private void hideCaptureElements()
-    {
-        if(!captureElementsHidden)
-        {
-            for(Widget element : screenCaptureElements)
-            {
-                element.setVisible(false);
-            }
-            captureElementsHidden = true;
-        }
     }
     
     public void hideControlPointCaptureBar()
@@ -178,9 +175,11 @@ public class SpoutClientLogic
             {
                 for(Label widget : reasonWidgetList)
                 {
+                    reasonContainer.removeChild(widget);
                     screen.removeWidget(widget);
-                    reasonWidgetList.remove(widget);
                 }
+                
+                reasonWidgetList = new ArrayList<Label>();
             }
         }
     }
@@ -215,67 +214,35 @@ public class SpoutClientLogic
     
     public void setupClientElements(RCPlayer rcplayer)
     {
-        splayer = ((SpoutPlayer) rcplayer.getBukkitPlayer());
         this.rcplayer = rcplayer;
+        splayer = ((SpoutPlayer) rcplayer.getBukkitPlayer());
         screen = splayer.getMainScreen();
         region = rcplayer.getCurrentRegion();
         
-        // Enemies/Allies Detected Bar
-        
         // Background
-        backgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(150).setHeight(40).setX(3).setY(-5);
-        
         screenElements.add(backgroundContainer);
-        
-        background = (Texture) new GenericTexture("background.png").setDrawAlphaChannel(true).setWidth(150).setHeight(40).setPriority(RenderPriority.Highest);
-        
         screenElements.add(background);
         
         backgroundContainer.addChild(background);
         
         // Region Info
-        regionInfo = (Container) new GenericContainer().setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(10).setX(10).setY(3).setMargin(3);
-        
         screenElements.add(regionInfo);
-        
-        ownericon = (Texture) new GenericTexture().setUrl(region.getOwner().getFactionIconUrl()).setHeight(16).setWidth(16).setFixed(true).setMargin(-5, 6, 0, 0);
-        
         screenElements.add(ownericon);
-        
-        regionname = (Label) new GenericLabel().setText(region.getDisplayName()).setShadow(false).setResize(true).setFixed(true);
-        
         screenElements.add(regionname);
-        
-        float currentscale = 1F;
-        while(GenericLabel.getStringWidth(regionname.getText(), currentscale) > 116)
-        {
-            currentscale -= 0.01F;
-        }
-        regionname.setScale(currentscale);
         
         regionInfo.addChildren(ownericon, regionname);
         
         // Region Status
-        regionStatusContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(12).setX(45).setY(18);
-        regionStatusBarContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(12).setX(45).setY(17);
-        alliesDetectedText = (Label) new GenericLabel("DEBUG").setShadow(false).setScale(0.5F).setResize(true).setFixed(true);
-        alliesDetectedBar = (Gradient) new GenericGradient(new Color(0, 0, 255)).setWidth(65).setHeight(5).setFixed(true).setPriority(RenderPriority.High);
-        
-        enemiesDetectedText = (Label) new GenericLabel().setShadow(false).setScale(0.5F).setResize(true).setFixed(true);
-        enemiesDetectedBar = (Gradient) new GenericGradient(new Color(255, 0, 0)).setWidth(65).setHeight(5).setFixed(true).setPriority(RenderPriority.High);
-        
-        regionStatusContainer.addChildren(alliesDetectedText, enemiesDetectedText);
-        regionStatusBarContainer.addChildren(alliesDetectedBar, enemiesDetectedBar);
-        
         screenElements.add(regionStatusContainer);
         screenElements.add(regionStatusBarContainer);
         screenElements.add(alliesDetectedText);
         screenElements.add(alliesDetectedBar);
         screenElements.add(enemiesDetectedBar);
         
-        // Control Points
-        controlPointsContainer = (Container) new GenericContainer().setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(50).setHeight(10).setX(25).setY(25).setMarginRight(1);
+        regionStatusContainer.addChildren(alliesDetectedText, enemiesDetectedText);
+        regionStatusBarContainer.addChildren(alliesDetectedBar, enemiesDetectedBar);
         
+        // Control Points
         screenElements.add(controlPointsContainer);
         
         for(ControlPoint controlPoint : region.getControlPoints())
@@ -299,104 +266,65 @@ public class SpoutClientLogic
         }
         
         // ControlPoint Capture Bar
-        controlPointCaptureBarContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(427).setHeight(10).shiftXPos(-75).shiftYPos(30);
-        
         controlPointScreenElements.add(controlPointCaptureBarContainer);
-        
-        controlPointCaptureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255)).setWidth(150).setHeight(5).setMargin(0, 3).setFixed(true).setPriority(RenderPriority.High);
-        
         controlPointScreenElements.add(controlPointCaptureBar);
         
         controlPointCaptureBarContainer.addChild(controlPointCaptureBar);
         
+        // Unable to capture ControlPoint Reasons (under Capture Bar)
+        reasonLocalisations.put("NO_CONNECTION", "Cannot capture Control Point: You do not own a connecting region.");
+        reasonLocalisations.put("CONNECTION_NOT_SECURE", "Cannot capture Control Point: All of your connecting regions are not secure.");
+        reasonLocalisations.put("MOUNTED", "Cannot capture Control Point: You are currently Mounted.");
+        reasonLocalisations.put("INVALID_CLASS", "Cannot capture Control Point: You are an Invalid Class");
+        
         // ControlPoint Capture Bar Background
-        controlPointCaptureBarBackgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(427).setHeight(7).shiftXPos(-74).shiftYPos(31);
-        
         controlPointScreenElements.add(controlPointCaptureBarBackgroundContainer);
-        
-        controlPointCaptureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(154).setHeight(7).setFixed(true).setPriority(RenderPriority.Highest);
-        
         controlPointScreenElements.add(controlPointCaptureBarBackground);
         
         controlPointCaptureBarBackgroundContainer.addChild(controlPointCaptureBarBackground);
         
-        // Capture Icons Goes here
-        influenceOwnerIconContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(10).setX(5).setY(40);
-        
+        // Influence Owner Icon
         screenElements.add(influenceOwnerIconContainer);
         screenCaptureElements.add(influenceOwnerIconContainer);
-        
-        influenceOwnerIcon = (Texture) new GenericTexture("null.png").setMargin(0, 0, 0, 3).setHeight(8).setWidth(8).setFixed(true);
-        
         screenElements.add(influenceOwnerIcon);
         screenCaptureElements.add(influenceOwnerIcon);
         
         influenceOwnerIconContainer.addChild(influenceOwnerIcon);
         
         // Capture Bar
-        captureBarContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(10).setX(20).setY(40);
-        
         screenElements.add(captureBarContainer);
         screenCaptureElements.add(captureBarContainer);
-        
-        captureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255)).setWidth(100).setHeight(10).setMargin(0, 3).setFixed(true).setPriority(RenderPriority.High);
-        
         screenElements.add(captureBar);
         screenCaptureElements.add(captureBar);
-        
-        captureBarContainer.addChild(captureBar);
-        
-        // Empty Capture Bar Overlay
-        captureBarSpaceContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_RIGHT).setAnchor(WidgetAnchor.CENTER_LEFT).setHeight(10).setX(73).setY(40);
-        
         screenElements.add(captureBarSpaceContainer);
         screenCaptureElements.add(captureBarSpaceContainer);
-        
-        captureBarSpace = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(0).setHeight(10).setFixed(true).setPriority(RenderPriority.Low);
-        
         screenElements.add(captureBarSpace);
         screenCaptureElements.add(captureBarSpace);
-        
-        captureBarSpaceContainer.addChild(captureBarSpace);
-        
-        // Capture Bar Background
-        captureBarBackgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(12).setX(21).setY(39);
-        
         screenElements.add(captureBarBackgroundContainer);
         screenCaptureElements.add(captureBarBackgroundContainer);
-        
-        captureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F)).setWidth(104).setHeight(12).setFixed(true).setPriority(RenderPriority.Highest);
-        
         screenElements.add(captureBarBackground);
         screenCaptureElements.add(captureBarBackground);
         
+        captureBarContainer.addChild(captureBar);
+        captureBarSpaceContainer.addChild(captureBarSpace);
         captureBarBackgroundContainer.addChild(captureBarBackground);
         
         // Timer
-        timerContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(10).setX(60).setY(41);
-        
         screenElements.add(timerContainer);
         screenCaptureElements.add(timerContainer);
-        
-        captureTimer = (Label) new GenericLabel().setText(" ").setResize(true).setFixed(true).setPriority(RenderPriority.Lowest);
-        
         screenElements.add(captureTimer);
         screenCaptureElements.add(captureTimer);
         
         timerContainer.addChild(captureTimer);
         
         // Capture Bar Animation
-        barAnimContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(427).setHeight(10).setMarginLeft(100).setY(40);
-        
         screenElements.add(barAnimContainer);
         screenCaptureElements.add(barAnimContainer);
-        
-        captureBarAnim = (Texture) new GenericTexture().setDrawAlphaChannel(true).setHeight(10).setFixed(true).setPriority(RenderPriority.Normal).setVisible(false);
-        
         screenElements.add(captureBarAnim);
         screenCaptureElements.add(captureBarAnim);
         
         captureBarAnim.setUrl("null.png").setWidth(125);
+        
         hideAllElements();
         showNonCaptureElements();
         
@@ -413,8 +341,8 @@ public class SpoutClientLogic
         hideControlPointCaptureBar();
         
         CapturableRegion currentRegion = rcplayer.getCurrentRegion();
-        List<RCPlayer> newPlayerList = currentRegion.getPlayers();
-        for(RCPlayer rPlayer : newPlayerList)
+        List<RCPlayer> playerList = currentRegion.getPlayers();
+        for(RCPlayer rPlayer : playerList)
         {
             if(rPlayer.hasSpout())
             {
@@ -538,18 +466,6 @@ public class SpoutClientLogic
         }.runTaskTimer(RegionControl.plugin, 10, 10);
     }
     
-    private void showCaptureElements()
-    {
-        if(captureElementsHidden)
-        {
-            for(Widget element : screenCaptureElements)
-            {
-                element.setVisible(true);
-            }
-            captureElementsHidden = false;
-        }
-    }
-    
     public void showControlPointCaptureBar()
     {
         if(!controlPointCaptureBar.isVisible())
@@ -574,40 +490,32 @@ public class SpoutClientLogic
             
             PlayerUtils playerUtils = new PlayerUtils();
             
-            if(!playerUtils.canCapture(region, rcplayer));
+            if(!playerUtils.canCapture(region, rcplayer))
             {
-                Container reasonContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.TOP_CENTER).setHeight(7).shiftYPos(50);
                 reasonWidgetList = new ArrayList<Label>();
                 for(String reason : playerUtils.getCannotCaptureReasons(region, rcplayer))
                 {
-                    reasonWidgetList.add((Label) new GenericLabel(reason).setShadow(false).setScale(0.5F).setMargin(5));
+                    String localisedReason = reasonLocalisations.get(reason);
+                    if(localisedReason == null)
+                    {
+                        localisedReason = reason;
+                    }
+                    Label reasonLabel = (Label) new GenericLabel(localisedReason).setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setAuto(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true);
+                    reasonLabel.shiftXPos(-GenericLabel.getStringWidth(reasonLabel.getText(), 0.5F) / 2);
+                    reasonWidgetList.add(reasonLabel);
                 }
                 
                 for(Label widget : reasonWidgetList)
                 {
                     reasonContainer.addChild(widget);
                 }
+                
                 screen.attachWidget(RegionControl.plugin, reasonContainer);
-                for(Label widget: reasonWidgetList)
+                for(Label widget : reasonWidgetList)
                 {
                     screen.attachWidget(RegionControl.plugin, widget);
                 }
             }
-        }
-    }
-    
-    private void showNonCaptureElements()
-    {
-        if(allElementsHidden)
-        {
-            for(Widget element : screenElements)
-            {
-                if(!screenCaptureElements.contains(element))
-                {
-                    element.setVisible(true);
-                }
-            }
-            allElementsHidden = false;
         }
     }
     
@@ -810,54 +718,54 @@ public class SpoutClientLogic
         
         if(friendliesDetected == 0)
         {
-            alliesDetectedText.setText("Allies Detected: None").setTextColor(new Color(200,200,200));
-            alliesDetectedBar.setColor(new Color(0,0,0));
+            alliesDetectedText.setText("Allies Detected: None").setTextColor(new Color(40, 220, 220));
+            alliesDetectedBar.setColor(new Color(0, 0, 0));
         }
         else if(friendliesDetected <= 12)
         {
-            alliesDetectedText.setText("Allies Detected: 1-12").setTextColor(new Color(150,150,150));
-            alliesDetectedBar.setColor(new Color(0,0,100));
+            alliesDetectedText.setText("Allies Detected: 1-12").setTextColor(new Color(40, 220, 220));
+            alliesDetectedBar.setColor(new Color(10, 55, 55));
         }
         else if(friendliesDetected <= 24)
         {
-            alliesDetectedText.setText("Allies Detected: 13-24").setTextColor(new Color(100,100,100));
-            alliesDetectedBar.setColor(new Color(0,0,150));
+            alliesDetectedText.setText("Allies Detected: 13-24").setTextColor(new Color(40, 220, 220));
+            alliesDetectedBar.setColor(new Color(20, 100, 100));
         }
         else if(friendliesDetected <= 48)
         {
-            alliesDetectedText.setText("Allies Detected: 25-48").setTextColor(new Color(75,75,75));
-            alliesDetectedBar.setColor(new Color(0,0,200));
+            alliesDetectedText.setText("Allies Detected: 25-48").setTextColor(new Color(0, 0, 0));
+            alliesDetectedBar.setColor(new Color(30, 140, 140));
         }
         else
         {
-            alliesDetectedText.setText("Allies Detected: 48+").setTextColor(new Color(255,255,255));
-            alliesDetectedBar.setColor(new Color(0,0,255));
+            alliesDetectedText.setText("Allies Detected: 48+").setTextColor(new Color(0, 0, 0));
+            alliesDetectedBar.setColor(new Color(40, 190, 190));
         }
         
         if(enemiesDetected == 0)
         {
-            enemiesDetectedText.setText("Enemies Detected: None").setTextColor(new Color(200,200,200));
-            enemiesDetectedBar.setColor(new Color(0,0,0));
+            enemiesDetectedText.setText("Enemies Detected: None").setTextColor(new Color(180, 40, 40));
+            enemiesDetectedBar.setColor(new Color(0, 0, 0));
         }
         else if(enemiesDetected <= 12)
         {
-            enemiesDetectedText.setText("Enemies Detected: 1-12").setTextColor(new Color(150,150,150));
-            enemiesDetectedBar.setColor(new Color(100,0,0));
+            enemiesDetectedText.setText("Enemies Detected: 1-12").setTextColor(new Color(180, 40, 40));
+            enemiesDetectedBar.setColor(new Color(50, 20, 20));
         }
         else if(enemiesDetected <= 24)
         {
-            enemiesDetectedText.setText("Enemies Detected: 13-24").setTextColor(new Color(100,100,100));
-            enemiesDetectedBar.setColor(new Color(150,0,0));
+            enemiesDetectedText.setText("Enemies Detected: 13-24").setTextColor(new Color(180, 40, 40));
+            enemiesDetectedBar.setColor(new Color(90, 30, 30));
         }
         else if(enemiesDetected <= 48)
         {
-            enemiesDetectedText.setText("Enemies Detected: 25-48").setTextColor(new Color(75,75,75));
-            enemiesDetectedBar.setColor(new Color(200,0,0));
+            enemiesDetectedText.setText("Enemies Detected: 25-48").setTextColor(new Color(0, 0, 0));
+            enemiesDetectedBar.setColor(new Color(140, 40, 40));
         }
         else
         {
-            enemiesDetectedText.setText("Enemies Detected: 48+").setTextColor(new Color(255,255,255));
-            enemiesDetectedBar.setColor(new Color(255,0,0));
+            enemiesDetectedText.setText("Enemies Detected: 48+").setTextColor(new Color(0, 0, 0));
+            enemiesDetectedBar.setColor(new Color(180, 45, 45));
         }
     }
     
@@ -935,6 +843,58 @@ public class SpoutClientLogic
                     background.setHeight(40);
                 }
             }
+        }
+    }
+    
+    private void hideAllElements()
+    {
+        if(!allElementsHidden)
+        {
+            for(Widget element : screenElements)
+            {
+                element.setVisible(false);
+            }
+            allElementsHidden = true;
+            captureElementsHidden = true;
+        }
+    }
+    
+    private void hideCaptureElements()
+    {
+        if(!captureElementsHidden)
+        {
+            for(Widget element : screenCaptureElements)
+            {
+                element.setVisible(false);
+            }
+            captureElementsHidden = true;
+        }
+    }
+    
+    private void showCaptureElements()
+    {
+        if(captureElementsHidden)
+        {
+            for(Widget element : screenCaptureElements)
+            {
+                element.setVisible(true);
+            }
+            captureElementsHidden = false;
+        }
+    }
+    
+    private void showNonCaptureElements()
+    {
+        if(allElementsHidden)
+        {
+            for(Widget element : screenElements)
+            {
+                if(!screenCaptureElements.contains(element))
+                {
+                    element.setVisible(true);
+                }
+            }
+            allElementsHidden = false;
         }
     }
 }
