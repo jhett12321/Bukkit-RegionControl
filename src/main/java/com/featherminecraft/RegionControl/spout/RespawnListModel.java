@@ -3,8 +3,10 @@ package com.featherminecraft.RegionControl.spout;
 import java.util.List;
 
 import org.getspout.spoutapi.gui.AbstractListModel;
+import org.getspout.spoutapi.gui.Color;
 import org.getspout.spoutapi.gui.GenericLabel;
 import org.getspout.spoutapi.gui.ListWidgetItem;
+import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.featherminecraft.RegionControl.RCPlayer;
@@ -73,16 +75,91 @@ public class RespawnListModel extends AbstractListModel
         
         rcplayer.setRespawnLocation(regionSelected.getSpawnPoint().getLocation());
         
+        int allyCount = 0;
+        int enemyCount = 0;
+        
+        for(RCPlayer rcPlayer : regionSelected.getPlayers())
+        {
+            if(rcPlayer.getFaction() == rcplayer.getFaction())
+            {
+                allyCount = allyCount + 1;
+            }
+            else
+            {
+                enemyCount = enemyCount + 1;
+            }
+        }
+        
+        String alliesDetectedText = "";
+        String enemiesDetectedText = "";
+        
+        if(allyCount == 0)
+        {
+            alliesDetectedText = "Allies Detected: None";
+        }
+        else if(allyCount <= 12)
+        {
+            alliesDetectedText = "Allies Detected: 1-12";
+        }
+        else if(allyCount <= 24)
+        {
+            alliesDetectedText = "Allies Detected: 13-24";
+        }
+        else if(allyCount <= 48)
+        {
+            alliesDetectedText = "Allies Detected: 25-48";
+        }
+        else
+        {
+            alliesDetectedText = "Allies Detected: 48+";
+        }
+        
+        if(enemyCount == 0)
+        {
+            enemiesDetectedText = "Enemies Detected: None";
+        }
+        else if(enemyCount <= 12)
+        {
+            enemiesDetectedText = "Enemies Detected: 1-12";
+        }
+        else if(enemyCount <= 24)
+        {
+            enemiesDetectedText = "Enemies Detected: 13-24";
+        }
+        else if(enemyCount <= 48)
+        {
+            enemiesDetectedText = "Enemies Detected: 25-48";
+        }
+        else
+        {
+            enemiesDetectedText = "Enemies Detected: 48+";
+        }
+        
         if(!doubleClicked)
         {
-            respawnScreen.getRedeployButton().setText("Redeploy: " + regionSelected.getDisplayName()).setDirty(true);
-            float currentscale = 1F;
-            while(GenericLabel.getStringWidth(respawnScreen.getRedeployButton().getText(), currentscale) > 190)
+            if(regionSelected.isBeingCaptured())
             {
-                currentscale -= 0.01F;
+                respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName()
+                                                         + "§r\n" + "Capture in: " + regionSelected.getMinutesToCapture() + ":" + regionSelected.getSecondsToCapture()
+                                                         + "\n" + alliesDetectedText
+                                                         + "\n" + enemiesDetectedText);
+                
+                respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName()
+                                                         + "§r\n" + "Capture in: " + regionSelected.getMinutesToCapture() + ":" + regionSelected.getSecondsToCapture()
+                                                         + "\n" + alliesDetectedText
+                                                         + "\n" + enemiesDetectedText);
+            }
+            else
+            {
+                respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName()
+                                                         + "§r\n" + alliesDetectedText
+                                                         + "\n" + enemiesDetectedText);
+                respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName()
+                                                         + "§r\n" + alliesDetectedText
+                                                         + "\n" + enemiesDetectedText);
             }
             
-            respawnScreen.getRedeployButton().setScale(currentscale);
+            respawnScreen.getRedeployButton().setText("Redeploy: " + regionSelected.getDisplayName()).setDirty(true);
             return;
         }
         

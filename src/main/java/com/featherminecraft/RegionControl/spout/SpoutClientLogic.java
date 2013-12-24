@@ -126,7 +126,7 @@ public class SpoutClientLogic
     private ArrayList<Label> reasonWidgetList;
     private Map<String, String> reasonLocalisations = new HashMap<String, String>();
     
-    private Container reasonContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(170).shiftXPos(-85).shiftYPos(40);
+    private Container reasonContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(170).shiftXPos(-83).shiftYPos(25);
     
     // Capture Bar Background
     private Container controlPointCaptureBarBackgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(427).setHeight(7).shiftXPos(-74).shiftYPos(31);
@@ -327,6 +327,7 @@ public class SpoutClientLogic
         
         hideAllElements();
         showNonCaptureElements();
+        updateRegion(region);
         
         barAnimContainer.addChild(captureBarAnim);
         
@@ -500,8 +501,7 @@ public class SpoutClientLogic
                     {
                         localisedReason = reason;
                     }
-                    Label reasonLabel = (Label) new GenericLabel(localisedReason).setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setAuto(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER).setFixed(true);
-                    reasonLabel.shiftXPos(-GenericLabel.getStringWidth(reasonLabel.getText(), 0.5F) / 2);
+                    Label reasonLabel = (Label) new GenericLabel(localisedReason).setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_LEFT).setFixed(true);
                     reasonWidgetList.add(reasonLabel);
                 }
                 
