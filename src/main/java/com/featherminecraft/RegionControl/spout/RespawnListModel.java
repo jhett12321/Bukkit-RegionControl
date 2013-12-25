@@ -139,23 +139,23 @@ public class RespawnListModel extends AbstractListModel
         {
             if(regionSelected.isBeingCaptured())
             {
-                respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                         + "§r\n" + "Capture in: " + regionSelected.getMinutesToCapture() + ":" + regionSelected.getSecondsToCapture()
+                respawnScreen.getListWidget().setTooltip("Â§lÂ§n" + regionSelected.getDisplayName()
+                                                         + "Â§r\n" + "Capture in: " + regionSelected.getMinutesToCapture() + ":" + regionSelected.getSecondsToCapture()
                                                          + "\n" + alliesDetectedText
                                                          + "\n" + enemiesDetectedText);
                 
-                respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                         + "§r\n" + "Capture in: " + regionSelected.getMinutesToCapture() + ":" + regionSelected.getSecondsToCapture()
+                respawnScreen.getRedeployButton().setTooltip("Â§lÂ§n" + regionSelected.getDisplayName()
+                                                         + "Â§r\n" + "Capture in: " + regionSelected.getMinutesToCapture() + ":" + regionSelected.getSecondsToCapture()
                                                          + "\n" + alliesDetectedText
                                                          + "\n" + enemiesDetectedText);
             }
             else
             {
-                respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                         + "§r\n" + alliesDetectedText
+                respawnScreen.getListWidget().setTooltip("Â§lÂ§n" + regionSelected.getDisplayName()
+                                                         + "Â§r\n" + alliesDetectedText
                                                          + "\n" + enemiesDetectedText);
-                respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                         + "§r\n" + alliesDetectedText
+                respawnScreen.getRedeployButton().setTooltip("Â§lÂ§n" + regionSelected.getDisplayName()
+                                                         + "Â§r\n" + alliesDetectedText
                                                          + "\n" + enemiesDetectedText);
             }
             
