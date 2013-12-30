@@ -8,11 +8,9 @@ import org.bukkit.event.HandlerList;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.utils.RegionUtils;
 
 public class RegionDefendEvent extends Event
 {
-    
     private static final HandlerList handlers = new HandlerList();
     
     public static HandlerList getHandlerList()
@@ -28,7 +26,7 @@ public class RegionDefendEvent extends Event
     public RegionDefendEvent(CapturableRegion region, Faction defender)
     {
         this.region = region;
-        players = new RegionUtils().getRegionPlayerList(region);
+        players = region.getPlayers();
         this.defender = defender;
     }
     

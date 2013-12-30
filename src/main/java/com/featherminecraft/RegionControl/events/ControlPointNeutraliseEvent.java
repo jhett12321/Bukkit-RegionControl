@@ -9,7 +9,6 @@ import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
 public class ControlPointNeutraliseEvent extends Event
 {
-    
     private static final HandlerList handlers = new HandlerList();
     
     public static HandlerList getHandlerList()

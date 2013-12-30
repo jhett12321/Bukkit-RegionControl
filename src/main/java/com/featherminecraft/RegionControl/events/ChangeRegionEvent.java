@@ -9,7 +9,6 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 // This event is triggered upon a player changing regions.
 public class ChangeRegionEvent extends Event
 {
-    
     private static final HandlerList handlers = new HandlerList();
     
     public static HandlerList getHandlerList()

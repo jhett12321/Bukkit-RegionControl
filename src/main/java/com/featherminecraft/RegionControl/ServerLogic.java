@@ -18,38 +18,31 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
-import com.featherminecraft.RegionControl.utils.Utils;
 
 public class ServerLogic
 {
-    // Temp Variable. Can be removed on plugin disable.
-    public static Map<String, RCPlayer> players = new HashMap<String, RCPlayer>();
+    // Utilities Begin
+    private static Config config = new Config();
+    // Utilities End
     
-    // Registered Variables; to be saved on plugin disable
+    public static Map<String, RCPlayer> players = new HashMap<String, RCPlayer>();
     public static Map<String, Faction> factions = new HashMap<String, Faction>();
     public static Map<String, CapturableRegion> capturableRegions = new HashMap<String, CapturableRegion>();
     
-    public static Boolean init()
+    public static void init()
     {
         // Faction Setup
         setupFactions();
         
         // Capturable Region Setup
-        if(!setupRegions())
-        {
-            return false;
-        }
+        setupRegions();
         
         // Spawn Region Setup
         setupSpawnRegions();
-        return true;
     }
     
     private static void setupFactions()
     {
-        // Utilities Begin
-        Config config = new Config();
-        // Utilities End
         Set<String> configfactions = config.getMainConfig().getConfigurationSection("factions").getKeys(false);
         for(String factionId : configfactions)
         {
@@ -67,12 +60,8 @@ public class ServerLogic
         }
     }
     
-    private static Boolean setupRegions()
+    private static void setupRegions()
     {
-        // Utilities Begin
-        Config config = new Config();
-        // Utilities End
-        
         Set<String> worlds = config.getMainConfig().getConfigurationSection("worlds").getKeys(false);
         
         // Region Setup
@@ -114,7 +103,7 @@ public class ServerLogic
                 // Owner End
                 
                 World world = Bukkit.getWorld(configWorld); // World
-                ProtectedRegion region = Utils.getWorldGuard().getRegionManager(world).getRegion(configRegion.getKey()); // WorldGuard Region
+                ProtectedRegion region = DependencyManager.getWorldGuard().getRegionManager(world).getRegion(configRegion.getKey()); // WorldGuard Region
                 
                 // ControlPoint List Begin
                 List<ControlPoint> controlPoints = new ArrayList<ControlPoint>();
@@ -179,14 +168,10 @@ public class ServerLogic
                 capturableRegions.get(configWorld + "_" + configRegion).setAdjacentRegions(adjacentregions);
             }
         }
-        return true;
     }
     
     private static void setupSpawnRegions()
     {
-        // Utilities Begin
-        Config config = new Config();
-        // Utilities End
         Set<String> configFactions = config.getMainConfig().getConfigurationSection("factions").getKeys(false);
         for(String configFaction : configFactions)
         {

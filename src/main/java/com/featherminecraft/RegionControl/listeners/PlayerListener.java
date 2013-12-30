@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
@@ -19,10 +20,11 @@ import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
-import com.featherminecraft.RegionControl.utils.RegionUtils;
+import com.featherminecraft.RegionControl.utils.SpoutUtils;
 
 public class PlayerListener implements Listener
 {
+    SpoutUtils spoutUtils = new SpoutUtils();
     
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDamage(EntityDamageByEntityEvent event)
@@ -70,7 +72,6 @@ public class PlayerListener implements Listener
     {
         // Utilities Begin
         PlayerUtils playerUtils = new PlayerUtils();
-        RegionUtils regionUtils = new RegionUtils();
         // Utilities End
         
         Player player = event.getPlayer();
@@ -83,6 +84,15 @@ public class PlayerListener implements Listener
         Faction faction = playerUtils.getPlayerFaction(player);
         if(faction == null)
         {
+            /*if(DependencyManager.isSpoutCraftAvailable())
+            {
+                if(spoutUtils.isSpoutPlayer(player))
+                {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 2400, 0, false));
+                    new FactionSelectScreen(player);
+                }
+            }*/
+            
             player.kickPlayer("You currently do not belong to a valid faction!");
             return;
         }
@@ -91,7 +101,7 @@ public class PlayerListener implements Listener
         RCPlayer rcPlayer = new RCPlayer(player, faction, currentRegion);
         
         ServerLogic.players.put(player.getName(), rcPlayer);
-        regionUtils.addPlayerToRegion(rcPlayer, currentRegion);
+        currentRegion.getPlayers().add(rcPlayer);
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -99,7 +109,6 @@ public class PlayerListener implements Listener
     {
         // Utilities Begin
         PlayerUtils playerUtils = new PlayerUtils();
-        RegionUtils regionUtils = new RegionUtils();
         // Utilities End
         
         // If a player is kicked for not being in a faction, they do not have an
@@ -110,11 +119,14 @@ public class PlayerListener implements Listener
             CapturableRegion currentRegion = player.getCurrentRegion();
             if(currentRegion != null)
             {
-                regionUtils.removePlayerFromRegion(player, currentRegion);
+                currentRegion.getPlayers().remove(player);
                 Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(null, currentRegion, player));
             }
             
-            player.getClientRunnables().cancel();
+            for(BukkitTask runnable : player.getClientRunnables().values())
+            {
+                runnable.cancel();
+            }
             ServerLogic.players.remove(event.getPlayer().getName());
             
         }

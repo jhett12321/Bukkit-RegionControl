@@ -87,7 +87,6 @@ public class SpoutClientLogic
     private InGameHUD screen;
     private CapturableRegion region;
     private ControlPoint controlPoint;
-    private BukkitTask runnable;
     
     // GUI
     private List<Widget> screenElements = new ArrayList<Widget>();
@@ -96,12 +95,11 @@ public class SpoutClientLogic
     private boolean captureElementsHidden = true;
     
     // Region Info Background
-    private Container backgroundContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(150).setHeight(40).setX(3).setY(-5);
-    private Texture background = (Texture) new GenericTexture("background.png").setDrawAlphaChannel(true).setWidth(150).setHeight(40).setPriority(RenderPriority.Highest);
+    private Texture background = (Texture) new GenericTexture("background.png").setDrawAlphaChannel(true).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(150).setHeight(40).setX(3).setY(-5).setPriority(RenderPriority.Highest);
     
     // Region Info
-    private Container regionInfo = (Container) new GenericContainer().setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(10).setX(10).setY(3).setMargin(3);
-    private Texture ownericon = (Texture) new GenericTexture("null.png").setHeight(16).setWidth(16).setFixed(true).setMargin(-5, 6, 0, 0);
+    private Container regionInfo = (Container) new GenericContainer().setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_LEFT).setAnchor(WidgetAnchor.CENTER_LEFT).setWidth(145).setHeight(10).setX(10).setY(3);
+    private Texture ownericon = (Texture) new GenericTexture("null.png").setDrawAlphaChannel(true).setWidth(16).setHeight(16).setFixed(true).setMargin(-5, 6, 0, 0);
     private Label regionname = (Label) new GenericLabel().setShadow(false).setResize(true).setFixed(true);
     
     // Region Status (Enemies/Allies Detected)
@@ -155,11 +153,6 @@ public class SpoutClientLogic
     public ControlPoint getControlPoint()
     {
         return controlPoint;
-    }
-    
-    public BukkitTask getRunnable()
-    {
-        return runnable;
     }
     
     public void hideControlPointCaptureBar()
@@ -220,10 +213,7 @@ public class SpoutClientLogic
         region = rcplayer.getCurrentRegion();
         
         // Background
-        screenElements.add(backgroundContainer);
         screenElements.add(background);
-        
-        backgroundContainer.addChild(background);
         
         // Region Info
         screenElements.add(regionInfo);
@@ -331,7 +321,7 @@ public class SpoutClientLogic
         
         barAnimContainer.addChild(captureBarAnim);
         
-        screen.attachWidgets(RegionControl.plugin, backgroundContainer, regionInfo, regionStatusContainer, regionStatusBarContainer, controlPointsContainer, controlPointCaptureBarContainer, controlPointCaptureBarBackgroundContainer, influenceOwnerIconContainer, captureBarContainer, captureBarSpaceContainer, captureBarBackgroundContainer, timerContainer, barAnimContainer);
+        screen.attachWidgets(RegionControl.plugin, regionInfo, regionStatusContainer, regionStatusBarContainer, controlPointsContainer, controlPointCaptureBarContainer, controlPointCaptureBarBackgroundContainer, influenceOwnerIconContainer, captureBarContainer, captureBarSpaceContainer, captureBarBackgroundContainer, timerContainer, barAnimContainer);
         screen.attachWidgets(RegionControl.plugin, background, ownericon, regionname, alliesDetectedText, alliesDetectedBar, enemiesDetectedText, enemiesDetectedBar, controlPointCaptureBar, controlPointCaptureBarBackground, influenceOwnerIcon, captureBarBackground, captureBar, captureBarSpace, captureTimer, captureBarAnim);
         
         for(Label controlPoint : controlPointLabels)
@@ -351,7 +341,7 @@ public class SpoutClientLogic
             }
         }
         
-        runnable = new BukkitRunnable()
+        BukkitTask runnable = new BukkitRunnable()
         {
             @Override
             public void run()
@@ -465,6 +455,8 @@ public class SpoutClientLogic
                 }
             }
         }.runTaskTimer(RegionControl.plugin, 10, 10);
+        
+        rcplayer.getClientRunnables().put("spoutClientLogic", runnable);
     }
     
     public void showControlPointCaptureBar()

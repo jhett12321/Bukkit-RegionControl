@@ -13,7 +13,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
-import com.featherminecraft.RegionControl.utils.RegionUtils;
 
 public class ClientRunnables extends BukkitRunnable
 {
@@ -37,10 +36,6 @@ public class ClientRunnables extends BukkitRunnable
     @Override
     public void run()
     {
-        // Utilities Begin
-        RegionUtils regionUtils = new RegionUtils();
-        // Utilities End
-        
         CapturableRegion currentRegion = player.getCurrentRegion();
         CapturableRegion newRegion = null;
         
@@ -59,20 +54,20 @@ public class ClientRunnables extends BukkitRunnable
         {
             if(newRegion == null)
             {
-                regionUtils.removePlayerFromRegion(player, currentRegion);
+                currentRegion.getPlayers().remove(player);
                 Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(null, currentRegion, player));
             }
             
             else if(newRegion != null && currentRegion != null)
             {
-                regionUtils.removePlayerFromRegion(player, currentRegion);
-                regionUtils.addPlayerToRegion(player, newRegion);
+                currentRegion.getPlayers().remove(player);
+                newRegion.getPlayers().add(player);
                 Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(newRegion, currentRegion, player));
             }
             
             else if(currentRegion == null)
             {
-                regionUtils.addPlayerToRegion(player, newRegion);
+                newRegion.getPlayers().add(player);
                 Bukkit.getServer().getPluginManager().callEvent(new ChangeRegionEvent(newRegion, null, player));
             }
             

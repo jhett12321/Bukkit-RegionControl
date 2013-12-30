@@ -44,7 +44,17 @@ public class RespawnScreen
         respawnButton = (Button) new GenericButton("Respawn: Ancestria Southern NetherGate").setWidth(200).setHeight(20).setFixed(true).setPriority(RenderPriority.Lowest);
         
         // Get Any Regions that are owned, and adjacent to the player.
-        List<CapturableRegion> regions = player.getCurrentRegion().getAdjacentRegions();
+        List<CapturableRegion> regions = new ArrayList<CapturableRegion>();
+        
+        List<CapturableRegion> adjacentregions = player.getCurrentRegion().getAdjacentRegions();
+        for(CapturableRegion region : adjacentregions)
+        {
+            if(region.getOwner() == player.getFaction())
+            {
+                regions.add(region);
+            }
+        }
+        
         regions.add(player.getCurrentRegion());
         if(!regions.contains(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld())))
         {

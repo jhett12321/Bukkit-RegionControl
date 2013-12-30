@@ -6,8 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-
 import org.getspout.spoutapi.event.input.KeyPressedEvent;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
@@ -33,7 +31,6 @@ import com.featherminecraft.RegionControl.utils.PlayerUtils;
 
 public class SpoutPlayerListener implements Listener
 {
-    
     private RespawnScreen respawnScreen;
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -47,6 +44,7 @@ public class SpoutPlayerListener implements Listener
         {
             playerUtils.respawnPlayer(player);
             event.getPlayer().getMainScreen().closePopup();
+            player.getClientRunnable("spoutRespawnTooltip").cancel();
         }
     }
     
@@ -199,29 +197,6 @@ public class SpoutPlayerListener implements Listener
         else
         {
             // TODO
-        }
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(PlayerQuitEvent event)
-    {
-        // Utilities Begin
-        PlayerUtils playerUtils = new PlayerUtils();
-        // Utilities End
-        
-        // If a player is kicked for not being in a faction, they do not have an
-        // RCPlayer object
-        try
-        {
-            RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
-            if(player.hasSpout())
-            {
-                player.getSpoutClientLogic().getRunnable().cancel();
-            }
-        }
-        catch(NullPointerException e)
-        {
-            return;
         }
     }
     

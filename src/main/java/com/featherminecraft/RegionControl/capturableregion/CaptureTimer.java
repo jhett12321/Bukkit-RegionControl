@@ -4,7 +4,6 @@ import com.featherminecraft.RegionControl.Faction;
 
 public class CaptureTimer
 {
-    
     private CapturableRegion region;
     
     public CaptureTimer(CapturableRegion cregion)

@@ -75,9 +75,6 @@ public class Config
     public void saveAll()
     {
         RegionControl.plugin.getLogger().info("Saving Region Data...");
-        // Utilities Begin
-        
-        // Utilities End
         
         // Begin retrieving of Region Data
         Collection<CapturableRegion> regions = ServerLogic.capturableRegions.values();
@@ -86,23 +83,17 @@ public class Config
         {
             if(!region.isSpawnRegion())
             {
-                // Not Here: DisplayName, Spawnpoint
-                // Variables being set
-                // Float baseInfluence = region.getBaseInfluence();
+                // Not Here: DisplayName, Spawnpoint, Base Influence
+                //Retrieve Data from regions.
                 Faction influenceOwner = region.getInfluenceOwner();
                 String configInfluenceOwner = influenceOwner.getId();
                 int configInfluence = region.getInfluenceMap().get(influenceOwner).intValue();
                 String configOwner = region.getOwner().getId();
                 
-                // Key location variables
                 String configWorld = region.getWorld().getName();
                 String configId = region.getRegionId();
                 
                 // Saving of data
-                // TODO Later Implementation: In-game setting of config values.
-                // mainconfig.set("worlds." + configWorld + ".regions." +
-                // configId + ".baseinfluence", baseInfluence.intValue());
-                
                 dataConfig.set("worlds." + configWorld + ".regions." + configId + ".influenceowner", configInfluenceOwner);
                 dataConfig.set("worlds." + configWorld + ".regions." + configId + ".influence", configInfluence);
                 dataConfig.set("worlds." + configWorld + ".regions." + configId + ".owner", configOwner);
@@ -132,13 +123,13 @@ public class Config
             }
         }
         
-        if(saveDataFile() && saveMainConfig())
+        if(saveDataFile()/* && saveMainConfig()*/)
         {
-            RegionControl.plugin.getLogger().info("Save Complete!");
+            RegionControl.plugin.getLogger().log(Level.INFO,"Save Complete!");
         }
         else
         {
-            RegionControl.plugin.getLogger().severe("Save Failed. Please check your plugin directory has write permissions.");
+            RegionControl.plugin.getLogger().log(Level.SEVERE,"Save Failed. Please check your plugin directory has write permissions.");
         }
     }
     
@@ -154,7 +145,7 @@ public class Config
         }
         catch(IOException ex)
         {
-            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config", ex);
+            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config!", ex);
             return false;
         }
         return true;
@@ -172,7 +163,7 @@ public class Config
         }
         catch(IOException ex)
         {
-            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config", ex);
+            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save main config!", ex);
             return false;
         }
         return true;

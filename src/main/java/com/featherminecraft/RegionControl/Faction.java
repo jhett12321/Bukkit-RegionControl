@@ -10,7 +10,6 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
 public class Faction
 {
-    
     private String displayName;
     private Map<World, CapturableRegion> spawnRegion = new HashMap<World, CapturableRegion>();
     private String permissionGroup;

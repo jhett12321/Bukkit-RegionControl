@@ -19,7 +19,6 @@ import com.featherminecraft.RegionControl.ServerLogic;
 
 public class CapturableRegion
 {
-    
     // RegionControl Object
     private final CapturableRegion cregion = this;
     

@@ -16,12 +16,7 @@ import com.featherminecraft.RegionControl.events.RegionInfluenceRateChangeEvent;
 
 public class InfluenceManager
 {
-    
-    // Region Variable
     private CapturableRegion region;
-    
-    // Private Vars
-    // private HashMap<Faction, Float> percentageOwned;
     
     public InfluenceManager(CapturableRegion cregion)
     {
@@ -31,10 +26,6 @@ public class InfluenceManager
     
     public Faction CalculateInfluenceOwner()
     {
-        /*
-         * Influence Owner Calculations
-         */
-        
         Map<Faction, Float> influenceMap = region.getInfluenceMap();
         Faction influenceOwner = null;
         for(Entry<Faction, Float> influence : influenceMap.entrySet())
@@ -51,11 +42,6 @@ public class InfluenceManager
     
     public Float CalculateInfluenceRate()
     {
-        /*
-         * Influence Rate Calculations, Take away influence for this loop. Rate
-         * 1: 1% Diff. + Rate 2: 33% Diff. + Rate 3: 66% Diff. + Rate 4: 100%
-         * Diff.
-         */
         List<ControlPoint> controlPoints = region.getControlPoints();
         float effectiveControlPointCount = 0F;
         for(ControlPoint controlPoint : controlPoints)
@@ -100,9 +86,6 @@ public class InfluenceManager
     
     public Faction CalculateMajorityController()
     {
-        /*
-         * Majority Controller Calculations
-         */
         List<ControlPoint> controlPoints = region.getControlPoints();
         Map<Faction, Float> ownedControlPoints = new HashMap<Faction, Float>();
         for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())

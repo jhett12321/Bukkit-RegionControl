@@ -14,7 +14,6 @@ import com.featherminecraft.RegionControl.events.RegionDefendEvent;
 
 public class GenericListener implements Listener
 {
-    
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event)
     {

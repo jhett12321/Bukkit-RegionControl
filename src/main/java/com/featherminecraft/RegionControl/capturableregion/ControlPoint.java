@@ -11,7 +11,6 @@ import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
@@ -21,9 +20,9 @@ import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.RegionControl.events.ControlPointPlayerInfluenceChangeEvent;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
 
+@SuppressWarnings("deprecation")
 public class ControlPoint
 {
-    
     // Region Variable
     private CapturableRegion region;
     
@@ -46,7 +45,6 @@ public class ControlPoint
     private List<RCPlayer> influentialPlayers = new ArrayList<RCPlayer>();
     
     public ControlPoint(String identifier, Faction owner, Location location, Double captureRadius, Float baseInfluence, Float influence, Faction influenceOwner)
-    
     {
         this.identifier = identifier;
         this.owner = owner;
@@ -68,14 +66,15 @@ public class ControlPoint
             }
         }
         
-        this.location.getBlock().setTypeId(85, false);
+        this.location.getBlock().setType(Material.FENCE);
         this.location.setY(location.getY() + 1);
-        this.location.getBlock().setTypeId(85, false);
+        this.location.getBlock().setType(Material.FENCE);
         this.location.setY(location.getY() + 1);
         
         if(influenceMap.get(influenceOwner) == baseInfluence)
         {
             this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(), DyeColor.getByColor(owner.getFactionColor()).getWoolData(), false);
+            ;
             capturing = false;
         }
         else

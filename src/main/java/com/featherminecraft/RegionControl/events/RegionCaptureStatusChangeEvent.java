@@ -7,7 +7,6 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
 public class RegionCaptureStatusChangeEvent extends Event
 {
-    
     private static final HandlerList handlers = new HandlerList();
     
     public static HandlerList getHandlerList()

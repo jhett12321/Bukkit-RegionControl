@@ -2,13 +2,7 @@ package com.featherminecraft.RegionControl;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import net.milkbowl.vault.permission.Permission;
-
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.listeners.GenericListener;
@@ -16,13 +10,15 @@ import com.featherminecraft.RegionControl.listeners.PlayerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
-import com.featherminecraft.RegionControl.utils.RegionUtils;
-import com.featherminecraft.RegionControl.utils.Utils;
+import com.featherminecraft.RegionControl.utils.SpoutUtils;
 
 public final class RegionControl extends JavaPlugin
 {
-    public static ProtocolManager protocolManager;
-    public static Permission permission;
+    // Utilities Begin
+    private PlayerUtils playerUtils = new PlayerUtils();
+    private SpoutUtils spoutUtils = new SpoutUtils();
+    // Utilities End
+    
     public static RegionControl plugin;
     public static boolean isfirstrun;
     
@@ -35,34 +31,10 @@ public final class RegionControl extends JavaPlugin
     @Override
     public void onEnable()
     {
-        // Utilities Begin
-        PlayerUtils playerUtils = new PlayerUtils();
-        RegionUtils regionUtils = new RegionUtils();
-        // Utilities End
-        
         RegionControl.plugin = this;
         
-        // TODO: Migrate from spout to client mod.
-        /*
-         * // This informs Bukkit that you will send messages through that
-         * channel Bukkit.getMessenger().registerOutgoingPluginChannel( this,
-         * "regioncontrol");
-         * Bukkit.getMessenger().registerIncomingPluginChannel( this,
-         * "regioncontrol", new ClientLogic() );
-         */
-        
-        PluginManager pm = getServer().getPluginManager();
-        if(!Utils.WorldGuardAvailable())
-        {
-            setEnabled(false);
-        }
-        
-        if(!Utils.VaultAvailable())
-        {
-            setEnabled(false);
-        }
-        
-        if(!Utils.ProtocolLibAvailable())
+        PluginManager pluginManager = getServer().getPluginManager();
+        if(!DependencyManager.init())
         {
             setEnabled(false);
         }
@@ -71,27 +43,19 @@ public final class RegionControl extends JavaPlugin
         Config config = new Config();
         config.reloadMainConfig();
         config.reloadDataFile();
-        setupPermissions();
-        setupProtocolManager();
-        if(!ServerLogic.init())
-        {
-            setEnabled(false);
-        }
         
-        pm.registerEvents(new PlayerListener(), this);
-        pm.registerEvents(new GenericListener(), this);
+        ServerLogic.init();
         
-        if(Utils.SpoutAvailable())
+        pluginManager.registerEvents(new PlayerListener(), this);
+        pluginManager.registerEvents(new GenericListener(), this);
+        
+        if(DependencyManager.isSpoutCraftAvailable())
         {
             SpoutClientLogic.init();
-            pm.registerEvents(new SpoutPlayerListener(), this);
+            pluginManager.registerEvents(new SpoutPlayerListener(), this);
         }
         
-        // Register Command Handler (NYI - TODO)
-        // getCommand("regioncontrol").setExecutor(new CommandHandler(isfirstrun));
-        
-        // Server may have been reloaded, so setup all current online players.
-        if(!Utils.SpoutAvailable())
+        else
         {
             for(Player player : getServer().getOnlinePlayers())
             {
@@ -101,23 +65,23 @@ public final class RegionControl extends JavaPlugin
                 RCPlayer rcPlayer = new RCPlayer(player, faction, currentRegion);
                 
                 ServerLogic.players.put(player.getName(), rcPlayer);
-                regionUtils.addPlayerToRegion(rcPlayer, currentRegion);
+                currentRegion.getPlayers().add(rcPlayer);
             }
         }
+        
+        // Register Command Handler (NYI - TODO)
+        // getCommand("regioncontrol").setExecutor(new CommandHandler(isfirstrun));
+        
+        // Server may have been reloaded, so setup all current online players.
     }
-    
-    private boolean setupPermissions()
+
+    public PlayerUtils getPlayerUtils()
     {
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
-        if(permissionProvider != null)
-        {
-            permission = permissionProvider.getProvider();
-        }
-        return(permission != null);
+        return playerUtils;
     }
-    
-    private void setupProtocolManager()
+
+    public SpoutUtils getSpoutUtils()
     {
-        protocolManager = ProtocolLibrary.getProtocolManager();
+        return spoutUtils;
     }
 }

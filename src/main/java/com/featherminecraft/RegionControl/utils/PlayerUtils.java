@@ -1,7 +1,5 @@
 package com.featherminecraft.RegionControl.utils;
 
-import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,22 +9,17 @@ import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.events.PacketContainer;
 
+import com.featherminecraft.RegionControl.DependencyManager;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
-import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 
+@SuppressWarnings("deprecation")
 public class PlayerUtils
 {
     /**
@@ -48,6 +41,13 @@ public class PlayerUtils
         return true;
     }
     
+    /**
+     * Retrieves a list of available SpawnPoints (a RegionControl Object with a Bukkit location) for a Bukkit Player
+     * 
+     * @param player
+     *            - The Player to check for available SpawnPoints.
+     * @return The available SpawnPoints for the provided player. 
+     */
     public List<SpawnPoint> getAvailableSpawnPoints(Player player)
     {
         Map<String, CapturableRegion> capturableregions = ServerLogic.capturableRegions;
@@ -64,6 +64,15 @@ public class PlayerUtils
         return availablespawnpoints;
     }
     
+    /**
+     * Gets the reason/s a player cannot capture a region, if any.
+     * 
+     * @param player
+     *            - The player that cannot capture the region.
+     * @param region
+     *            - The region the player cannot capture.
+     * @return a List containing strings: NO_CONNECTION, CONNECTION_NOT_SECURE, MOUNTED, if Applicable.
+     */
     public List<String> getCannotCaptureReasons(CapturableRegion region, RCPlayer player)
     {
         Map<String, Boolean> checks = new HashMap<String, Boolean>();
@@ -129,31 +138,13 @@ public class PlayerUtils
     
     public CapturableRegion getCurrentRegion(Player player)
     {
-        CapturableRegion playerRegion = null;
-        
-        WorldGuardPlugin worldguard = Utils.getWorldGuard();
-        RegionManager regionmanager = worldguard.getRegionManager(player.getWorld());
-        Vector location = toVector(player.getLocation());
-        ApplicableRegionSet currentregions = regionmanager.getApplicableRegions(location);
-        
-        if(currentregions != null && currentregions.size() == 1)
-        {
-            for(ProtectedRegion region : currentregions)
-            {
-                CapturableRegion capturableregion = new RegionUtils().getCapturableRegionFromWorldGuardRegion(region, player.getWorld());
-                if(capturableregion.getRegion().contains(location))
-                {
-                    playerRegion = capturableregion;
-                }
-            }
-        }
-        
-        return playerRegion;
+        RCPlayer rcPlayer = ServerLogic.players.get(player.getName());
+        return rcPlayer.getCurrentRegion();
     }
     
     public Faction getPlayerFaction(Player player)
     {
-        String group = RegionControl.permission.getPrimaryGroup(player);
+        String group = DependencyManager.getPermission().getPrimaryGroup(player);
         
         Faction playerFaction = null;
         
@@ -168,8 +159,7 @@ public class PlayerUtils
         if(playerFaction == null)
         {
             playerFaction = ServerLogic.factions.get("relkanaForces"); // For Test Clients TODO REMOVE!!
-            // TODO set player to use default faction, or kick player (possibly
-            // a config option?)
+            // TODO set player to use default faction, or kick player (possibly a config option?)
         }
         
         return playerFaction;
@@ -188,11 +178,11 @@ public class PlayerUtils
         try
         {
             Class.forName("com.comphenix.protocol.PacketType");
-            respawn = RegionControl.protocolManager.createPacket(com.comphenix.protocol.PacketType.Play.Client.CLIENT_COMMAND);
+            respawn = DependencyManager.getProtocolManager().createPacket(com.comphenix.protocol.PacketType.Play.Client.CLIENT_COMMAND);
         }
         catch(ClassNotFoundException e)
         {
-            respawn = RegionControl.protocolManager.createPacket(Packets.Client.CLIENT_COMMAND);
+            respawn = DependencyManager.getProtocolManager().createPacket(Packets.Client.CLIENT_COMMAND);
         }
         
         if(respawn != null)
@@ -201,11 +191,10 @@ public class PlayerUtils
             
             try
             {
-                RegionControl.protocolManager.recieveClientPacket(player.getBukkitPlayer(), respawn);
+                DependencyManager.getProtocolManager().recieveClientPacket(player.getBukkitPlayer(), respawn);
             }
             catch(InvocationTargetException | IllegalAccessException e)
             {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

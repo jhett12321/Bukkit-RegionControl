@@ -2,10 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.featherminecraft</groupId>
 	<artifactId>RegionControl</artifactId>
-	<version>0.8</version>
+	<version>0.9-D1</version>
 	<name>RegionControl</name>
 	<properties>
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- Bukkit Version -->
 		<craftbukkitVersion>1.6.4-R2.0</craftbukkitVersion>
 		
@@ -13,7 +14,7 @@
 		<vaultVersion>1.2.27</vaultVersion>
 		<worldEditVersion>5.5.8-SNAPSHOT</worldEditVersion>
 		<worldGuardVersion>5.8.1-SNAPSHOT</worldGuardVersion>
-		<spoutVersion>1.5.2-R1.0-SNAPSHOT</spoutVersion>
+		<spoutVersion>1.6.4-R2.1-SNAPSHOT</spoutVersion>
 	</properties>
 	<repositories>
 		<repository>

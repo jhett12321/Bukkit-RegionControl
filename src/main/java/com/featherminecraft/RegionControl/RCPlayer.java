@@ -1,5 +1,8 @@
 package com.featherminecraft.RegionControl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -10,16 +13,15 @@ import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 
 public class RCPlayer
 {
-    
     private String playerName;
     private CapturableRegion currentRegion;
     private Faction faction;
     private Boolean hasSpout = false;
     private Location respawnLocation;
-    private BukkitTask clientRunnables;
     
     // Player Classes/Runnables
     private SpoutClientLogic spoutClientLogic;
+    private Map<String,BukkitTask> clientRunnables = new HashMap<String,BukkitTask>();
     
     public RCPlayer(Player player, Faction faction, CapturableRegion currentRegion)
     {
@@ -27,7 +29,7 @@ public class RCPlayer
         this.faction = faction;
         this.currentRegion = currentRegion;
         
-        clientRunnables = new ClientRunnables(this).runTaskTimer(RegionControl.plugin, 20, 20);
+        clientRunnables.put("regionWatcher", new ClientRunnables(this).runTaskTimer(RegionControl.plugin, 10, 10));
     }
     
     public Player getBukkitPlayer()
@@ -35,7 +37,12 @@ public class RCPlayer
         return Bukkit.getPlayer(playerName);
     }
     
-    public BukkitTask getClientRunnables()
+    public BukkitTask getClientRunnable(String id)
+    {
+        return clientRunnables.get(id);
+    }
+    
+    public Map<String,BukkitTask> getClientRunnables()
     {
         return clientRunnables;
     }

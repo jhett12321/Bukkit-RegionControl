@@ -1,28 +1,17 @@
 package com.featherminecraft.RegionControl.utils;
 
-import org.getspout.spoutapi.gui.Label;
-import org.getspout.spoutapi.gui.Texture;
-import org.getspout.spoutapi.gui.Widget;
+import org.bukkit.entity.Player;
 
-import com.featherminecraft.RegionControl.Config;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SpoutUtils
 {
-    public int getMaxSpawnButtons()
+    public boolean isSpoutPlayer(Player player)
     {
-        return new Config().getMainConfig().getInt("spout.maxspawnbuttons");
+        if(((SpoutPlayer) player).isSpoutCraftEnabled())
+        {
+            return true;
+        }
+        return false;
     }
-    
-    public Widget updateLabelText(Label widget, String text)
-    {
-        widget = widget.setText(text);
-        return widget;
-    }
-    
-    public Widget updateTexture(Texture widget, String newtexture)
-    {
-        widget = widget.setUrl(newtexture);
-        return widget;
-    }
-    
 }

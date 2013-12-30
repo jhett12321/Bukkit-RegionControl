@@ -4,7 +4,6 @@ import org.bukkit.Location;
 
 public class SpawnPoint
 {
-    
     private Location location;
     
     public SpawnPoint(Location location)
@@ -16,5 +15,4 @@ public class SpawnPoint
     {
         return location;
     }
-    
 }
