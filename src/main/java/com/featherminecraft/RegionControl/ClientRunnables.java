@@ -2,8 +2,6 @@ package com.featherminecraft.RegionControl;
 
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
-import java.util.Map.Entry;
-
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -41,12 +39,12 @@ public class ClientRunnables extends BukkitRunnable
         
         Vector newlocation = toVector(player.getBukkitPlayer().getLocation());
         
-        for(Entry<String, CapturableRegion> capturableRegion : ServerLogic.capturableRegions.entrySet())
+        for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
         {
-            ProtectedRegion region = capturableRegion.getValue().getRegion();
+            ProtectedRegion region = capturableRegion.getRegion();
             if(region.contains(newlocation))
             {
-                newRegion = capturableRegion.getValue();
+                newRegion = capturableRegion;
             }
         }
         

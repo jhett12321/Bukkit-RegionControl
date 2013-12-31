@@ -42,40 +42,40 @@ public class SpoutClientLogic
     public static void init()
     {
         // Precache Included Assets
-        if(!new File(RegionControl.plugin.getDataFolder(), "background.png").exists())
+        if(!new File(RegionControl.plugin.getDataFolder(), "assets/images/background.png").exists())
         {
-            RegionControl.plugin.saveResource("background.png", false);
+            RegionControl.plugin.saveResource("assets/images/background.png", false);
         }
         
-        if(!new File(RegionControl.plugin.getDataFolder(), "Capture_Anim_Losing.png").exists())
+        if(!new File(RegionControl.plugin.getDataFolder(), "assets/images/Capture_Anim_Losing.png").exists())
         {
-            RegionControl.plugin.saveResource("Capture_Anim_Losing.png", false);
+            RegionControl.plugin.saveResource("assets/images/Capture_Anim_Losing.png", false);
         }
         
-        if(!new File(RegionControl.plugin.getDataFolder(), "Capture_Anim_Capturing.png").exists())
+        if(!new File(RegionControl.plugin.getDataFolder(), "assets/images/Capture_Anim_Capturing.png").exists())
         {
-            RegionControl.plugin.saveResource("Capture_Anim_Capturing.png", false);
+            RegionControl.plugin.saveResource("assets/images/Capture_Anim_Capturing.png", false);
         }
         
-        if(!new File(RegionControl.plugin.getDataFolder(), "null.png").exists())
+        if(!new File(RegionControl.plugin.getDataFolder(), "assets/images/null.png").exists())
         {
-            RegionControl.plugin.saveResource("null.png", false);
+            RegionControl.plugin.saveResource("assets/images/null.png", false);
         }
         
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/background.png"));
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Losing.png"));
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/Capture_Anim_Capturing.png"));
-        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/null.png"));
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/background.png"));
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/Capture_Anim_Losing.png"));
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/Capture_Anim_Capturing.png"));
+        SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/null.png"));
         
         // Precache Faction Icons
         Config config = new Config();
         for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
         {
-            String factionUrl = config.getMainConfig().getString("factions." + faction.getKey() + ".factionIcon");
+            String factionUrl = config.getFactionConfig().getString("factions." + faction.getKey() + ".factionIcon");
             faction.getValue().setFactionIconUrl(factionUrl);
-            if(faction.getValue().getFactionIconUrl() != null && faction.getValue().getFactionIconUrl() != "" && new File(RegionControl.plugin.getDataFolder(), faction.getValue().getFactionIconUrl()).exists())
+            if(faction.getValue().getFactionIconUrl() != null && faction.getValue().getFactionIconUrl() != "" && new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/factionIcons/" + faction.getValue().getFactionIconUrl()).exists())
             {
-                SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/" + faction.getValue().getFactionIconUrl()));
+                SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/factionIcons/" + faction.getValue().getFactionIconUrl()));
             }
             // TODO Precache Faction Music/Voiceovers
         }

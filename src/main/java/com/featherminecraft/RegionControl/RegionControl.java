@@ -3,6 +3,7 @@ package com.featherminecraft.RegionControl;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.listeners.GenericListener;
@@ -26,6 +27,18 @@ public final class RegionControl extends JavaPlugin
     public void onDisable()
     {
         new Config().saveAll();
+        for( RCPlayer player : ServerLogic.players.values())
+        {
+            for(BukkitTask runnable : player.getClientRunnables().values())
+            {
+                runnable.cancel();
+            }
+        }
+        
+        for(BukkitTask runnable : ServerLogic.serverRunnables.values())
+        {
+            runnable.cancel();
+        }
     }
     
     @Override
@@ -41,8 +54,8 @@ public final class RegionControl extends JavaPlugin
         
         // Server Setup
         Config config = new Config();
-        config.reloadMainConfig();
-        config.reloadDataFile();
+        config.reloadFactionConfig();
+        config.reloadRegionConfigs();
         
         ServerLogic.init();
         

@@ -39,9 +39,6 @@ public class CapturableRegion
     private SpawnPoint spawnPoint;
     private List<RCPlayer> players = new ArrayList<RCPlayer>();
     
-    // Runnable
-    private BukkitTask runnable;
-    
     // Influence
     private Float baseInfluence;
     private InfluenceManager influenceManager;
@@ -117,7 +114,7 @@ public class CapturableRegion
                 controlPoint.setRegion(this);
             }
             
-            runnable = new BukkitRunnable()
+            BukkitTask runnable = new BukkitRunnable()
             {
                 
                 @Override
@@ -131,6 +128,8 @@ public class CapturableRegion
                     captureTimer.Runnable();
                 }
             }.runTaskTimer(RegionControl.plugin, 20, 20);
+            
+            ServerLogic.serverRunnables.put(world + "_" + regionId, runnable);
         }
         
         else
@@ -224,12 +223,6 @@ public class CapturableRegion
     /*
      * Region Objects Begin
      */
-    
-    // Runnable
-    public BukkitTask getRunnable()
-    {
-        return runnable;
-    }
     
     public int getSecondsToCapture()
     {

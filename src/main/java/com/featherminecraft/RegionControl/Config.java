@@ -1,12 +1,19 @@
 package com.featherminecraft.RegionControl;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -15,61 +22,43 @@ import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
 public class Config
 {
-    private static FileConfiguration mainconfig;
-    private static FileConfiguration dataConfig;
-    private static File mainconfigfile;
-    private static File dataFile;
+    //Main Configs
+    private FileConfiguration factionConfig;
+    private File factionConfigFile;
     
-    public FileConfiguration getDataConfig()
-    {
-        if(dataConfig == null)
-        {
-            reloadDataFile();
+    //Region Configs
+    private Map<String,FileConfiguration> regionConfigs;
+    private Map<String,FileConfiguration> regionData;
+    
+    private Map<String,File> regionConfigFiles;
+    private Map<String,File> regionDataFiles;
+    
+    private void copy(InputStream in, File file) {
+        try {
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len=in.read(buf))>0){
+                out.write(buf,0,len);
+            }
+            out.close();
+            in.close();
+        } catch (IOException ex) {
+            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save default config!", ex);
         }
-        return dataConfig;
     }
     
     public String getDefaultFaction()
     {
-        Set<String> factions = mainconfig.getConfigurationSection("factions").getKeys(false);
+        Set<String> factions = factionConfig.getConfigurationSection("factions").getKeys(false);
         for(String faction : factions)
         {
-            if(mainconfig.getBoolean("factions." + faction + ".default"))
+            if(factionConfig.getBoolean("factions." + faction + ".default"))
             {
                 return faction;
             }
         }
         return null;
-    }
-    
-    public FileConfiguration getMainConfig()
-    {
-        if(mainconfig == null)
-        {
-            reloadMainConfig();
-        }
-        return mainconfig;
-    }
-    
-    public void reloadDataFile()
-    {
-        dataFile = new File(RegionControl.plugin.getDataFolder(), "data/data.yml");
-        dataFile.getParentFile().mkdirs();
-        if(!dataFile.exists())
-        {
-            RegionControl.plugin.saveResource("data/data.yml", false);
-        }
-        dataConfig = YamlConfiguration.loadConfiguration(dataFile);
-    }
-    
-    public void reloadMainConfig()
-    {
-        mainconfigfile = new File(RegionControl.plugin.getDataFolder(), "config.yml");
-        if(!mainconfigfile.exists())
-        {
-            RegionControl.plugin.saveResource("config.yml", false);
-        }
-        mainconfig = YamlConfiguration.loadConfiguration(mainconfigfile);
     }
     
     public void saveAll()
@@ -78,52 +67,64 @@ public class Config
         
         // Begin retrieving of Region Data
         Collection<CapturableRegion> regions = ServerLogic.capturableRegions.values();
+        boolean saveSuccessful = true;
         
-        for(CapturableRegion region : regions)
+        for(String configWorld : regionData.keySet())
         {
-            if(!region.isSpawnRegion())
+            for(CapturableRegion region : regions)
             {
-                // Not Here: DisplayName, Spawnpoint, Base Influence
-                //Retrieve Data from regions.
-                Faction influenceOwner = region.getInfluenceOwner();
-                String configInfluenceOwner = influenceOwner.getId();
-                int configInfluence = region.getInfluenceMap().get(influenceOwner).intValue();
-                String configOwner = region.getOwner().getId();
-                
-                String configWorld = region.getWorld().getName();
-                String configId = region.getRegionId();
-                
-                // Saving of data
-                dataConfig.set("worlds." + configWorld + ".regions." + configId + ".influenceowner", configInfluenceOwner);
-                dataConfig.set("worlds." + configWorld + ".regions." + configId + ".influence", configInfluence);
-                dataConfig.set("worlds." + configWorld + ".regions." + configId + ".owner", configOwner);
-                
-                // Control Points
-                List<ControlPoint> controlPoints = region.getControlPoints();
-                for(ControlPoint controlPoint : controlPoints)
+                if(region.getWorld().getName() == configWorld)
                 {
-                    Faction controlPointInfluenceOwner = controlPoint.getInfluenceOwner();
-                    String configControlPointInfluenceOwner = controlPointInfluenceOwner.getId();
-                    int configControlPointInfluence = controlPoint.getInfluenceMap().get(controlPointInfluenceOwner).intValue();
-                    String configControlPointId = controlPoint.getIdentifier();
-                    String configControlPointOwner = controlPoint.getOwner().getId();
+                    FileConfiguration dataConfig = regionData.get(configWorld);
+                    File dataFile = regionDataFiles.get(configWorld);
                     
-                    dataConfig.set("worlds." + configWorld + ".regions." + configId + ".controlpoints." + configControlPointId + ".influenceowner", configControlPointInfluenceOwner);
-                    dataConfig.set("worlds." + configWorld + ".regions." + configId + ".controlpoints." + configControlPointId + ".influence", configControlPointInfluence);
-                    dataConfig.set("worlds." + configWorld + ".regions." + configId + ".controlpoints." + configControlPointId + ".owner", configControlPointOwner);
+                    if(!region.isSpawnRegion())
+                    {
+                        // Not Here: DisplayName, Spawnpoint, Base Influence
+                        //Retrieve Data from regions.
+                        Faction influenceOwner = region.getInfluenceOwner();
+                        String configInfluenceOwner = influenceOwner.getId();
+                        int configInfluence = region.getInfluenceMap().get(influenceOwner).intValue();
+                        String configOwner = region.getOwner().getId();
+                        
+                        String configId = region.getRegionId();
+                        
+                        // Saving of data
+                        dataConfig.set("regions." + configId + ".influenceowner", configInfluenceOwner);
+                        dataConfig.set("regions." + configId + ".influence", configInfluence);
+                        dataConfig.set("regions." + configId + ".owner", configOwner);
+                        
+                        // Control Points
+                        List<ControlPoint> controlPoints = region.getControlPoints();
+                        for(ControlPoint controlPoint : controlPoints)
+                        {
+                            Faction controlPointInfluenceOwner = controlPoint.getInfluenceOwner();
+                            String configControlPointInfluenceOwner = controlPointInfluenceOwner.getId();
+                            int configControlPointInfluence = controlPoint.getInfluenceMap().get(controlPointInfluenceOwner).intValue();
+                            String configControlPointId = controlPoint.getIdentifier();
+                            String configControlPointOwner = controlPoint.getOwner().getId();
+                            
+                            dataConfig.set("regions." + configId + ".controlpoints." + configControlPointId + ".influenceowner", configControlPointInfluenceOwner);
+                            dataConfig.set("regions." + configId + ".controlpoints." + configControlPointId + ".influence", configControlPointInfluence);
+                            dataConfig.set("regions." + configId + ".controlpoints." + configControlPointId + ".owner", configControlPointOwner);
+                        }
+                    }
+                    else
+                    {
+                        String configOwner = region.getOwner().getId();
+                        String configId = region.getRegionId();
+                        
+                        dataConfig.set("regions." + configId + ".owner", configOwner);
+                    }
+                    if(!saveConfig(dataConfig,dataFile))
+                    {
+                        saveSuccessful = false;
+                    }
                 }
-            }
-            else
-            {
-                String configOwner = region.getOwner().getId();
-                String configWorld = region.getWorld().getName();
-                String configId = region.getRegionId();
-                
-                dataConfig.set("worlds." + configWorld + ".regions." + configId + ".owner", configOwner);
             }
         }
         
-        if(saveDataFile()/* && saveMainConfig()*/)
+        if(saveSuccessful)
         {
             RegionControl.plugin.getLogger().log(Level.INFO,"Save Complete!");
         }
@@ -132,40 +133,121 @@ public class Config
             RegionControl.plugin.getLogger().log(Level.SEVERE,"Save Failed. Please check your plugin directory has write permissions.");
         }
     }
-    
-    public Boolean saveDataFile()
+
+    private boolean saveConfig(FileConfiguration config, File configFile)
     {
-        if(dataConfig == null || dataFile == null)
-        {
-            return false;
-        }
         try
         {
-            getDataConfig().save(dataFile);
+            config.save(configFile);
+            return true;
         }
         catch(IOException ex)
         {
             RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config!", ex);
             return false;
         }
-        return true;
     }
-    
-    public Boolean saveMainConfig()
+
+    protected void reloadFactionConfig()
     {
-        if(mainconfig == null || mainconfigfile == null)
+        if (factionConfigFile == null)
         {
-            return false;
+            factionConfigFile = new File(RegionControl.plugin.getDataFolder(), "factions.yml");
         }
-        try
+        factionConfig = YamlConfiguration.loadConfiguration(factionConfigFile);
+        
+        if(!factionConfigFile.exists())
         {
-            getMainConfig().save(mainconfigfile);
+            factionConfigFile.getParentFile().mkdirs();
+            copy(RegionControl.plugin.getResource("defaults/factions.yml"), factionConfigFile);
         }
-        catch(IOException ex)
+    }
+
+    protected void reloadRegionConfigs()
+    {
+        if(regionConfigs == null || regionData == null || regionConfigFiles == null || regionDataFiles == null)
         {
-            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save main config!", ex);
-            return false;
+            regionConfigs = new HashMap<String,FileConfiguration>();
+            regionConfigFiles = new HashMap<String,File>();
+            
+            regionData = new HashMap<String,FileConfiguration>();
+            regionDataFiles = new HashMap<String,File>();
+            
+            for(World world : Bukkit.getWorlds())
+            {
+                regionConfigs.put(world.getName(), null);
+                regionConfigFiles.put(world.getName(), null);
+                
+                regionData.put(world.getName(), null);
+                regionDataFiles.put(world.getName(), null);
+            }
         }
-        return true;
+        
+        for(World world : Bukkit.getServer().getWorlds())
+        {
+            String worldName = world.getName();
+            File regionsFile = regionConfigFiles.get(worldName);
+            FileConfiguration regionsConfig = regionConfigs.get(worldName);
+            
+            if (regionsFile == null)
+            {
+                regionsFile = new File(RegionControl.plugin.getDataFolder(), "worlds/" + worldName + "/regions.yml");
+            }
+            regionsConfig = YamlConfiguration.loadConfiguration(regionsFile);
+            
+            if(!regionsFile.exists())
+            {
+                regionsFile.getParentFile().mkdirs();
+                copy(RegionControl.plugin.getResource("defaults/regions.yml"), regionsFile);
+            }
+            
+            File dataFile = regionDataFiles.get(worldName);
+            FileConfiguration dataConfig = regionData.get(worldName);
+            
+            if (dataFile == null)
+            {
+                dataFile = new File(RegionControl.plugin.getDataFolder(), "worlds/" + worldName + "/data.yml");
+            }
+            dataConfig = YamlConfiguration.loadConfiguration(dataFile);
+            
+            if(!dataFile.exists())
+            {
+                dataFile.getParentFile().mkdirs();
+                copy(RegionControl.plugin.getResource("defaults/data.yml"), dataFile);
+            }
+            
+            regionConfigFiles.put(worldName,regionsFile);
+            regionConfigs.put(worldName, regionsConfig);
+            regionDataFiles.put(worldName,dataFile);
+            regionData.put(worldName, dataConfig);
+        }
+        
+    }
+
+    public FileConfiguration getFactionConfig()
+    {
+        if(factionConfig == null)
+        {
+            reloadFactionConfig();
+        }
+        return factionConfig;
+    }
+
+    public Map<String, FileConfiguration> getRegionConfigs()
+    {
+        if(regionConfigs == null)
+        {
+            reloadRegionConfigs();
+        }
+        return regionConfigs;
+    }
+
+    public Map<String, FileConfiguration> getRegionData()
+    {
+        if(regionData == null)
+        {
+            reloadRegionConfigs();
+        }
+        return regionData;
     }
 }
