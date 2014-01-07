@@ -12,7 +12,7 @@ import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.events.RegionDefendEvent;
 
-public class GenericListener implements Listener
+public class ServerListener implements Listener
 {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event)

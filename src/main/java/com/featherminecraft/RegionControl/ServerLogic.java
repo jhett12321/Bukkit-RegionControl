@@ -24,10 +24,6 @@ import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 
 public class ServerLogic
 {
-    // Utilities Begin
-    private static Config config = new Config();
-    // Utilities End
-    
     public static Map<String, BukkitTask> serverRunnables = new HashMap<String, BukkitTask>();
     public static Map<String, RCPlayer> players = new HashMap<String, RCPlayer>();
     public static Map<String, Faction> factions = new HashMap<String, Faction>();
@@ -49,7 +45,7 @@ public class ServerLogic
             @Override
             public void run()
             {
-                config.saveAll();
+                Config.saveAll(false);
             }
             
         }.runTaskTimer(RegionControl.plugin, 1200, 1200);
@@ -59,14 +55,14 @@ public class ServerLogic
     
     private static void setupFactions()
     {
-        Set<String> configfactions = config.getFactionConfig().getConfigurationSection("factions").getKeys(false);
+        Set<String> configfactions = Config.getFactionConfig().getConfigurationSection("factions").getKeys(false);
         for(String factionId : configfactions)
         {
-            String permissionGroup = config.getFactionConfig().getString("factions." + factionId + ".permissiongroup");
+            String permissionGroup = Config.getFactionConfig().getString("factions." + factionId + ".permissiongroup");
             
-            String configColor = config.getFactionConfig().getString("factions." + factionId + ".color");
+            String configColor = Config.getFactionConfig().getString("factions." + factionId + ".color");
             
-            String displayName = config.getFactionConfig().getString("factions." + factionId + ".displayname");
+            String displayName = Config.getFactionConfig().getString("factions." + factionId + ".displayname");
             
             Color factioncolor = DyeColor.valueOf(configColor.toUpperCase()).getColor();
             
@@ -78,13 +74,13 @@ public class ServerLogic
     
     private static void setupRegions()
     {
-        Set<String> worlds = config.getRegionConfigs().keySet();
+        Set<String> worlds = Config.getRegionConfigs().keySet();
         
         // Region Setup
         for(String configWorld : worlds)
         {
-            FileConfiguration worldConfig = config.getRegionConfigs().get(configWorld);
-            FileConfiguration worldData = config.getRegionData().get(configWorld);
+            FileConfiguration worldConfig = Config.getRegionConfigs().get(configWorld);
+            FileConfiguration worldData = Config.getRegionData().get(configWorld);
             
             Set<String> configRegions;
             try 
@@ -125,7 +121,7 @@ public class ServerLogic
                 String configOwner = worldData.getString("regions." + configRegion.getKey() + ".owner");
                 if(configOwner == null)
                 {
-                    configOwner = config.getDefaultFaction();
+                    configOwner = Config.getDefaultFaction();
                 }
                 Faction owner = factions.get(configOwner);
                 // Owner End
@@ -178,7 +174,7 @@ public class ServerLogic
         // Adjacent Region Setup
         for(String configWorld : worlds)
         {
-            FileConfiguration worldConfig = config.getRegionConfigs().get(configWorld);
+            FileConfiguration worldConfig = Config.getRegionConfigs().get(configWorld);
             
             Set<String> configRegions;
             try 
@@ -210,10 +206,10 @@ public class ServerLogic
     
     private static void setupSpawnRegions()
     {
-        Set<String> configFactions = config.getFactionConfig().getConfigurationSection("factions").getKeys(false);
+        Set<String> configFactions = Config.getFactionConfig().getConfigurationSection("factions").getKeys(false);
         for(String configFaction : configFactions)
         {
-            Map<String, Object> regionWorlds = config.getFactionConfig().getConfigurationSection("factions." + configFaction + ".defaultspawn").getValues(false);
+            Map<String, Object> regionWorlds = Config.getFactionConfig().getConfigurationSection("factions." + configFaction + ".defaultspawn").getValues(false);
             Map<World, CapturableRegion> spawnRegions = new HashMap<World, CapturableRegion>();
             Faction faction = factions.get(configFaction);
             

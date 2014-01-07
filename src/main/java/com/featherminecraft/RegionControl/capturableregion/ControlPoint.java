@@ -270,7 +270,6 @@ public class ControlPoint
         /*
          * Majority Population on Point Calculations
          */
-        PlayerUtils playerUtils = new PlayerUtils();
         
         List<RCPlayer> players = region.getPlayers();
         Map<Faction, Integer> factionInfluence = new HashMap<Faction, Integer>();
@@ -288,7 +287,7 @@ public class ControlPoint
             {
                 influentialPlayers.add(player);
                 Faction playersFaction = player.getFaction();
-                if(playerUtils.canCapture(region, player))
+                if(PlayerUtils.canCapture(region, player))
                 {
                     factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
                 }

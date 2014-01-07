@@ -1,0 +1,19 @@
+players:
+  enableFriendlyDamage: true
+hooks:
+  spout: 
+    enabled: false
+  heroes:
+    enabled: false
+    baseExperience:
+      largeBaseCapture: 1000
+      smallBaseCapture: 500
+      largeBaseDefense: 500
+      smallBaseDefense: 250
+      controlPointCapture: 50
+      enemyPlayerKill: 250
+      friendlyPlayerKill: -100
+    experienceModifier: 1.0
+    groupExperienceModifiers:   #Added to experience Modifier
+      default: 0
+      members: 0.5

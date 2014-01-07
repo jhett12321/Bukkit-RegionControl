@@ -22,18 +22,23 @@ import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
 public class Config
 {
-    //Main Configs
-    private FileConfiguration factionConfig;
-    private File factionConfigFile;
+    /*Main Configs*/
+    // Main Config
+    private static FileConfiguration mainConfig;
+    private static File mainConfigFile;
     
-    //Region Configs
-    private Map<String,FileConfiguration> regionConfigs;
-    private Map<String,FileConfiguration> regionData;
+    // Faction Config
+    private static FileConfiguration factionConfig;
+    private static File factionConfigFile;
     
-    private Map<String,File> regionConfigFiles;
-    private Map<String,File> regionDataFiles;
+    /*Region Configs*/
+    private static Map<String,FileConfiguration> regionConfigs;
+    private static Map<String,FileConfiguration> regionData;
     
-    private void copy(InputStream in, File file) {
+    private static Map<String,File> regionConfigFiles;
+    private static Map<String,File> regionDataFiles;
+    
+    private static void copy(InputStream in, File file) {
         try {
             OutputStream out = new FileOutputStream(file);
             byte[] buf = new byte[1024];
@@ -48,7 +53,7 @@ public class Config
         }
     }
     
-    public String getDefaultFaction()
+    public static String getDefaultFaction()
     {
         Set<String> factions = factionConfig.getConfigurationSection("factions").getKeys(false);
         for(String faction : factions)
@@ -61,9 +66,12 @@ public class Config
         return null;
     }
     
-    public void saveAll()
+    public static void saveAll(Boolean verbose)
     {
-        RegionControl.plugin.getLogger().info("Saving Region Data...");
+        if(verbose)
+        {
+            RegionControl.plugin.getLogger().info("Saving Region Data...");
+        }
         
         // Begin retrieving of Region Data
         Collection<CapturableRegion> regions = ServerLogic.capturableRegions.values();
@@ -124,17 +132,17 @@ public class Config
             }
         }
         
-        if(saveSuccessful)
+        if(saveSuccessful && verbose)
         {
             RegionControl.plugin.getLogger().log(Level.INFO,"Save Complete!");
         }
-        else
+        else if(verbose)
         {
             RegionControl.plugin.getLogger().log(Level.SEVERE,"Save Failed. Please check your plugin directory has write permissions.");
         }
     }
-
-    private boolean saveConfig(FileConfiguration config, File configFile)
+    
+    private static boolean saveConfig(FileConfiguration config, File configFile)
     {
         try
         {
@@ -143,12 +151,12 @@ public class Config
         }
         catch(IOException ex)
         {
-            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save data config!", ex);
+            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save config!", ex);
             return false;
         }
     }
-
-    protected void reloadFactionConfig()
+    
+    protected static void reloadFactionConfig()
     {
         if (factionConfigFile == null)
         {
@@ -162,8 +170,23 @@ public class Config
             copy(RegionControl.plugin.getResource("defaults/factions.yml"), factionConfigFile);
         }
     }
-
-    protected void reloadRegionConfigs()
+    
+    protected static void reloadMainConfig()
+    {
+        if (mainConfigFile == null)
+        {
+            mainConfigFile = new File(RegionControl.plugin.getDataFolder(), "config.yml");
+        }
+        mainConfig = YamlConfiguration.loadConfiguration(mainConfigFile);
+        
+        if(!mainConfigFile.exists())
+        {
+            mainConfigFile.getParentFile().mkdirs();
+            copy(RegionControl.plugin.getResource("defaults/config.yml"), mainConfigFile);
+        }
+    }
+    
+    protected static void reloadRegionConfigs()
     {
         if(regionConfigs == null || regionData == null || regionConfigFiles == null || regionDataFiles == null)
         {
@@ -223,8 +246,17 @@ public class Config
         }
         
     }
-
-    public FileConfiguration getFactionConfig()
+    
+    public static FileConfiguration getMainConfig()
+    {
+        if(mainConfig == null)
+        {
+            reloadMainConfig();
+        }
+        return mainConfig;
+    }
+    
+    public static FileConfiguration getFactionConfig()
     {
         if(factionConfig == null)
         {
@@ -232,8 +264,8 @@ public class Config
         }
         return factionConfig;
     }
-
-    public Map<String, FileConfiguration> getRegionConfigs()
+    
+    public static Map<String, FileConfiguration> getRegionConfigs()
     {
         if(regionConfigs == null)
         {
@@ -241,8 +273,8 @@ public class Config
         }
         return regionConfigs;
     }
-
-    public Map<String, FileConfiguration> getRegionData()
+    
+    public static Map<String, FileConfiguration> getRegionData()
     {
         if(regionData == null)
         {

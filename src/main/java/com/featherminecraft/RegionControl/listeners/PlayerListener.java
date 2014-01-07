@@ -14,21 +14,23 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.featherminecraft.RegionControl.Config;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
-import com.featherminecraft.RegionControl.utils.SpoutUtils;
 
 public class PlayerListener implements Listener
 {
-    SpoutUtils spoutUtils = new SpoutUtils();
-    
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDamage(EntityDamageByEntityEvent event)
     {
+        if(Config.getMainConfig().getBoolean("players.enableFriendlyDamage"))
+        {
+            return;
+        }
         Player playerdamager = null;
         Player damagedplayer = null;
         
@@ -57,9 +59,8 @@ public class PlayerListener implements Listener
         
         if(playerdamager != null && damagedplayer != null)
         {
-            PlayerUtils playerutils = new PlayerUtils();
-            Faction damagerfaction = playerutils.getPlayerFaction(playerdamager);
-            Faction damagedentityfaction = playerutils.getPlayerFaction(damagedplayer);
+            Faction damagerfaction = PlayerUtils.getPlayerFaction(playerdamager);
+            Faction damagedentityfaction = PlayerUtils.getPlayerFaction(damagedplayer);
             if(damagerfaction == damagedentityfaction)
             {
                 event.setCancelled(true);
@@ -70,10 +71,6 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        // Utilities Begin
-        PlayerUtils playerUtils = new PlayerUtils();
-        // Utilities End
-        
         Player player = event.getPlayer();
         if(player == null)
         {
@@ -81,7 +78,7 @@ public class PlayerListener implements Listener
             return;
         }
         
-        Faction faction = playerUtils.getPlayerFaction(player);
+        Faction faction = PlayerUtils.getPlayerFaction(player);
         if(faction == null)
         {
             /*if(DependencyManager.isSpoutCraftAvailable())
@@ -107,15 +104,11 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        // Utilities Begin
-        PlayerUtils playerUtils = new PlayerUtils();
-        // Utilities End
-        
         // If a player is kicked for not being in a faction, they do not have an
         // RCPlayer object
         try
         {
-            RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
+            RCPlayer player = PlayerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
             CapturableRegion currentRegion = player.getCurrentRegion();
             if(currentRegion != null)
             {
@@ -139,10 +132,8 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event)
     {
-        PlayerUtils playerUtils = new PlayerUtils();
-        
         Player player = event.getPlayer();
-        RCPlayer rcplayer = playerUtils.getRCPlayerFromBukkitPlayer(player);
+        RCPlayer rcplayer = PlayerUtils.getRCPlayerFromBukkitPlayer(player);
         Location respawnLocation = rcplayer.getRespawnLocation();
         if(respawnLocation != null)
         {

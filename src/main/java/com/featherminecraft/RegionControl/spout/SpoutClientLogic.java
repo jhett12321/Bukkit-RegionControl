@@ -68,10 +68,9 @@ public class SpoutClientLogic
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/null.png"));
         
         // Precache Faction Icons
-        Config config = new Config();
         for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
         {
-            String factionUrl = config.getFactionConfig().getString("factions." + faction.getKey() + ".factionIcon");
+            String factionUrl = Config.getFactionConfig().getString("factions." + faction.getKey() + ".factionIcon");
             faction.getValue().setFactionIconUrl(factionUrl);
             if(faction.getValue().getFactionIconUrl() != null && faction.getValue().getFactionIconUrl() != "" && new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/factionIcons/" + faction.getValue().getFactionIconUrl()).exists())
             {
@@ -122,7 +121,6 @@ public class SpoutClientLogic
     
     // Cannot Capture Control Point Indicator
     private ArrayList<Label> reasonWidgetList;
-    private Map<String, String> reasonLocalisations = new HashMap<String, String>();
     
     private Container reasonContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(170).shiftXPos(-83).shiftYPos(25);
     
@@ -260,12 +258,6 @@ public class SpoutClientLogic
         controlPointScreenElements.add(controlPointCaptureBar);
         
         controlPointCaptureBarContainer.addChild(controlPointCaptureBar);
-        
-        // Unable to capture ControlPoint Reasons (under Capture Bar)
-        reasonLocalisations.put("NO_CONNECTION", "Cannot capture Control Point: You do not own a connecting region.");
-        reasonLocalisations.put("CONNECTION_NOT_SECURE", "Cannot capture Control Point: All of your connecting regions are not secure.");
-        reasonLocalisations.put("MOUNTED", "Cannot capture Control Point: You are currently Mounted.");
-        reasonLocalisations.put("INVALID_CLASS", "Cannot capture Control Point: You are an Invalid Class");
         
         // ControlPoint Capture Bar Background
         controlPointScreenElements.add(controlPointCaptureBarBackgroundContainer);
@@ -481,19 +473,12 @@ public class SpoutClientLogic
             Color spoutColor = new Color(red, green, blue);
             controlPointCaptureBar.setColor(spoutColor);
             
-            PlayerUtils playerUtils = new PlayerUtils();
-            
-            if(!playerUtils.canCapture(region, rcplayer))
+            if(!PlayerUtils.canCapture(region, rcplayer))
             {
                 reasonWidgetList = new ArrayList<Label>();
-                for(String reason : playerUtils.getCannotCaptureReasons(region, rcplayer))
+                for(String reason : PlayerUtils.getCannotCaptureReasons(region, rcplayer))
                 {
-                    String localisedReason = reasonLocalisations.get(reason);
-                    if(localisedReason == null)
-                    {
-                        localisedReason = reason;
-                    }
-                    Label reasonLabel = (Label) new GenericLabel(localisedReason).setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_LEFT).setFixed(true);
+                    Label reasonLabel = (Label) new GenericLabel(reason).setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_LEFT).setFixed(true);
                     reasonWidgetList.add(reasonLabel);
                 }
                 

@@ -91,7 +91,7 @@ public class RespawnListModel extends AbstractListModel
             return;
         }
         
-        new PlayerUtils().respawnPlayer(rcplayer);
+        PlayerUtils.respawnPlayer(rcplayer);
         splayer.getMainScreen().closePopup();
         rcplayer.getClientRunnable("spoutRespawnTooltip").cancel();
     }
@@ -170,24 +170,33 @@ public class RespawnListModel extends AbstractListModel
             enemiesDetectedText = "Enemies Detected: 48+";
         }
         
-        if(regionSelected.isBeingCaptured())
+        Integer seconds = regionSelected.getSecondsToCapture();
+        Integer minutes = regionSelected.getMinutesToCapture();
+        
+        String secondsString = seconds.toString();
+        if(seconds < 10)
+        {
+            secondsString = "0" + secondsString;
+        }
+        
+        if(!regionSelected.isBeingCaptured() || (seconds == 0 && minutes == 0))
         {
             respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                     + "§r\n" + "Capture in: " + regionSelected.getMinutesToCapture() + ":" + regionSelected.getSecondsToCapture()
-                                                     + "\n" + alliesDetectedText
+                                                     + "§r\n" + alliesDetectedText
                                                      + "\n" + enemiesDetectedText);
             respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                     + "§r\n" + "Capture in: " + regionSelected.getMinutesToCapture() + ":" + regionSelected.getSecondsToCapture()
-                                                     + "\n" + alliesDetectedText
+                                                     + "§r\n" + alliesDetectedText
                                                      + "\n" + enemiesDetectedText);
         }
         else
         {
             respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                     + "§r\n" + alliesDetectedText
+                                                     + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString
+                                                     + "\n" + alliesDetectedText
                                                      + "\n" + enemiesDetectedText);
             respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                     + "§r\n" + alliesDetectedText
+                                                     + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString
+                                                     + "\n" + alliesDetectedText
                                                      + "\n" + enemiesDetectedText);
         }
     }

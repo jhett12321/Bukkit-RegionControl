@@ -16,6 +16,7 @@ import com.featherminecraft.RegionControl.DependencyManager;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
+import com.featherminecraft.RegionControl.capturableregion.CannotCaptureReason;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 
@@ -31,7 +32,7 @@ public class PlayerUtils
      *            - The Player to be checked
      * @return Boolean whether a player can capture the Region
      */
-    public boolean canCapture(CapturableRegion region, RCPlayer player)
+    public static boolean canCapture(CapturableRegion region, RCPlayer player)
     {
         if(getCannotCaptureReasons(region, player).size() > 0)
         {
@@ -48,7 +49,7 @@ public class PlayerUtils
      *            - The Player to check for available SpawnPoints.
      * @return The available SpawnPoints for the provided player. 
      */
-    public List<SpawnPoint> getAvailableSpawnPoints(Player player)
+    public static List<SpawnPoint> getAvailableSpawnPoints(Player player)
     {
         Map<String, CapturableRegion> capturableregions = ServerLogic.capturableRegions;
         List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
@@ -71,20 +72,20 @@ public class PlayerUtils
      *            - The player that cannot capture the region.
      * @param region
      *            - The region the player cannot capture.
-     * @return a List containing strings: NO_CONNECTION, CONNECTION_NOT_SECURE, MOUNTED, if Applicable.
+     * @return a List containing strings explaining why the player cannot capture this region.
      */
-    public List<String> getCannotCaptureReasons(CapturableRegion region, RCPlayer player)
+    public static List<String> getCannotCaptureReasons(CapturableRegion region, RCPlayer player)
     {
         Map<String, Boolean> checks = new HashMap<String, Boolean>();
-        checks.put("NO_CONNECTION", true);
-        checks.put("CONNECTION_NOT_SECURE", true);
-        checks.put("MOUNTED", true);
+        checks.put(CannotCaptureReason.NO_CONNECTION, true);
+        checks.put(CannotCaptureReason.CONNECTION_NOT_SECURE, true);
+        checks.put(CannotCaptureReason.MOUNTED, true);
         // checks.put("INVALID_CLASS", true); //TODO
         
         // No Connection Check
-        if(region.getOwner() == getPlayerFaction(player.getBukkitPlayer()))
+        if(region.getOwner() == getPlayerFaction(player.getBukkitPlayer()) || region.isBeingCaptured())
         {
-            checks.put("NO_CONNECTION", false);
+            checks.put(CannotCaptureReason.NO_CONNECTION, false);
         }
         
         else
@@ -93,35 +94,35 @@ public class PlayerUtils
             {
                 if(adjacentregion.getOwner() == getPlayerFaction(player.getBukkitPlayer()))
                 {
-                    checks.put("NO_CONNECTION", false);
+                    checks.put(CannotCaptureReason.NO_CONNECTION, false);
                 }
             }
         }
         
         // Connection Not Secure Check
-        if(!checks.get("NO_CONNECTION"))
+        if(!checks.get(CannotCaptureReason.NO_CONNECTION))
         {
             for(CapturableRegion adjacentregion : region.getAdjacentRegions())
             {
                 if(adjacentregion.getOwner() == getPlayerFaction(player.getBukkitPlayer()) && adjacentregion.isSpawnRegion())
                 {
-                    checks.put("CONNECTION_NOT_SECURE", false);
+                    checks.put(CannotCaptureReason.CONNECTION_NOT_SECURE, false);
                 }
                 else if(adjacentregion.getOwner() == getPlayerFaction(player.getBukkitPlayer()) && adjacentregion.getInfluenceMap().get(adjacentregion.getInfluenceOwner()) >= adjacentregion.getBaseInfluence())
                 {
-                    checks.put("CONNECTION_NOT_SECURE", false);
+                    checks.put(CannotCaptureReason.CONNECTION_NOT_SECURE, false);
                 }
             }
         }
         else
         {
-            checks.put("CONNECTION_NOT_SECURE", false);
+            checks.put(CannotCaptureReason.CONNECTION_NOT_SECURE, false);
         }
         
         // Player is Mounted Check
         if(!player.getBukkitPlayer().isInsideVehicle())
         {
-            checks.put("MOUNTED", false);
+            checks.put(CannotCaptureReason.MOUNTED, false);
         }
         
         List<String> reasons = new ArrayList<String>();
@@ -136,13 +137,13 @@ public class PlayerUtils
         return reasons;
     }
     
-    public CapturableRegion getCurrentRegion(Player player)
+    public static CapturableRegion getCurrentRegion(Player player)
     {
         RCPlayer rcPlayer = ServerLogic.players.get(player.getName());
         return rcPlayer.getCurrentRegion();
     }
     
-    public Faction getPlayerFaction(Player player)
+    public static Faction getPlayerFaction(Player player)
     {
         String group = DependencyManager.getPermission().getPrimaryGroup(player);
         
@@ -165,13 +166,13 @@ public class PlayerUtils
         return playerFaction;
     }
     
-    public RCPlayer getRCPlayerFromBukkitPlayer(Player player)
+    public static RCPlayer getRCPlayerFromBukkitPlayer(Player player)
     {
         RCPlayer rcPlayer = ServerLogic.players.get(player.getName());
         return rcPlayer;
     }
     
-    public void respawnPlayer(RCPlayer player)
+    public static void respawnPlayer(RCPlayer player)
     {
         PacketContainer respawn = null;
         

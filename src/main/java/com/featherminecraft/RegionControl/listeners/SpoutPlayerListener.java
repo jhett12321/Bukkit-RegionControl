@@ -36,13 +36,10 @@ public class SpoutPlayerListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onButtonClick(ButtonClickEvent event)
     {
-        // Utilities
-        PlayerUtils playerUtils = new PlayerUtils();
-        
-        RCPlayer player = playerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
+        RCPlayer player = PlayerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
         if(event.getButton().getText().contains("Redeploy:"))
         {
-            playerUtils.respawnPlayer(player);
+            PlayerUtils.respawnPlayer(player);
             event.getPlayer().getMainScreen().closePopup();
             player.getClientRunnable("spoutRespawnTooltip").cancel();
         }
@@ -188,7 +185,8 @@ public class SpoutPlayerListener implements Listener
     public void onPlayerDeath(PlayerDeathEvent event)
     {
         final SpoutPlayer splayer = (SpoutPlayer) event.getEntity();
-        RCPlayer rcplayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer);
+        new PlayerUtils();
+        RCPlayer rcplayer = PlayerUtils.getRCPlayerFromBukkitPlayer(splayer);
         if(rcplayer.hasSpout())
         {
             InGameHUD mainscreen = splayer.getMainScreen();
@@ -248,7 +246,7 @@ public class SpoutPlayerListener implements Listener
     {
         SpoutPlayer splayer = event.getPlayer();
         
-        RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(splayer.getPlayer());
+        RCPlayer rcPlayer = PlayerUtils.getRCPlayerFromBukkitPlayer(splayer.getPlayer());
         rcPlayer.setHasSpout(true);
         
         rcPlayer.setSpoutClientLogic(new SpoutClientLogic());
@@ -258,7 +256,7 @@ public class SpoutPlayerListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onSpoutCraftFailedEvent(SpoutcraftFailedEvent event)
     {
-        RCPlayer rcPlayer = new PlayerUtils().getRCPlayerFromBukkitPlayer(event.getPlayer().getPlayer());
+        RCPlayer rcPlayer = PlayerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer().getPlayer());
         CapturableRegion currentRegion = rcPlayer.getCurrentRegion();
         List<RCPlayer> playerList = currentRegion.getPlayers();
         for(RCPlayer rPlayer : playerList)

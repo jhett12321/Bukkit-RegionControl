@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.featherminecraft</groupId>
 	<artifactId>RegionControl</artifactId>
-	<version>0.9-D2</version>
+	<version>0.9-D3</version>
 	<name>RegionControl</name>
 	<properties>
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
@@ -14,12 +14,19 @@
 		<vaultVersion>1.2.27</vaultVersion>
 		<worldEditVersion>5.5.8-SNAPSHOT</worldEditVersion>
 		<worldGuardVersion>5.8.1-SNAPSHOT</worldGuardVersion>
+		<protocolLibVersion>3.0.1</protocolLibVersion>
+		
 		<spoutVersion>1.6.4-R2.1-SNAPSHOT</spoutVersion>
+		<heroesVersion>1.5.5</heroesVersion>
 	</properties>
 	<repositories>
 		<repository>
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>spigot-repo</id>
+			<url>http://repo.md-5.net/content/repositories/public/</url>
 		</repository>
 		<repository>
 			<id>sonatype-nexus-releases</id>
@@ -45,6 +52,10 @@
 			<id>comphenix-rep</id>
 			<name>Comphenix Repository</name>
 			<url>http://repo.comphenix.net/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>heroes-repo</id>
+			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -98,7 +109,19 @@
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
-			<version>3.0.1</version>
+			<version>${protocolLibVersion}</version>
+		</dependency>
+		<!-- Heroes -->
+		<dependency>
+			<groupId>com.herocraftonline.heroes</groupId>
+			<artifactId>Heroes</artifactId>
+			<version>${heroesVersion}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.dthielke.herochat</groupId>
+					<artifactId>HeroChat</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>
