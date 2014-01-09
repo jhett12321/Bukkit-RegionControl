@@ -1,5 +1,6 @@
 package com.featherminecraft.RegionControl.dynmap;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.bukkit.World;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerSet;
+import org.dynmap.markers.PolyLineMarker;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
@@ -29,9 +31,11 @@ public class DynmapImpl
     
     private static MarkerSet territoryControlMarkerSet;
     private static MarkerSet controlPointsMarkerSet;
+    private static MarkerSet latticeLineMarkerSet;
     
     private static Map<CapturableRegion, AreaMarker> territoryControlMarkers = new HashMap<CapturableRegion, AreaMarker>();
     private static Map<ControlPoint, Marker> controlPointMarkers = new HashMap<ControlPoint, Marker>();
+    private static Map<String, PolyLineMarker> latticeLineMarkers = new HashMap<String, PolyLineMarker>();
     
     public static void init()
     {
@@ -69,10 +73,29 @@ public class DynmapImpl
             RegionControl.plugin.getLogger().severe("Error creating marker set");
             return;
         }
-        controlPointsMarkerSet.setLayerPriority(10);
+        controlPointsMarkerSet.setLayerPriority(8);
         controlPointsMarkerSet.setHideByDefault(false);
         
         updateControlPoints();
+        
+        latticeLineMarkerSet = DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerSet("regioncontrol.latticeLines");
+        if(latticeLineMarkerSet == null)
+        {
+            latticeLineMarkerSet = DependencyManager.getDynmapAPI().getMarkerAPI().createMarkerSet("regioncontrol.latticeLines", "Region Connections", null, false);
+        }
+        else
+        {
+            latticeLineMarkerSet.setMarkerSetLabel("Region Connections");
+        }
+        if(latticeLineMarkerSet == null)
+        {
+            RegionControl.plugin.getLogger().severe("Error creating marker set");
+            return;
+        }
+        latticeLineMarkerSet.setLayerPriority(8);
+        latticeLineMarkerSet.setHideByDefault(false);
+        
+        updateLatticeLinks();
     }
     
     public static void updateRegion(CapturableRegion region)
@@ -216,6 +239,82 @@ public class DynmapImpl
                 Marker marker = controlPointsMarkerSet.createMarker(id, controlPoint.getIdentifier().toUpperCase(), region.getWorld().getName(), x, y, z, null, false);
                 
                 controlPointMarkers.put(controlPoint, marker);
+            }
+        }
+    }
+    
+    private static void updateLatticeLinks()
+    {
+        for(CapturableRegion region : ServerLogic.capturableRegions.values())
+        {
+            for(CapturableRegion adjacentRegion : region.getAdjacentRegions())
+            {
+                List<CapturableRegion> previousLink = new ArrayList<CapturableRegion>();
+                previousLink.add(adjacentRegion);
+                previousLink.add(region);
+                
+                if(!latticeLineMarkers.containsKey(adjacentRegion.getWorld().getName() + "_" + adjacentRegion.getRegionId() + "_" + region.getRegionId()))
+                {
+                    String id = region.getWorld().getName() + "_" + region.getRegionId() + "_" + adjacentRegion.getRegionId();
+                    double[] x = new double[2];
+                    double[] y = new double[2];
+                    double[] z = new double[2];
+                    
+                    x[0] = region.getSpawnPoint().getLocation().getX();
+                    y[0] = region.getSpawnPoint().getLocation().getY();
+                    z[0] = region.getSpawnPoint().getLocation().getZ();
+                    x[1] = adjacentRegion.getSpawnPoint().getLocation().getX();
+                    y[1] = adjacentRegion.getSpawnPoint().getLocation().getY();
+                    z[1] = adjacentRegion.getSpawnPoint().getLocation().getZ();
+                    
+                    PolyLineMarker marker = latticeLineMarkerSet.createPolyLineMarker(id, null, false, region.getWorld().getName(), x, y, z, false);
+                    
+                    if(region.getOwner() == adjacentRegion.getOwner())
+                    {
+                        marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().asRGB());
+                    }
+                    else
+                    {
+                        marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
+                    }
+                    
+                   latticeLineMarkers.put(id, marker);
+                }
+            }
+        }
+    }
+    
+    public static void updateLatticeLink(CapturableRegion region, CapturableRegion adjacentRegion)
+    {
+        String id = region.getWorld().getName() + "_" + region.getRegionId() + "_" + adjacentRegion.getRegionId();
+        
+        PolyLineMarker marker = latticeLineMarkers.get(id);
+        
+        if(marker != null)
+        {
+            if(region.getOwner() == adjacentRegion.getOwner())
+            {
+                marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().asRGB());
+            }
+            
+            else
+            {
+                marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
+            }
+        }
+        else
+        {
+            id = adjacentRegion.getWorld().getName() + "_" + adjacentRegion.getRegionId() + "_" + region.getRegionId();
+            marker = latticeLineMarkers.get(id);
+            
+            if(region.getOwner() == adjacentRegion.getOwner())
+            {
+                marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().asRGB());
+            }
+            
+            else
+            {
+                marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
             }
         }
     }
