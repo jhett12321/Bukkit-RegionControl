@@ -3,6 +3,7 @@ package com.featherminecraft.RegionControl.spout;
 import java.util.List;
 
 import org.bukkit.scheduler.BukkitRunnable;
+
 import org.getspout.spoutapi.gui.AbstractListModel;
 import org.getspout.spoutapi.gui.ListWidgetItem;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -181,23 +182,13 @@ public class RespawnListModel extends AbstractListModel
         
         if(!regionSelected.isBeingCaptured() || (seconds == 0 && minutes == 0))
         {
-            respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                     + "§r\n" + alliesDetectedText
-                                                     + "\n" + enemiesDetectedText);
-            respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                     + "§r\n" + alliesDetectedText
-                                                     + "\n" + enemiesDetectedText);
+            respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + alliesDetectedText + "\n" + enemiesDetectedText);
+            respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + alliesDetectedText + "\n" + enemiesDetectedText);
         }
         else
         {
-            respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                     + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString
-                                                     + "\n" + alliesDetectedText
-                                                     + "\n" + enemiesDetectedText);
-            respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName()
-                                                     + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString
-                                                     + "\n" + alliesDetectedText
-                                                     + "\n" + enemiesDetectedText);
+            respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString + "\n" + alliesDetectedText + "\n" + enemiesDetectedText);
+            respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString + "\n" + alliesDetectedText + "\n" + enemiesDetectedText);
         }
     }
 }

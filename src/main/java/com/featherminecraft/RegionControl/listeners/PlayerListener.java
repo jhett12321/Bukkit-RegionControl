@@ -81,14 +81,16 @@ public class PlayerListener implements Listener
         Faction faction = PlayerUtils.getPlayerFaction(player);
         if(faction == null)
         {
-            /*if(DependencyManager.isSpoutCraftAvailable())
-            {
-                if(spoutUtils.isSpoutPlayer(player))
-                {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 2400, 0, false));
-                    new FactionSelectScreen(player);
-                }
-            }*/
+            /*
+             * if(DependencyManager.isSpoutCraftAvailable())
+             * {
+             * if(spoutUtils.isSpoutPlayer(player))
+             * {
+             * player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 2400, 0, false));
+             * new FactionSelectScreen(player);
+             * }
+             * }
+             */
             
             player.kickPlayer("You currently do not belong to a valid faction!");
             return;

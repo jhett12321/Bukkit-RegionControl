@@ -47,7 +47,7 @@ public class PlayerUtils
      * 
      * @param player
      *            - The Player to check for available SpawnPoints.
-     * @return The available SpawnPoints for the provided player. 
+     * @return The available SpawnPoints for the provided player.
      */
     public static List<SpawnPoint> getAvailableSpawnPoints(Player player)
     {

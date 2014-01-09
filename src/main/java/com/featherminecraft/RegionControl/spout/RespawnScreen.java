@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
 import org.bukkit.Location;
 
 import org.getspout.spoutapi.gui.Button;
@@ -89,6 +90,11 @@ public class RespawnScreen
         mainscreen.attachPopupScreen(popup);
     }
     
+    public GenericListView getListWidget()
+    {
+        return listWidget;
+    }
+    
     public GenericPopup getPopup()
     {
         return popup;
@@ -97,10 +103,5 @@ public class RespawnScreen
     public Button getRedeployButton()
     {
         return respawnButton;
-    }
-    
-    public GenericListView getListWidget()
-    {
-        return listWidget;
     }
 }

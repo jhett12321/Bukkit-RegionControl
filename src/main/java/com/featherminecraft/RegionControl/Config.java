@@ -22,7 +22,7 @@ import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
 public class Config
 {
-    /*Main Configs*/
+    /* Main Configs */
     // Main Config
     private static FileConfiguration mainConfig;
     private static File mainConfigFile;
@@ -31,27 +31,12 @@ public class Config
     private static FileConfiguration factionConfig;
     private static File factionConfigFile;
     
-    /*Region Configs*/
-    private static Map<String,FileConfiguration> regionConfigs;
-    private static Map<String,FileConfiguration> regionData;
+    /* Region Configs */
+    private static Map<String, FileConfiguration> regionConfigs;
+    private static Map<String, FileConfiguration> regionData;
     
-    private static Map<String,File> regionConfigFiles;
-    private static Map<String,File> regionDataFiles;
-    
-    private static void copy(InputStream in, File file) {
-        try {
-            OutputStream out = new FileOutputStream(file);
-            byte[] buf = new byte[1024];
-            int len;
-            while((len=in.read(buf))>0){
-                out.write(buf,0,len);
-            }
-            out.close();
-            in.close();
-        } catch (IOException ex) {
-            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save default config!", ex);
-        }
-    }
+    private static Map<String, File> regionConfigFiles;
+    private static Map<String, File> regionDataFiles;
     
     public static String getDefaultFaction()
     {
@@ -64,6 +49,42 @@ public class Config
             }
         }
         return null;
+    }
+    
+    public static FileConfiguration getFactionConfig()
+    {
+        if(factionConfig == null)
+        {
+            reloadFactionConfig();
+        }
+        return factionConfig;
+    }
+    
+    public static FileConfiguration getMainConfig()
+    {
+        if(mainConfig == null)
+        {
+            reloadMainConfig();
+        }
+        return mainConfig;
+    }
+    
+    public static Map<String, FileConfiguration> getRegionConfigs()
+    {
+        if(regionConfigs == null)
+        {
+            reloadRegionConfigs();
+        }
+        return regionConfigs;
+    }
+    
+    public static Map<String, FileConfiguration> getRegionData()
+    {
+        if(regionData == null)
+        {
+            reloadRegionConfigs();
+        }
+        return regionData;
     }
     
     public static void saveAll(Boolean verbose)
@@ -89,7 +110,7 @@ public class Config
                     if(!region.isSpawnRegion())
                     {
                         // Not Here: DisplayName, Spawnpoint, Base Influence
-                        //Retrieve Data from regions.
+                        // Retrieve Data from regions.
                         Faction influenceOwner = region.getInfluenceOwner();
                         String configInfluenceOwner = influenceOwner.getId();
                         int configInfluence = region.getInfluenceMap().get(influenceOwner).intValue();
@@ -124,7 +145,7 @@ public class Config
                         
                         dataConfig.set("regions." + configId + ".owner", configOwner);
                     }
-                    if(!saveConfig(dataConfig,dataFile))
+                    if(!saveConfig(dataConfig, dataFile))
                     {
                         saveSuccessful = false;
                     }
@@ -134,11 +155,31 @@ public class Config
         
         if(saveSuccessful && verbose)
         {
-            RegionControl.plugin.getLogger().log(Level.INFO,"Save Complete!");
+            RegionControl.plugin.getLogger().log(Level.INFO, "Save Complete!");
         }
         else if(verbose)
         {
-            RegionControl.plugin.getLogger().log(Level.SEVERE,"Save Failed. Please check your plugin directory has write permissions.");
+            RegionControl.plugin.getLogger().log(Level.SEVERE, "Save Failed. Please check your plugin directory has write permissions.");
+        }
+    }
+    
+    private static void copy(InputStream in, File file)
+    {
+        try
+        {
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len = in.read(buf)) > 0)
+            {
+                out.write(buf, 0, len);
+            }
+            out.close();
+            in.close();
+        }
+        catch(IOException ex)
+        {
+            RegionControl.plugin.getLogger().log(Level.SEVERE, "Could not save default config!", ex);
         }
     }
     
@@ -158,7 +199,7 @@ public class Config
     
     protected static void reloadFactionConfig()
     {
-        if (factionConfigFile == null)
+        if(factionConfigFile == null)
         {
             factionConfigFile = new File(RegionControl.plugin.getDataFolder(), "factions.yml");
         }
@@ -173,7 +214,7 @@ public class Config
     
     protected static void reloadMainConfig()
     {
-        if (mainConfigFile == null)
+        if(mainConfigFile == null)
         {
             mainConfigFile = new File(RegionControl.plugin.getDataFolder(), "config.yml");
         }
@@ -190,11 +231,11 @@ public class Config
     {
         if(regionConfigs == null || regionData == null || regionConfigFiles == null || regionDataFiles == null)
         {
-            regionConfigs = new HashMap<String,FileConfiguration>();
-            regionConfigFiles = new HashMap<String,File>();
+            regionConfigs = new HashMap<String, FileConfiguration>();
+            regionConfigFiles = new HashMap<String, File>();
             
-            regionData = new HashMap<String,FileConfiguration>();
-            regionDataFiles = new HashMap<String,File>();
+            regionData = new HashMap<String, FileConfiguration>();
+            regionDataFiles = new HashMap<String, File>();
             
             for(World world : Bukkit.getWorlds())
             {
@@ -212,7 +253,7 @@ public class Config
             File regionsFile = regionConfigFiles.get(worldName);
             FileConfiguration regionsConfig = regionConfigs.get(worldName);
             
-            if (regionsFile == null)
+            if(regionsFile == null)
             {
                 regionsFile = new File(RegionControl.plugin.getDataFolder(), "worlds/" + worldName + "/regions.yml");
             }
@@ -227,7 +268,7 @@ public class Config
             File dataFile = regionDataFiles.get(worldName);
             FileConfiguration dataConfig = regionData.get(worldName);
             
-            if (dataFile == null)
+            if(dataFile == null)
             {
                 dataFile = new File(RegionControl.plugin.getDataFolder(), "worlds/" + worldName + "/data.yml");
             }
@@ -239,47 +280,11 @@ public class Config
                 copy(RegionControl.plugin.getResource("defaults/data.yml"), dataFile);
             }
             
-            regionConfigFiles.put(worldName,regionsFile);
+            regionConfigFiles.put(worldName, regionsFile);
             regionConfigs.put(worldName, regionsConfig);
-            regionDataFiles.put(worldName,dataFile);
+            regionDataFiles.put(worldName, dataFile);
             regionData.put(worldName, dataConfig);
         }
         
-    }
-    
-    public static FileConfiguration getMainConfig()
-    {
-        if(mainConfig == null)
-        {
-            reloadMainConfig();
-        }
-        return mainConfig;
-    }
-    
-    public static FileConfiguration getFactionConfig()
-    {
-        if(factionConfig == null)
-        {
-            reloadFactionConfig();
-        }
-        return factionConfig;
-    }
-    
-    public static Map<String, FileConfiguration> getRegionConfigs()
-    {
-        if(regionConfigs == null)
-        {
-            reloadRegionConfigs();
-        }
-        return regionConfigs;
-    }
-    
-    public static Map<String, FileConfiguration> getRegionData()
-    {
-        if(regionData == null)
-        {
-            reloadRegionConfigs();
-        }
-        return regionData;
     }
 }

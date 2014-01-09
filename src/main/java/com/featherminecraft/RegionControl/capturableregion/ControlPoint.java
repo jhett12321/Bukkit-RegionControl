@@ -11,6 +11,7 @@ import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
@@ -102,6 +103,11 @@ public class ControlPoint
     public Faction getInfluenceOwner()
     {
         return influenceOwner;
+    }
+    
+    public Location getLocation()
+    {
+        return location;
     }
     
     public Faction getMajorityPopulation()

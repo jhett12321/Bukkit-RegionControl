@@ -6,8 +6,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.listeners.ServerListener;
+import com.featherminecraft.RegionControl.dynmap.DynmapImpl;
+import com.featherminecraft.RegionControl.listeners.DynmapListener;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
+import com.featherminecraft.RegionControl.listeners.ServerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 import com.featherminecraft.RegionControl.utils.PlayerUtils;
@@ -25,7 +27,7 @@ public final class RegionControl extends JavaPlugin
         if(pluginLoaded)
         {
             Config.saveAll(true);
-            for( RCPlayer player : ServerLogic.players.values())
+            for(RCPlayer player : ServerLogic.players.values())
             {
                 for(BukkitTask runnable : player.getClientRunnables().values())
                 {
@@ -63,6 +65,12 @@ public final class RegionControl extends JavaPlugin
         {
             SpoutClientLogic.init();
             pluginManager.registerEvents(new SpoutPlayerListener(), this);
+        }
+        
+        if(DependencyManager.isDynmapAvailable())
+        {
+            DynmapImpl.init();
+            pluginManager.registerEvents(new DynmapListener(), this);
         }
         
         else

@@ -21,7 +21,7 @@ public class RCPlayer
     
     // Player Classes/Runnables
     private SpoutClientLogic spoutClientLogic;
-    private Map<String,BukkitTask> clientRunnables = new HashMap<String,BukkitTask>();
+    private Map<String, BukkitTask> clientRunnables = new HashMap<String, BukkitTask>();
     
     public RCPlayer(Player player, Faction faction, CapturableRegion currentRegion)
     {
@@ -42,7 +42,7 @@ public class RCPlayer
         return clientRunnables.get(id);
     }
     
-    public Map<String,BukkitTask> getClientRunnables()
+    public Map<String, BukkitTask> getClientRunnables()
     {
         return clientRunnables;
     }

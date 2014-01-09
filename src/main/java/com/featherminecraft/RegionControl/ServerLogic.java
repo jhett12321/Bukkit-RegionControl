@@ -21,6 +21,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
+import com.featherminecraft.RegionControl.utils.RegionUtils;
 
 public class ServerLogic
 {
@@ -83,7 +84,7 @@ public class ServerLogic
             FileConfiguration worldData = Config.getRegionData().get(configWorld);
             
             Set<String> configRegions;
-            try 
+            try
             {
                 configRegions = worldConfig.getConfigurationSection("regions").getKeys(false);
             }
@@ -177,7 +178,7 @@ public class ServerLogic
             FileConfiguration worldConfig = Config.getRegionConfigs().get(configWorld);
             
             Set<String> configRegions;
-            try 
+            try
             {
                 configRegions = worldConfig.getConfigurationSection("regions").getKeys(false);
             }
@@ -199,7 +200,7 @@ public class ServerLogic
                     CapturableRegion adjacentRegion = capturableRegions.get(configWorld + "_" + configAdjacentRegion);
                     adjacentregions.add(adjacentRegion);
                 }
-                capturableRegions.get(configWorld + "_" + configRegion).setAdjacentRegions(adjacentregions);
+                RegionUtils.getRegionFromWorldGuardRegion(configWorld, configRegion).setAdjacentRegions(adjacentregions);
             }
         }
     }
@@ -215,7 +216,7 @@ public class ServerLogic
             
             for(Entry<String, Object> configWorld : regionWorlds.entrySet())
             {
-                CapturableRegion region = capturableRegions.get(configWorld.getKey() + "_" + configWorld.getValue().toString());
+                CapturableRegion region = RegionUtils.getRegionFromWorldGuardRegion(configWorld.getKey(), configWorld.getValue().toString());
                 World world = Bukkit.getWorld(configWorld.getKey());
                 spawnRegions.put(world, region);
                 faction.addFactionSpawnRegion(region);

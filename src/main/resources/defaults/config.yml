@@ -3,6 +3,8 @@ players:
 hooks:
   spout: 
     enabled: false
+  dynmap:
+    enabled: false
   heroes:
     enabled: false
     baseExperience:
