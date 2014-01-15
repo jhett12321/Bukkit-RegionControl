@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.ServerLogic;
+import com.featherminecraft.RegionControl.events.InfluenceOwnerChangeEvent;
 import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.events.RegionCaptureStatusChangeEvent;
 import com.featherminecraft.RegionControl.events.RegionDefendEvent;
@@ -21,7 +22,6 @@ public class InfluenceManager
     public InfluenceManager(CapturableRegion cregion)
     {
         region = cregion;
-        region.setInfluenceManager(this);
     }
     
     public Faction CalculateInfluenceOwner()
@@ -129,22 +129,22 @@ public class InfluenceManager
         region.setMajorityController(majorityController);
         
         Faction influenceOwner = CalculateInfluenceOwner();
-        region.setInfluenceOwner(influenceOwner);
+        if(influenceOwner == null && majorityController != null)
+        {
+            influenceOwner = majorityController;
+            region.setInfluenceOwner(influenceOwner);
+            Bukkit.getServer().getPluginManager().callEvent(new InfluenceOwnerChangeEvent(region));
+        }
+        else
+        {
+            region.setInfluenceOwner(influenceOwner);
+        }
         
         Float influenceRate = CalculateInfluenceRate();
         Float oldInfluenceRate = region.getInfluenceRate();
         region.setInfluenceRate(influenceRate);
         
-        if(influenceOwner == null)
-        {
-            if(majorityController != null && influenceRate != null && influenceRate != 0F)
-            {
-                region.getInfluenceMap().put(majorityController, influenceRate);
-                Bukkit.getServer().getPluginManager().callEvent(new RegionInfluenceRateChangeEvent(region, oldInfluenceRate, influenceRate));
-            }
-        }
-        
-        else if(influenceOwner != majorityController)
+        if(influenceOwner != majorityController)
         {
             if(majorityController != null && influenceRate != null && influenceRate != 0F)
             {
@@ -176,19 +176,6 @@ public class InfluenceManager
                     
                     else if(region.getOwner() != influenceOwner)
                     {
-                        region.setOwner(influenceOwner);
-                        region.setInfluenceRate(4F);
-                        for(ControlPoint controlPoint : region.getControlPoints())
-                        {
-                            for(Entry<Faction, Float> influence : controlPoint.getInfluenceMap().entrySet())
-                            {
-                                controlPoint.getInfluenceMap().put(influence.getKey(), 0F);
-                            }
-                            controlPoint.getInfluenceMap().put(influenceOwner, controlPoint.getBaseInfluence());
-                            controlPoint.setInfluenceOwner(influenceOwner);
-                            controlPoint.setOwner(influenceOwner);
-                        }
-                        region.setBeingCaptured(false);
                         Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureStatusChangeEvent(region, false));
                         Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureEvent(region, region.getOwner(), influenceOwner));
                     }
@@ -202,7 +189,6 @@ public class InfluenceManager
             
             else if(majorityController != null && influenceRate == 4F && region.getInfluenceMap().get(influenceOwner) + influenceRate >= region.getBaseInfluence() && region.getOwner() == influenceOwner && region.isBeingCaptured())
             {
-                region.setBeingCaptured(false);
                 Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureStatusChangeEvent(region, false));
                 Bukkit.getServer().getPluginManager().callEvent(new RegionDefendEvent(region, influenceOwner));
             }

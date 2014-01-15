@@ -3,6 +3,7 @@ package com.featherminecraft.RegionControl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.World;
 
@@ -16,13 +17,15 @@ public class Faction
     private Color factionColor;
     private String factionIconUrl;
     private String id;
+    private ChatColor factionChatColor;
     
-    public Faction(String id, String displayName, String permissionGroup, Color factionColor)
+    public Faction(String id, String displayName, String permissionGroup, Color factionColor, ChatColor factionChatColor)
     {
         this.id = id;
         this.displayName = displayName;
         this.permissionGroup = permissionGroup;
         this.factionColor = factionColor;
+        this.factionChatColor = factionChatColor;
     }
     
     public void addFactionSpawnRegion(CapturableRegion spawnRegion)
@@ -40,6 +43,11 @@ public class Faction
         return factionColor;
     }
     
+    public ChatColor getFactionChatColor()
+    {
+        return factionChatColor;
+    }
+
     public String getFactionIconUrl()
     {
         return factionIconUrl;

@@ -1,5 +1,7 @@
 package com.featherminecraft.RegionControl;
 
+import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,6 +40,18 @@ public final class RegionControl extends JavaPlugin
             for(BukkitTask runnable : ServerLogic.serverRunnables.values())
             {
                 runnable.cancel();
+            }
+            
+            for(CapturableRegion region : ServerLogic.capturableRegions.values())
+            {
+                for(BlockState block : region.getBlocksPlaced())
+                {
+                    block.getBlock().setType(Material.AIR);
+                }
+                for(BlockState block : region.getBlocksDestroyed())
+                {
+                    block.update(true, false);
+                }
             }
         }
     }

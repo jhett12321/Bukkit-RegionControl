@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -62,12 +63,14 @@ public class ServerLogic
             String permissionGroup = Config.getFactionConfig().getString("factions." + factionId + ".permissiongroup");
             
             String configColor = Config.getFactionConfig().getString("factions." + factionId + ".color");
+            String configChatColor = Config.getFactionConfig().getString("factions." + factionId + ".chatcolor");
             
             String displayName = Config.getFactionConfig().getString("factions." + factionId + ".displayname");
             
             Color factioncolor = DyeColor.valueOf(configColor.toUpperCase()).getColor();
+            ChatColor factionChatColor = ChatColor.valueOf(configChatColor.toUpperCase());
             
-            Faction factionObject = new Faction(factionId, displayName, permissionGroup, factioncolor);
+            Faction factionObject = new Faction(factionId, displayName, permissionGroup, factioncolor, factionChatColor);
             
             factions.put(factionId, factionObject);
         }
@@ -156,16 +159,18 @@ public class ServerLogic
                 // ControlPoint List End
                 
                 // SpawnPoint Begin
-                int x = worldConfig.getInt("regions." + configRegion.getKey() + ".spawnpoint" + ".x");
-                int y = worldConfig.getInt("regions." + configRegion.getKey() + ".spawnpoint" + ".y");
-                int z = worldConfig.getInt("regions." + configRegion.getKey() + ".spawnpoint" + ".z");
+                double x = worldConfig.getDouble("regions." + configRegion.getKey() + ".spawnpoint" + ".x");
+                double y = worldConfig.getDouble("regions." + configRegion.getKey() + ".spawnpoint" + ".y");
+                double z = worldConfig.getDouble("regions." + configRegion.getKey() + ".spawnpoint" + ".z");
                 Location spawnpointlocation = new Location(world, x, y, z);
                 SpawnPoint spawnPoint = new SpawnPoint(spawnpointlocation);
                 // SpawnPoint End
                 
-                Float baseInfluence = ((Integer) worldConfig.getInt("regions." + configRegion.getKey() + ".baseinfluence")).floatValue(); // Base Influence
-                Float influence = ((Integer) worldData.getInt("regions." + configRegion.getKey() + ".influence")).floatValue(); // Influence
-                Faction influenceOwner = factions.get(worldData.get("regions." + configRegion.getKey() + ".influenceowner")); // Influence Owner
+                //Influence Begin
+                Float baseInfluence = ((Integer) worldConfig.getInt("regions." + configRegion.getKey() + ".baseinfluence")).floatValue();
+                Float influence = ((Integer) worldData.getInt("regions." + configRegion.getKey() + ".influence")).floatValue();
+                Faction influenceOwner = factions.get(worldData.get("regions." + configRegion.getKey() + ".influenceowner"));
+                // Influence End
                 
                 CapturableRegion capturableregion = new CapturableRegion(regionDisplayname, configRegion.getKey(), owner, region, world, controlPoints, spawnPoint, baseInfluence, influence, influenceOwner, configRegion.getValue());
                 capturableRegions.put(configWorld + "_" + configRegion.getKey(), capturableregion);

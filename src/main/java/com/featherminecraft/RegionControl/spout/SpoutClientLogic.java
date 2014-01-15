@@ -383,59 +383,22 @@ public class SpoutClientLogic
                             captureTimer.setText(minutes.toString() + ":" + secondsString);
                         }
                         
-                        if(region.getInfluenceOwner() != null)
+                        if(captureElementsHidden && captureBar.getWidth() != 0)
                         {
-                            if(captureElementsHidden && captureBar.getWidth() != 0)
+                            String secondsString = seconds.toString();
+                            if(seconds < 10)
                             {
-                                String secondsString = seconds.toString();
-                                if(seconds < 10)
-                                {
-                                    secondsString = "0" + secondsString;
-                                }
-                                captureTimer.setText(minutes.toString() + ":" + secondsString);
-                                showCaptureElements();
-                                if(background.getHeight() != 70)
-                                {
-                                    background.setHeight(70);
-                                }
+                                secondsString = "0" + secondsString;
                             }
-                            
-                            float influence = region.getInfluenceMap().get(region.getInfluenceOwner());
-                            float baseinfluence = region.getBaseInfluence();
-                            
-                            int barwidth = (int) (influence / baseinfluence * 100);
-                            captureBar.setWidth(barwidth);
-                            captureBarSpace.setWidth(100 - barwidth);
-                            
-                            /*
-                             * if(barwidth > 75 && barwidth < 100 &&
-                             * musicPlaying == false &&
-                             * region.getInfluenceOwner() ==
-                             * region.getMajorityController())
-                             * {
-                             * SpoutManager.getSoundManager().playCustomMusic(
-                             * RegionControl.plugin, splayer, "music.wav",
-                             * false);
-                             * musicPlaying = true;
-                             * }
-                             * else if(musicPlaying == true && (barwidth < 75 ||
-                             * barwidth == 100))
-                             * {
-                             * SpoutManager.getSoundManager().stopMusic(splayer,
-                             * false, 1000);
-                             * musicPlaying = false;
-                             * }
-                             */
-                            
-                            Integer red = region.getInfluenceOwner().getFactionColor().getRed();
-                            Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
-                            Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
-                            
-                            Color spoutColor = new Color(red, green, blue);
-                            captureBar.setColor(spoutColor);
+                            captureTimer.setText(minutes.toString() + ":" + secondsString);
+                            showCaptureElements();
+                            if(background.getHeight() != 70)
+                            {
+                                background.setHeight(70);
+                            }
                         }
                         
-                        else if(captureBar.getWidth() == 0)
+                        else if(!captureElementsHidden && captureBar.getWidth() == 0)
                         {
                             hideCaptureElements();
                             if(background.getHeight() != 40)
@@ -443,6 +406,41 @@ public class SpoutClientLogic
                                 background.setHeight(40);
                             }
                         }
+                        
+                        float influence = region.getInfluenceMap().get(region.getInfluenceOwner());
+                        float baseinfluence = region.getBaseInfluence();
+                        
+                        int barwidth = (int) (influence / baseinfluence * 100);
+                        captureBar.setWidth(barwidth);
+                        captureBarSpace.setWidth(100 - barwidth);
+                        
+                        /*
+                         * if(barwidth > 75 && barwidth < 100 &&
+                         * musicPlaying == false &&
+                         * region.getInfluenceOwner() ==
+                         * region.getMajorityController())
+                         * {
+                         * SpoutManager.getSoundManager().playCustomMusic(
+                         * RegionControl.plugin, splayer, "music.wav",
+                         * false);
+                         * musicPlaying = true;
+                         * }
+                         * else if(musicPlaying == true && (barwidth < 75 ||
+                         * barwidth == 100))
+                         * {
+                         * SpoutManager.getSoundManager().stopMusic(splayer,
+                         * false, 1000);
+                         * musicPlaying = false;
+                         * }
+                         */
+                        
+                        Integer red = region.getInfluenceOwner().getFactionColor().getRed();
+                        Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
+                        Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
+                        
+                        Color spoutColor = new Color(red, green, blue);
+                        captureBar.setColor(spoutColor);
+                        
                     }
                 }
             }
@@ -595,6 +593,12 @@ public class SpoutClientLogic
         }
     }
     
+    public void updateInfluenceOwnerIcon()
+    {
+        influenceOwnerIcon.setUrl(region.getMajorityController().getFactionIconUrl());
+        updateInfluenceRate(region.getInfluenceRate());
+    }
+    
     public void updateInfluenceRate(Float influenceRate)
     {
         screen.removeWidget(barAnimContainer).removeWidget(captureBarAnim);
@@ -634,14 +638,7 @@ public class SpoutClientLogic
             
             if(influenceRate == 1F || influenceRate == 2F || influenceRate == 3F || influenceRate == 4F)
             {
-                if(region.getInfluenceOwner() == null)
-                {
-                    captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
-                    captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart().setDirty(true);
-                    influenceOwnerIcon.setUrl(region.getMajorityController().getFactionIconUrl());
-                }
-                
-                else if(region.getMajorityController() == region.getInfluenceOwner())
+                if(region.getMajorityController() == region.getInfluenceOwner())
                 {
                     captureBarAnim.setUrl("Capture_Anim_Capturing.png").setWidth(30);
                     captureBarAnim.animate(WidgetAnim.POS_X, barFloatValue, barShortValue, barAnimRate, true, true).animateStart().setDirty(true);
@@ -800,7 +797,7 @@ public class SpoutClientLogic
             }
             regionname.setScale(currentscale);
             
-            if(updatedRegion.isBeingCaptured())
+            if(updatedRegion.isBeingCaptured() && !updatedRegion.isSpawnRegion())
             {
                 showCaptureElements();
                 background.setHeight(70);
@@ -808,14 +805,14 @@ public class SpoutClientLogic
                 updateInfluenceRate(region.getInfluenceRate());
             }
             
-            else if(!updatedRegion.isBeingCaptured())
+            else
             {
                 if(captureBarAnim.isVisible())
                 {
                     captureBarAnim.animateStop(false);
                 }
                 hideCaptureElements();
-                if(!region.isSpawnRegion() && background.getHeight() != 40)
+                if(background.getHeight() != 40)
                 {
                     background.setHeight(40);
                 }

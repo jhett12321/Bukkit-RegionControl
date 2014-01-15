@@ -21,7 +21,7 @@ public class ClientRunnables extends BukkitRunnable
         this.player = player;
         SpawnPoint spawnPoint = player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()).getSpawnPoint();
         
-        if(spawnPoint.getLocation() == null)
+        if(spawnPoint == null)
         {
             player.getBukkitPlayer().teleport(player.getBukkitPlayer().getWorld().getSpawnLocation());
         }

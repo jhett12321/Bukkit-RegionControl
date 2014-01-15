@@ -31,8 +31,6 @@ public class RegionCaptureEvent extends Event
         players = region.getPlayers();
         this.oldowner = oldowner;
         this.newowner = newowner;
-        
-        region.setOwner(newowner);
     }
     
     public CapturableRegion getCapturableRegion()

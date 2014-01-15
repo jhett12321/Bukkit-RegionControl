@@ -22,6 +22,7 @@ import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
 import com.featherminecraft.RegionControl.events.ControlPointDefendEvent;
 import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
 import com.featherminecraft.RegionControl.events.ControlPointPlayerInfluenceChangeEvent;
+import com.featherminecraft.RegionControl.events.InfluenceOwnerChangeEvent;
 import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.events.RegionCaptureStatusChangeEvent;
 import com.featherminecraft.RegionControl.events.RegionDefendEvent;
@@ -46,7 +47,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event)
     {
         RCPlayer player = event.getPlayer();
@@ -85,7 +86,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onControlPointCapture(ControlPointCaptureEvent event)
     {
         List<RCPlayer> playerList = event.getRegion().getPlayers();
@@ -99,7 +100,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onControlPointDefend(ControlPointDefendEvent event)
     {
         List<RCPlayer> playerList = event.getRegion().getPlayers();
@@ -113,7 +114,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onControlPointNeutralise(ControlPointNeutraliseEvent event)
     {
         List<RCPlayer> playerList = event.getRegion().getPlayers();
@@ -127,7 +128,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onControlPointPlayerInfluenceChange(ControlPointPlayerInfluenceChangeEvent event)
     {
         List<RCPlayer> addedPlayers = event.getAddedPlayers();
@@ -152,7 +153,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onInfluenceRateChange(RegionInfluenceRateChangeEvent event)
     {
         CapturableRegion region = event.getRegion();
@@ -164,6 +165,22 @@ public class SpoutPlayerListener implements Listener
             {
                 SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
                 spoutClientLogic.updateInfluenceRate(event.getNewInfluenceRate());
+            }
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInfluenceOwnerChange(InfluenceOwnerChangeEvent event)
+    {
+        CapturableRegion region = event.getRegion();
+        List<RCPlayer> affectedPlayers = region.getPlayers();
+        
+        for(RCPlayer player : affectedPlayers)
+        {
+            if(player.hasSpout())
+            {
+                SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
+                spoutClientLogic.updateInfluenceOwnerIcon();
             }
         }
     }
@@ -199,7 +216,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onRegionCapture(RegionCaptureEvent event)
     {
         List<RCPlayer> playerList = event.getCapturableRegion().getPlayers();
@@ -214,7 +231,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onRegionCaptureStatusChange(RegionCaptureStatusChangeEvent event)
     {
         List<RCPlayer> playerList = event.getRegion().getPlayers();
@@ -228,7 +245,7 @@ public class SpoutPlayerListener implements Listener
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onRegionDefend(RegionDefendEvent event)
     {
         List<RCPlayer> playerList = event.getCapturableRegion().getPlayers();

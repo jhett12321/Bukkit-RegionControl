@@ -243,6 +243,7 @@ public class ControlPoint
                 influenceMap.put(faction.getKey(), 0F);
             }
         }
+        influenceOwner = owner;
         location.getBlock().setTypeIdAndData(Material.WOOL.getId(), DyeColor.getByColor(owner.getFactionColor()).getWoolData(), false);
         Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(region, influenceOwner, this));
     }

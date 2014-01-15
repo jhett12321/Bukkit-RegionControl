@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import com.featherminecraft.RegionControl.Faction;
@@ -29,6 +29,8 @@ public class CapturableRegion
     private List<CapturableRegion> adjacentRegions;
     private boolean isBeingCaptured;
     private boolean isSpawnRegion;
+    private List<BlockState> blocksDestroyed = new ArrayList<BlockState>();
+    private List<BlockState> blocksPlaced = new ArrayList<BlockState>();
     
     // WorldGuard Region Info
     private ProtectedRegion region;
@@ -37,6 +39,7 @@ public class CapturableRegion
     // Region Objects
     private List<ControlPoint> controlPoints;
     private SpawnPoint spawnPoint;
+    private RegionScoreboard regionScoreboard;
     private List<RCPlayer> players = new ArrayList<RCPlayer>();
     
     // Influence
@@ -82,7 +85,6 @@ public class CapturableRegion
      */
     public CapturableRegion(String displayName, String regionId, Faction owner, ProtectedRegion region, World world, List<ControlPoint> controlpoints, SpawnPoint spawnPoint, Float baseInfluence, Float influence, Faction influenceOwner, boolean isSpawnRegion)
     {
-        
         this.displayName = displayName;
         this.regionId = regionId;
         this.owner = owner;
@@ -91,21 +93,23 @@ public class CapturableRegion
         controlPoints = controlpoints;
         this.spawnPoint = spawnPoint;
         this.baseInfluence = baseInfluence;
+        this.influenceOwner = influenceOwner;
         this.isSpawnRegion = isSpawnRegion;
         
+        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        {
+            if(faction.getValue() != null)
+            {
+                influenceMap.put(faction.getValue(), 0F);
+            }
+        }
+        
+        influenceMap.put(influenceOwner, influence);
         if(!isSpawnRegion)
         {
-            for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
-            {
-                if(faction.getValue() != null)
-                {
-                    influenceMap.put(faction.getValue(), 0F);
-                }
-            }
-            
-            influenceMap.put(influenceOwner, influence);
             captureTimer = new CaptureTimer(this);
             influenceManager = new InfluenceManager(this);
+            regionScoreboard = new RegionScoreboard(this);
             
             this.baseInfluence = baseInfluence;
             
@@ -116,7 +120,6 @@ public class CapturableRegion
             
             BukkitTask runnable = new BukkitRunnable()
             {
-                
                 @Override
                 public void run()
                 {
@@ -126,6 +129,7 @@ public class CapturableRegion
                     }
                     influenceManager.Runnable();
                     captureTimer.Runnable();
+                    regionScoreboard.Runnable();
                 }
             }.runTaskTimer(RegionControl.plugin, 20, 20);
             
@@ -135,6 +139,7 @@ public class CapturableRegion
         else
         {
             isBeingCaptured = false;
+            regionScoreboard = new RegionScoreboard(this);
         }
     }
     
@@ -147,7 +152,21 @@ public class CapturableRegion
     {
         return baseInfluence;
     }
-    
+
+    public List<BlockState> getBlocksDestroyed()
+    {
+        return blocksDestroyed;
+    }
+
+    public List<BlockState> getBlocksPlaced()
+    {
+        return blocksPlaced;
+    }
+    public RegionScoreboard getRegionScoreboard()
+    {
+        return regionScoreboard;
+    }
+
     /*
      * Region Info Begin
      */
@@ -174,6 +193,11 @@ public class CapturableRegion
     public Map<Faction, Float> getInfluenceMap()
     {
         return influenceMap;
+    }
+    
+    public Float getInfluence()
+    {
+        return influenceMap.get(influenceOwner);
     }
     
     public Faction getInfluenceOwner()
@@ -284,11 +308,6 @@ public class CapturableRegion
     public void setDisplayName(String displayName)
     {
         this.displayName = displayName;
-    }
-    
-    public void setInfluenceManager(InfluenceManager influenceManager)
-    {
-        this.influenceManager = influenceManager;
     }
     
     public void setInfluenceMap(Map<Faction, Float> influenceMap)
