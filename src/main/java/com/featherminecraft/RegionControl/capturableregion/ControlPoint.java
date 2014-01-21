@@ -75,7 +75,6 @@ public class ControlPoint
         if(influenceMap.get(influenceOwner) == baseInfluence)
         {
             this.location.getBlock().setTypeIdAndData(Material.WOOL.getId(), influenceOwner.getFactionColor().getWoolColor().getWoolData(), false);
-            ;
             capturing = false;
         }
         else
@@ -244,7 +243,7 @@ public class ControlPoint
             }
         }
         influenceOwner = owner;
-        location.getBlock().setTypeIdAndData(Material.WOOL.getId(), DyeColor.getByColor(influenceOwner.getFactionColor().getColor()).getWoolData(), false);
+        location.getBlock().setTypeIdAndData(Material.WOOL.getId(), owner.getFactionColor().getWoolColor().getWoolData(), false);
         Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(region, influenceOwner, this));
     }
     

@@ -39,6 +39,25 @@ public class DynmapImpl
     
     public static void init()
     {
+        latticeLineMarkerSet = DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerSet("regioncontrol.latticeLines");
+        if(latticeLineMarkerSet == null)
+        {
+            latticeLineMarkerSet = DependencyManager.getDynmapAPI().getMarkerAPI().createMarkerSet("regioncontrol.latticeLines", "Region Connections", null, false);
+        }
+        else
+        {
+            latticeLineMarkerSet.setMarkerSetLabel("Region Connections");
+        }
+        if(latticeLineMarkerSet == null)
+        {
+            RegionControl.plugin.getLogger().severe("Error creating marker set");
+            return;
+        }
+        latticeLineMarkerSet.setLayerPriority(8);
+        latticeLineMarkerSet.setHideByDefault(false);
+        
+        updateLatticeLinks();
+        
         territoryControlMarkerSet = DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerSet("regioncontrol.territorycontrol");
         
         if(territoryControlMarkerSet == null)
@@ -77,25 +96,6 @@ public class DynmapImpl
         controlPointsMarkerSet.setHideByDefault(false);
         
         updateControlPoints();
-        
-        latticeLineMarkerSet = DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerSet("regioncontrol.latticeLines");
-        if(latticeLineMarkerSet == null)
-        {
-            latticeLineMarkerSet = DependencyManager.getDynmapAPI().getMarkerAPI().createMarkerSet("regioncontrol.latticeLines", "Region Connections", null, false);
-        }
-        else
-        {
-            latticeLineMarkerSet.setMarkerSetLabel("Region Connections");
-        }
-        if(latticeLineMarkerSet == null)
-        {
-            RegionControl.plugin.getLogger().severe("Error creating marker set");
-            return;
-        }
-        latticeLineMarkerSet.setLayerPriority(8);
-        latticeLineMarkerSet.setHideByDefault(false);
-        
-        updateLatticeLinks();
     }
     
     public static void updateLatticeLink(CapturableRegion region, CapturableRegion adjacentRegion)
@@ -247,7 +247,7 @@ public class DynmapImpl
             marker.setLabel(name); /* Update label */
         }
         /* Set line and fill properties */
-        marker.setFillStyle(0.6, region.getOwner().getFactionColor().getColor().asRGB());
+        marker.setFillStyle(0.3, region.getOwner().getFactionColor().getColor().asRGB());
         marker.setLineStyle(2, 1.0, Color.BLACK.asRGB());
         
         /* Build popup */

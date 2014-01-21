@@ -135,7 +135,7 @@ public class InfluenceManager
             region.setInfluenceOwner(influenceOwner);
             Bukkit.getServer().getPluginManager().callEvent(new InfluenceOwnerChangeEvent(region));
         }
-        else
+        else if(influenceOwner != null && majorityController != null)
         {
             region.setInfluenceOwner(influenceOwner);
         }
