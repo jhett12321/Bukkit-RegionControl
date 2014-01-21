@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitTask;
+
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import com.featherminecraft.RegionControl.Config;
@@ -40,6 +41,46 @@ import com.featherminecraft.RegionControl.utils.SpoutUtils;
 
 public class PlayerListener implements Listener
 {
+    // Block removed from region. Needs to be added after region capture.
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBlockBreak(BlockBreakEvent event)
+    {
+        if(!event.isCancelled())
+        {
+            for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
+            {
+                ProtectedRegion region = capturableRegion.getRegion();
+                if(region.contains(toVector(event.getBlock().getLocation())))
+                {
+                    if(!capturableRegion.getBlocksPlaced().contains(event.getBlock().getState()))
+                    {
+                        capturableRegion.getBlocksDestroyed().add(event.getBlock().getState());
+                    }
+                }
+            }
+        }
+    }
+    
+    // Block added to region. Needs to be removed after region capture.
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBlockPlace(BlockPlaceEvent event)
+    {
+        if(!event.isCancelled())
+        {
+            for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
+            {
+                ProtectedRegion region = capturableRegion.getRegion();
+                if(region.contains(toVector(event.getBlock().getLocation())))
+                {
+                    if(!capturableRegion.getBlocksDestroyed().contains(event.getBlockPlaced().getState()))
+                    {
+                        capturableRegion.getBlocksPlaced().add(event.getBlockPlaced().getState());
+                    }
+                }
+            }
+        }
+    }
+    
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event)
     {
@@ -47,18 +88,6 @@ public class PlayerListener implements Listener
         {
             event.getPlayer().getBukkitPlayer().setScoreboard(event.getNewRegion().getRegionScoreboard().getScoreboard());
         }
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onRegionCapture(RegionCaptureEvent event)
-    {
-        event.getCapturableRegion().getRegionScoreboard().updateOwner();
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onRegionDefend(RegionDefendEvent event)
-    {
-        event.getCapturableRegion().getRegionScoreboard().updateOwner();
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -77,18 +106,6 @@ public class PlayerListener implements Listener
     public void onControlPointNeutralise(ControlPointNeutraliseEvent event)
     {
         event.getRegion().getRegionScoreboard().updateControlPoints();
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onInfluenceRateChange(RegionInfluenceRateChangeEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateInfluenceRate();
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onInfluenceOwnerChange(InfluenceOwnerChangeEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateInfluenceRate();
     }
     
     @EventHandler(priority = EventPriority.NORMAL)
@@ -135,6 +152,41 @@ public class PlayerListener implements Listener
         }
     }
     
+    // Explosion. Blocks need to be added after region capture.
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityExplode(EntityExplodeEvent event)
+    {
+        if(!event.isCancelled())
+        {
+            for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
+            {
+                ProtectedRegion region = capturableRegion.getRegion();
+                for(Block block : event.blockList())
+                {
+                    if(region.contains(toVector(block.getLocation())))
+                    {
+                        if(!capturableRegion.getBlocksPlaced().contains(block.getState()))
+                        {
+                            capturableRegion.getBlocksDestroyed().add(block.getState());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInfluenceOwnerChange(InfluenceOwnerChangeEvent event)
+    {
+        event.getRegion().getRegionScoreboard().updateInfluenceRate();
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInfluenceRateChange(RegionInfluenceRateChangeEvent event)
+    {
+        event.getRegion().getRegionScoreboard().updateInfluenceRate();
+    }
+    
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
@@ -143,14 +195,14 @@ public class PlayerListener implements Listener
         Faction faction = PlayerUtils.getPlayerFaction(player);
         if(faction == null)
         {
-//            if(DependencyManager.isSpoutCraftAvailable())
-//            {
-//                if(SpoutUtils.isSpoutPlayer(player))
-//                {
-//                    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 2400, 0, false));
-//                    new FactionSelectScreen(player);
-//                }
-//            }
+            // if(DependencyManager.isSpoutCraftAvailable())
+            // {
+            // if(SpoutUtils.isSpoutPlayer(player))
+            // {
+            // player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 2400, 0, false));
+            // new FactionSelectScreen(player);
+            // }
+            // }
             
             player.kickPlayer("You currently do not belong to a valid faction!");
             return;
@@ -211,66 +263,15 @@ public class PlayerListener implements Listener
         rcplayer.setRespawnLocation(null);
     }
     
-    //Block added to region. Needs to be removed after region capture.
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockPlace(BlockPlaceEvent event)
+    public void onRegionCapture(RegionCaptureEvent event)
     {
-        if(!event.isCancelled())
-        {
-            for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
-            {
-                ProtectedRegion region = capturableRegion.getRegion();
-                if(region.contains(toVector(event.getBlock().getLocation())))
-                {
-                    if(!capturableRegion.getBlocksDestroyed().contains(event.getBlock().getState()))
-                    {
-                        capturableRegion.getBlocksPlaced().add(event.getBlock().getState());
-                    }
-                }
-            }
-        }
+        event.getCapturableRegion().getRegionScoreboard().updateOwner();
     }
     
-    //Explosion. Blocks need to be added after region capture.
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onEntityExplode(EntityExplodeEvent event)
+    public void onRegionDefend(RegionDefendEvent event)
     {
-        if(!event.isCancelled())
-        {
-            for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
-            {
-                ProtectedRegion region = capturableRegion.getRegion();
-                for(Block block : event.blockList())
-                {
-                    if(region.contains(toVector(block.getLocation())))
-                    {
-                        if(!capturableRegion.getBlocksPlaced().contains(block.getState()))
-                        {
-                            capturableRegion.getBlocksDestroyed().add(block.getState());
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    //Block removed from region. Needs to be added after region capture.
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockBreak(BlockBreakEvent event)
-    {
-        if(!event.isCancelled())
-        {
-            for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
-            {
-                ProtectedRegion region = capturableRegion.getRegion();
-                if(region.contains(toVector(event.getBlock().getLocation())))
-                {
-                    if(!capturableRegion.getBlocksPlaced().contains(event.getBlock().getState()))
-                    {
-                        capturableRegion.getBlocksDestroyed().add(event.getBlock().getState());
-                    }
-                }
-            }
-        }
+        event.getCapturableRegion().getRegionScoreboard().updateOwner();
     }
 }

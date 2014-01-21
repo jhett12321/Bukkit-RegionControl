@@ -98,11 +98,46 @@ public class DynmapImpl
         updateLatticeLinks();
     }
     
+    public static void updateLatticeLink(CapturableRegion region, CapturableRegion adjacentRegion)
+    {
+        String id = region.getWorld().getName() + "_" + region.getRegionId() + "_" + adjacentRegion.getRegionId();
+        
+        PolyLineMarker marker = latticeLineMarkers.get(id);
+        
+        if(marker != null)
+        {
+            if(region.getOwner() == adjacentRegion.getOwner())
+            {
+                marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().getColor().asRGB());
+            }
+            
+            else
+            {
+                marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
+            }
+        }
+        else
+        {
+            id = adjacentRegion.getWorld().getName() + "_" + adjacentRegion.getRegionId() + "_" + region.getRegionId();
+            marker = latticeLineMarkers.get(id);
+            
+            if(region.getOwner() == adjacentRegion.getOwner())
+            {
+                marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().getColor().asRGB());
+            }
+            
+            else
+            {
+                marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
+            }
+        }
+    }
+    
     public static void updateRegion(CapturableRegion region)
     {
         AreaMarker marker = territoryControlMarkers.get(region);
         
-        marker.setFillStyle(0.6, region.getOwner().getFactionColor().asRGB());
+        marker.setFillStyle(0.6, region.getOwner().getFactionColor().getColor().asRGB());
         updateRegionControlPoints(region);
     }
     
@@ -141,9 +176,9 @@ public class DynmapImpl
         for(ControlPoint controlPoint : region.getControlPoints())
         {
             String controlpointdef = DEF_CONTROLPOINT.replace("%controlPointId%", controlPoint.getIdentifier().toUpperCase());
-            controlpointdef = controlpointdef.replace("%red%", ((Integer) controlPoint.getOwner().getFactionColor().getRed()).toString());
-            controlpointdef = controlpointdef.replace("%green%", ((Integer) controlPoint.getOwner().getFactionColor().getGreen()).toString());
-            controlpointdef = controlpointdef.replace("%blue%", ((Integer) controlPoint.getOwner().getFactionColor().getBlue()).toString());
+            controlpointdef = controlpointdef.replace("%red%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getRed()).toString());
+            controlpointdef = controlpointdef.replace("%green%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getGreen()).toString());
+            controlpointdef = controlpointdef.replace("%blue%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getBlue()).toString());
             infoDiv = infoDiv.replace("%ControlPointDefs%", controlpointdef + "%ControlPointDefs%");
         }
         
@@ -212,7 +247,7 @@ public class DynmapImpl
             marker.setLabel(name); /* Update label */
         }
         /* Set line and fill properties */
-        marker.setFillStyle(0.6, region.getOwner().getFactionColor().asRGB());
+        marker.setFillStyle(0.6, region.getOwner().getFactionColor().getColor().asRGB());
         marker.setLineStyle(2, 1.0, Color.BLACK.asRGB());
         
         /* Build popup */
@@ -236,7 +271,7 @@ public class DynmapImpl
                 double y = controlPoint.getLocation().getY();
                 double z = controlPoint.getLocation().getZ();
                 
-                Marker marker = controlPointsMarkerSet.createMarker(id, controlPoint.getIdentifier().toUpperCase(), region.getWorld().getName(), x, y, z, null, false);
+                Marker marker = controlPointsMarkerSet.createMarker(id, controlPoint.getIdentifier().toUpperCase(), region.getWorld().getName(), x, y, z, DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerIcon("yellowflag"), false);
                 
                 controlPointMarkers.put(controlPoint, marker);
             }
@@ -271,50 +306,15 @@ public class DynmapImpl
                     
                     if(region.getOwner() == adjacentRegion.getOwner())
                     {
-                        marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().asRGB());
+                        marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().getColor().asRGB());
                     }
                     else
                     {
                         marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
                     }
                     
-                   latticeLineMarkers.put(id, marker);
+                    latticeLineMarkers.put(id, marker);
                 }
-            }
-        }
-    }
-    
-    public static void updateLatticeLink(CapturableRegion region, CapturableRegion adjacentRegion)
-    {
-        String id = region.getWorld().getName() + "_" + region.getRegionId() + "_" + adjacentRegion.getRegionId();
-        
-        PolyLineMarker marker = latticeLineMarkers.get(id);
-        
-        if(marker != null)
-        {
-            if(region.getOwner() == adjacentRegion.getOwner())
-            {
-                marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().asRGB());
-            }
-            
-            else
-            {
-                marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
-            }
-        }
-        else
-        {
-            id = adjacentRegion.getWorld().getName() + "_" + adjacentRegion.getRegionId() + "_" + region.getRegionId();
-            marker = latticeLineMarkers.get(id);
-            
-            if(region.getOwner() == adjacentRegion.getOwner())
-            {
-                marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().asRGB());
-            }
-            
-            else
-            {
-                marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
             }
         }
     }

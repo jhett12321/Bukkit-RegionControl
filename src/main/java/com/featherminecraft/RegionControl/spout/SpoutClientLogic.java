@@ -28,7 +28,6 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.gui.WidgetAnim;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-import com.featherminecraft.RegionControl.Config;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
@@ -68,13 +67,11 @@ public class SpoutClientLogic
         SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/null.png"));
         
         // Precache Faction Icons
-        for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
+        for(Faction faction : ServerLogic.factions.values())
         {
-            String factionUrl = Config.getFactionConfig().getString("factions." + faction.getKey() + ".factionIcon");
-            faction.getValue().setFactionIconUrl(factionUrl);
-            if(faction.getValue().getFactionIconUrl() != null && faction.getValue().getFactionIconUrl() != "" && new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/factionIcons/" + faction.getValue().getFactionIconUrl()).exists())
+            if(faction.getFactionColor().getFactionIcon() != null && faction.getFactionColor().getFactionIcon() != "" && new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/factionIcons/" + faction.getFactionColor().getFactionIcon()).exists())
             {
-                SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/factionIcons/" + faction.getValue().getFactionIconUrl()));
+                SpoutManager.getFileManager().addToCache(RegionControl.plugin, new File(RegionControl.plugin.getDataFolder().getAbsolutePath() + "/assets/images/factionIcons/" + faction.getFactionColor().getFactionIcon()));
             }
             // TODO Precache Faction Music/Voiceovers
         }
@@ -120,7 +117,7 @@ public class SpoutClientLogic
     private Gradient controlPointCaptureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255)).setWidth(150).setHeight(5).setMargin(0, 3).setFixed(true).setPriority(RenderPriority.High);
     
     // Cannot Capture Control Point Indicator
-    private ArrayList<Label> reasonWidgetList;
+    private ArrayList<Label> reasonWidgetList = new ArrayList<Label>();
     
     private Container reasonContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER).setAnchor(WidgetAnchor.TOP_CENTER).setWidth(170).shiftXPos(-83).shiftYPos(25);
     
@@ -203,12 +200,12 @@ public class SpoutClientLogic
         }
     }
     
-    public void setupClientElements(RCPlayer rcplayer)
+    public void setupClientElements(RCPlayer rcPlayer)
     {
-        this.rcplayer = rcplayer;
-        splayer = ((SpoutPlayer) rcplayer.getBukkitPlayer());
+        rcplayer = rcPlayer;
+        splayer = ((SpoutPlayer) rcPlayer.getBukkitPlayer());
         screen = splayer.getMainScreen();
-        region = rcplayer.getCurrentRegion();
+        region = rcPlayer.getCurrentRegion();
         
         // Background
         screenElements.add(background);
@@ -238,9 +235,9 @@ public class SpoutClientLogic
             Color spoutColor = new Color(255, 255, 255);
             if(!controlPoint.isCapturing())
             {
-                Integer red = controlPoint.getInfluenceOwner().getFactionColor().getRed();
-                Integer green = controlPoint.getInfluenceOwner().getFactionColor().getGreen();
-                Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getBlue();
+                Integer red = controlPoint.getInfluenceOwner().getFactionColor().getColor().getRed();
+                Integer green = controlPoint.getInfluenceOwner().getFactionColor().getColor().getGreen();
+                Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getColor().getBlue();
                 
                 spoutColor.setRed(red).setGreen(green).setBlue(blue);
             }
@@ -323,7 +320,7 @@ public class SpoutClientLogic
         
         hideControlPointCaptureBar();
         
-        CapturableRegion currentRegion = rcplayer.getCurrentRegion();
+        CapturableRegion currentRegion = rcPlayer.getCurrentRegion();
         List<RCPlayer> playerList = currentRegion.getPlayers();
         for(RCPlayer rPlayer : playerList)
         {
@@ -350,16 +347,27 @@ public class SpoutClientLogic
                             int barwidth = (int) (influence / baseinfluence * 150);
                             controlPointCaptureBar.setWidth(barwidth);
                             
-                            Integer red = controlPoint.getInfluenceOwner().getFactionColor().getRed();
-                            Integer green = controlPoint.getInfluenceOwner().getFactionColor().getGreen();
-                            Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getBlue();
+                            Integer red = controlPoint.getInfluenceOwner().getFactionColor().getColor().getRed();
+                            Integer green = controlPoint.getInfluenceOwner().getFactionColor().getColor().getGreen();
+                            Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getColor().getBlue();
                             
                             Color spoutColor = new Color(red, green, blue);
                             controlPointCaptureBar.setColor(spoutColor);
+                            
+                            if(!reasonWidgetList.isEmpty() && PlayerUtils.canCapture(region, rcplayer))
+                            {
+                                for(Label widget : reasonWidgetList)
+                                {
+                                    reasonContainer.removeChild(widget);
+                                    screen.removeWidget(widget);
+                                }
+                                
+                                reasonWidgetList = new ArrayList<Label>();
+                            }
                         }
                     }
                     
-                    if(region.isBeingCaptured())
+                    if(region.isBeingCaptured() && region.getInfluenceOwner() != null)
                     {
                         Integer seconds = region.getSecondsToCapture();
                         Integer minutes = region.getMinutesToCapture();
@@ -434,9 +442,9 @@ public class SpoutClientLogic
                          * }
                          */
                         
-                        Integer red = region.getInfluenceOwner().getFactionColor().getRed();
-                        Integer green = region.getInfluenceOwner().getFactionColor().getGreen();
-                        Integer blue = region.getInfluenceOwner().getFactionColor().getBlue();
+                        Integer red = region.getInfluenceOwner().getFactionColor().getColor().getRed();
+                        Integer green = region.getInfluenceOwner().getFactionColor().getColor().getGreen();
+                        Integer blue = region.getInfluenceOwner().getFactionColor().getColor().getBlue();
                         
                         Color spoutColor = new Color(red, green, blue);
                         captureBar.setColor(spoutColor);
@@ -446,7 +454,7 @@ public class SpoutClientLogic
             }
         }.runTaskTimer(RegionControl.plugin, 10, 10);
         
-        rcplayer.getClientRunnables().put("spoutClientLogic", runnable);
+        rcPlayer.getClientRunnables().put("spoutClientLogic", runnable);
     }
     
     public void showControlPointCaptureBar()
@@ -464,9 +472,9 @@ public class SpoutClientLogic
             int barwidth = (int) (influence / baseinfluence * 150);
             controlPointCaptureBar.setWidth(barwidth);
             
-            Integer red = controlPoint.getInfluenceOwner().getFactionColor().getRed();
-            Integer green = controlPoint.getInfluenceOwner().getFactionColor().getGreen();
-            Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getBlue();
+            Integer red = controlPoint.getInfluenceOwner().getFactionColor().getColor().getRed();
+            Integer green = controlPoint.getInfluenceOwner().getFactionColor().getColor().getGreen();
+            Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getColor().getBlue();
             
             Color spoutColor = new Color(red, green, blue);
             controlPointCaptureBar.setColor(spoutColor);
@@ -503,9 +511,9 @@ public class SpoutClientLogic
                 Color spoutColor = new Color(255, 255, 255);
                 if(!controlPoint.isCapturing())
                 {
-                    Integer red = controlPoint.getOwner().getFactionColor().getRed();
-                    Integer green = controlPoint.getOwner().getFactionColor().getGreen();
-                    Integer blue = controlPoint.getOwner().getFactionColor().getBlue();
+                    Integer red = controlPoint.getOwner().getFactionColor().getColor().getRed();
+                    Integer green = controlPoint.getOwner().getFactionColor().getColor().getGreen();
+                    Integer blue = controlPoint.getOwner().getFactionColor().getColor().getBlue();
                     
                     spoutColor.setRed(red).setGreen(green).setBlue(blue);
                 }
@@ -531,9 +539,9 @@ public class SpoutClientLogic
                         Color spoutColor = new Color(255, 255, 255);
                         if(!controlPoint.isCapturing())
                         {
-                            Integer red = controlPoint.getOwner().getFactionColor().getRed();
-                            Integer green = controlPoint.getOwner().getFactionColor().getGreen();
-                            Integer blue = controlPoint.getOwner().getFactionColor().getBlue();
+                            Integer red = controlPoint.getOwner().getFactionColor().getColor().getRed();
+                            Integer green = controlPoint.getOwner().getFactionColor().getColor().getGreen();
+                            Integer blue = controlPoint.getOwner().getFactionColor().getColor().getBlue();
                             
                             spoutColor.setRed(red).setGreen(green).setBlue(blue);
                         }
@@ -561,9 +569,9 @@ public class SpoutClientLogic
                 Color spoutColor = new Color(255, 255, 255);
                 if(!controlPoint.isCapturing())
                 {
-                    Integer red = controlPoint.getOwner().getFactionColor().getRed();
-                    Integer green = controlPoint.getOwner().getFactionColor().getGreen();
-                    Integer blue = controlPoint.getOwner().getFactionColor().getBlue();
+                    Integer red = controlPoint.getOwner().getFactionColor().getColor().getRed();
+                    Integer green = controlPoint.getOwner().getFactionColor().getColor().getGreen();
+                    Integer blue = controlPoint.getOwner().getFactionColor().getColor().getBlue();
                     
                     spoutColor.setRed(red).setGreen(green).setBlue(blue);
                 }
@@ -595,14 +603,14 @@ public class SpoutClientLogic
     
     public void updateInfluenceOwnerIcon()
     {
-        influenceOwnerIcon.setUrl(region.getMajorityController().getFactionIconUrl());
+        influenceOwnerIcon.setUrl(region.getMajorityController().getFactionColor().getFactionIcon());
         updateInfluenceRate(region.getInfluenceRate());
     }
     
     public void updateInfluenceRate(Float influenceRate)
     {
         screen.removeWidget(barAnimContainer).removeWidget(captureBarAnim);
-        if(influenceRate != null && influenceRate != 0F && region.isBeingCaptured())
+        if(influenceRate != null && influenceRate != 0F && region.isBeingCaptured() && region.getInfluenceOwner() != null)
         {
             short barAnimRate = 0;
             float barFloatValue = 0F;
@@ -775,16 +783,16 @@ public class SpoutClientLogic
                 }
             }
             
-            ownericon.setUrl(region.getOwner().getFactionIconUrl());
+            ownericon.setUrl(region.getOwner().getFactionColor().getFactionIcon());
             regionname.setText(updatedRegion.getDisplayName());
             
-            if(!region.isSpawnRegion())
+            if(!region.isSpawnRegion() && region.getInfluenceOwner() != null)
             {
-                influenceOwnerIcon.setUrl(region.getInfluenceOwner().getFactionIconUrl());
+                influenceOwnerIcon.setUrl(region.getInfluenceOwner().getFactionColor().getFactionIcon());
                 
-                Integer red = updatedRegion.getInfluenceOwner().getFactionColor().getRed();
-                Integer green = updatedRegion.getInfluenceOwner().getFactionColor().getGreen();
-                Integer blue = updatedRegion.getInfluenceOwner().getFactionColor().getBlue();
+                Integer red = updatedRegion.getInfluenceOwner().getFactionColor().getColor().getRed();
+                Integer green = updatedRegion.getInfluenceOwner().getFactionColor().getColor().getGreen();
+                Integer blue = updatedRegion.getInfluenceOwner().getFactionColor().getColor().getBlue();
                 
                 Color spoutColor = new Color(red, green, blue);
                 captureBar.setColor(spoutColor);

@@ -2,6 +2,7 @@ package com.featherminecraft.RegionControl.capturableregion;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -12,6 +13,8 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 public class RegionScoreboard
 {
+    private static final int ELEMENT_COUNT = 20;
+    
     private CapturableRegion region;
     
     private Scoreboard scoreBoard;
@@ -36,19 +39,22 @@ public class RegionScoreboard
         
         objective = scoreBoard.registerNewObjective("regionInfo", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName(region.getOwner().getFactionChatColor() + region.getDisplayName());
+        objective.setDisplayName(region.getOwner().getFactionColor().getChatColor() + region.getDisplayName());
         
         ownerTitle = objective.getScore(Bukkit.getOfflinePlayer("Owned by:"));
-        ownerTitle.setScore(20);
+        ownerTitle.setScore(ELEMENT_COUNT);
         
-        owner = objective.getScore(Bukkit.getOfflinePlayer(region.getOwner().getFactionChatColor() + region.getOwner().getDisplayName()));
+        owner = objective.getScore(Bukkit.getOfflinePlayer(region.getOwner().getFactionColor().getChatColor() + region.getOwner().getDisplayName()));
         owner.setScore(ownerTitle.getScore() - 1);
         
         influenceTitle = objective.getScore(Bukkit.getOfflinePlayer("Influence:"));
         influenceTitle.setScore(owner.getScore() - 1);
         
-        influence = objective.getScore(Bukkit.getOfflinePlayer(region.getInfluenceOwner().getFactionChatColor() + Integer.valueOf(region.getInfluence().intValue()).toString() + "/" + Integer.valueOf(region.getBaseInfluence().intValue()).toString()));
-        influence.setScore(influenceTitle.getScore() - 1);
+        if(region.getInfluenceOwner() != null)
+        {
+            influence = objective.getScore(Bukkit.getOfflinePlayer(region.getInfluenceOwner().getFactionColor().getChatColor() + Integer.valueOf(region.getInfluence().intValue()).toString() + "/" + Integer.valueOf(region.getBaseInfluence().intValue()).toString()));
+            influence.setScore(influenceTitle.getScore() - 1);
+        }
         
         if(!region.isSpawnRegion())
         {
@@ -57,11 +63,11 @@ public class RegionScoreboard
             {
                 if(region.getInfluenceOwner() == region.getMajorityController())
                 {
-                    influenceRateString = region.getMajorityController().getFactionChatColor() + "+" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
+                    influenceRateString = region.getMajorityController().getFactionColor().getChatColor() + "+" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
                 }
                 else
                 {
-                    influenceRateString = region.getMajorityController().getFactionChatColor() + "-" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
+                    influenceRateString = region.getMajorityController().getFactionColor().getChatColor() + "-" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
                 }
                 
                 influenceRate = objective.getScore(Bukkit.getOfflinePlayer(influenceRateString));
@@ -74,7 +80,7 @@ public class RegionScoreboard
             List<String> controlPointStrings = new ArrayList<String>();
             for(ControlPoint controlPoint : region.getControlPoints())
             {
-                controlPointStrings.add(controlPoint.getOwner().getFactionChatColor() + controlPoint.getIdentifier().toUpperCase() + " ");
+                controlPointStrings.add(controlPoint.getOwner().getFactionColor().getChatColor() + controlPoint.getIdentifier().toUpperCase() + " ");
             }
             
             String controlPointsString = "";
@@ -88,78 +94,9 @@ public class RegionScoreboard
         }
     }
     
-    public void updateControlPoints()
+    public Scoreboard getScoreboard()
     {
-        int score = controlPoints.getScore();
-        
-        scoreBoard.resetScores(controlPoints.getPlayer());
-        
-        List<String> controlPointStrings = new ArrayList<String>();
-        for(ControlPoint controlPoint : region.getControlPoints())
-        {
-            if(controlPoint.getInfluenceMap().get(controlPoint.getInfluenceOwner()) == controlPoint.getBaseInfluence())
-            {
-                controlPointStrings.add(controlPoint.getOwner().getFactionChatColor() + controlPoint.getIdentifier().toUpperCase() + " ");
-            }
-            else
-            {
-                controlPointStrings.add(ChatColor.WHITE + controlPoint.getIdentifier().toUpperCase() + " ");
-            }
-        }
-        
-        String controlPointsString = "";
-        for(String controlPointString : controlPointStrings)
-        {
-            controlPointsString = controlPointsString + controlPointString + "";
-        }
-        
-        controlPoints = objective.getScore(Bukkit.getOfflinePlayer(controlPointsString.trim()));
-        controlPoints.setScore(score);
-    }
-    
-    public void updateOwner()
-    {
-        int score = owner.getScore();
-        
-        scoreBoard.resetScores(owner.getPlayer());
-        
-        objective.setDisplayName(region.getOwner().getFactionChatColor() + region.getDisplayName());
-        
-        owner = objective.getScore(Bukkit.getOfflinePlayer(region.getOwner().getFactionChatColor() + region.getOwner().getDisplayName()));
-        owner.setScore(score);
-    }
-    
-    public void updateInfluenceRate()
-    {
-        int score = influence.getScore() - 1;
-        
-        if(influenceRate != null)
-        {
-            scoreBoard.resetScores(influenceRate.getPlayer());
-        }
-        
-        String influenceRateString = null;
-        if(region.getInfluenceOwner() != null && region.getMajorityController() != null)
-        {
-            influenceRateString = "";
-            if(region.getInfluenceOwner() == region.getMajorityController())
-            {
-                influenceRateString = region.getInfluenceOwner().getFactionChatColor() + "+" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
-            }
-            else
-            {
-                influenceRateString = region.getInfluenceOwner().getFactionChatColor() + "-" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
-            }
-            
-            influenceRate = objective.getScore(Bukkit.getOfflinePlayer(influenceRateString));
-            influenceRate.setScore(influence.getScore() - 1);
-        }
-        
-        if(influenceRateString != null)
-        {
-            influenceRate = objective.getScore(Bukkit.getOfflinePlayer(influenceRateString));
-            influenceRate.setScore(score);
-        }
+        return scoreBoard;
     }
     
     public void Runnable()
@@ -170,7 +107,7 @@ public class RegionScoreboard
             Integer minutes = region.getMinutesToCapture();
             if(seconds != 0 || minutes != 0)
             {
-                //Timer
+                // Timer
                 if(timerTitle == null)
                 {
                     timerTitle = objective.getScore(Bukkit.getOfflinePlayer("Capture in:"));
@@ -192,12 +129,12 @@ public class RegionScoreboard
                 timer = objective.getScore(Bukkit.getOfflinePlayer(minutes.toString() + ":" + secondsString));
                 timer.setScore(score);
                 
-                //Influence
+                // Influence
                 scoreBoard.resetScores(influence.getPlayer());
                 
                 if(region.getInfluenceOwner() != null)
                 {
-                    influence = objective.getScore(Bukkit.getOfflinePlayer(region.getInfluenceOwner().getFactionChatColor() + Integer.valueOf(region.getInfluence().intValue()).toString() + "/" + Integer.valueOf(region.getBaseInfluence().intValue()).toString()));
+                    influence = objective.getScore(Bukkit.getOfflinePlayer(region.getInfluenceOwner().getFactionColor().getChatColor() + Integer.valueOf(region.getInfluence().intValue()).toString() + "/" + Integer.valueOf(region.getBaseInfluence().intValue()).toString()));
                     influence.setScore(influenceTitle.getScore() - 1);
                 }
             }
@@ -211,13 +148,85 @@ public class RegionScoreboard
             timerTitle = null;
             timer = null;
             
-            influence = objective.getScore(Bukkit.getOfflinePlayer(region.getInfluenceOwner().getFactionChatColor() + Integer.valueOf(region.getInfluence().intValue()).toString() + "/" + Integer.valueOf(region.getBaseInfluence().intValue()).toString()));
-            influence.setScore(influenceTitle.getScore() - 1);
+            if(region.getInfluenceOwner() != null)
+            {
+                influence = objective.getScore(Bukkit.getOfflinePlayer(region.getInfluenceOwner().getFactionColor().getChatColor() + Integer.valueOf(region.getInfluence().intValue()).toString() + "/" + Integer.valueOf(region.getBaseInfluence().intValue()).toString()));
+                influence.setScore(influenceTitle.getScore() - 1);
+            }
         }
     }
-
-    public Scoreboard getScoreboard()
+    
+    public void updateControlPoints()
     {
-        return scoreBoard;
+        int score = controlPoints.getScore();
+        
+        scoreBoard.resetScores(controlPoints.getPlayer());
+        
+        List<String> controlPointStrings = new ArrayList<String>();
+        for(ControlPoint controlPoint : region.getControlPoints())
+        {
+            if(controlPoint.getInfluenceMap().get(controlPoint.getInfluenceOwner()) == controlPoint.getBaseInfluence())
+            {
+                controlPointStrings.add(controlPoint.getOwner().getFactionColor().getChatColor() + controlPoint.getIdentifier().toUpperCase() + " ");
+            }
+            else
+            {
+                controlPointStrings.add(ChatColor.WHITE + controlPoint.getIdentifier().toUpperCase() + " ");
+            }
+        }
+        
+        String controlPointsString = "";
+        for(String controlPointString : controlPointStrings)
+        {
+            controlPointsString = controlPointsString + controlPointString + "";
+        }
+        
+        controlPoints = objective.getScore(Bukkit.getOfflinePlayer(controlPointsString.trim()));
+        controlPoints.setScore(score);
+    }
+    
+    public void updateInfluenceRate()
+    {
+        int score = influence.getScore() - 1;
+        
+        if(influenceRate != null)
+        {
+            scoreBoard.resetScores(influenceRate.getPlayer());
+        }
+        
+        String influenceRateString = null;
+        if(region.getInfluenceOwner() != null && region.getMajorityController() != null)
+        {
+            influenceRateString = "";
+            if(region.getInfluenceOwner() == region.getMajorityController())
+            {
+                influenceRateString = region.getInfluenceOwner().getFactionColor().getChatColor() + "+" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
+            }
+            else
+            {
+                influenceRateString = region.getInfluenceOwner().getFactionColor().getChatColor() + "-" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
+            }
+            
+            influenceRate = objective.getScore(Bukkit.getOfflinePlayer(influenceRateString));
+            influenceRate.setScore(influence.getScore() - 1);
+        }
+        
+        if(influenceRateString != null)
+        {
+            influenceRate = objective.getScore(Bukkit.getOfflinePlayer(influenceRateString));
+            influenceRate.setScore(score);
+        }
+    }
+    
+    public void updateOwner()
+    {
+        int score = owner.getScore();
+        
+        scoreBoard.resetScores(owner.getPlayer());
+        
+        objective.setDisplayName(region.getOwner().getFactionColor().getChatColor() + region.getDisplayName());
+        
+        owner = objective.getScore(Bukkit.getOfflinePlayer(region.getOwner().getFactionColor().getChatColor() + region.getOwner().getDisplayName()));
+        owner.setScore(score);
     }
 }

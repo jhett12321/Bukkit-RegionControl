@@ -2,12 +2,15 @@ package com.featherminecraft.RegionControl;
 
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+import com.featherminecraft.RegionControl.commands.CommandHandler;
 import com.featherminecraft.RegionControl.dynmap.DynmapImpl;
 import com.featherminecraft.RegionControl.listeners.DynmapListener;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
@@ -20,8 +23,15 @@ public final class RegionControl extends JavaPlugin
 {
     public static Config config = new Config();
     public static RegionControl plugin;
-    public static boolean isfirstrun;
     private static boolean pluginLoaded = false;
+    private CommandHandler commandHandler;
+    
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
+    {
+        commandHandler.handleCommand(sender, args);
+        return true; // We handle all usage/permission messages.
+    }
     
     @Override
     public void onDisable()
@@ -102,8 +112,8 @@ public final class RegionControl extends JavaPlugin
             }
         }
         
-        // Register Command Handler (NYI - TODO)
-        // getCommand("regioncontrol").setExecutor(new CommandHandler(isfirstrun));
+        // Register Command Handler
+        commandHandler = new CommandHandler();
         
         pluginLoaded = true;
     }

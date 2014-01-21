@@ -7,6 +7,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;

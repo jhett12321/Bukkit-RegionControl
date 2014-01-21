@@ -8,9 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -62,15 +59,11 @@ public class ServerLogic
         {
             String permissionGroup = Config.getFactionConfig().getString("factions." + factionId + ".permissiongroup");
             
-            String configColor = Config.getFactionConfig().getString("factions." + factionId + ".color");
-            String configChatColor = Config.getFactionConfig().getString("factions." + factionId + ".chatcolor");
+            String factionColor = Config.getFactionConfig().getString("factions." + factionId + ".color").toLowerCase();
             
             String displayName = Config.getFactionConfig().getString("factions." + factionId + ".displayname");
             
-            Color factioncolor = DyeColor.valueOf(configColor.toUpperCase()).getColor();
-            ChatColor factionChatColor = ChatColor.valueOf(configChatColor.toUpperCase());
-            
-            Faction factionObject = new Faction(factionId, displayName, permissionGroup, factioncolor, factionChatColor);
+            Faction factionObject = new Faction(factionId, displayName, permissionGroup, factionColor);
             
             factions.put(factionId, factionObject);
         }
@@ -166,7 +159,7 @@ public class ServerLogic
                 SpawnPoint spawnPoint = new SpawnPoint(spawnpointlocation);
                 // SpawnPoint End
                 
-                //Influence Begin
+                // Influence Begin
                 Float baseInfluence = ((Integer) worldConfig.getInt("regions." + configRegion.getKey() + ".baseinfluence")).floatValue();
                 Float influence = ((Integer) worldData.getInt("regions." + configRegion.getKey() + ".influence")).floatValue();
                 Faction influenceOwner = factions.get(worldData.get("regions." + configRegion.getKey() + ".influenceowner"));
@@ -199,13 +192,39 @@ public class ServerLogic
                 List<CapturableRegion> adjacentregions = new ArrayList<CapturableRegion>();
                 for(String configAdjacentRegion : configAdjacentRegions)
                 {
-                    // TODO Future Implementation: Cross-world adjacent regions.
-                    // World world = Bukkit.getWorld(configWorld);
-                    
-                    CapturableRegion adjacentRegion = capturableRegions.get(configWorld + "_" + configAdjacentRegion);
+                    CapturableRegion adjacentRegion = RegionUtils.getRegionFromWorldGuardRegion(configWorld, configAdjacentRegion);
                     adjacentregions.add(adjacentRegion);
                 }
                 RegionUtils.getRegionFromWorldGuardRegion(configWorld, configRegion).setAdjacentRegions(adjacentregions);
+            }
+        }
+        // World Lattice - Adjacent Worlds
+        for(String configWorld : worlds)
+        {
+            FileConfiguration worldConfig = Config.getRegionConfigs().get(configWorld);
+            
+            Set<String> configRegions;
+            try
+            {
+                configRegions = worldConfig.getConfigurationSection("regions").getKeys(false);
+            }
+            catch(NullPointerException e)
+            {
+                continue;
+            }
+            
+            for(String configRegion : configRegions)
+            {
+                CapturableRegion region = RegionUtils.getRegionFromWorldGuardRegion(configWorld, configRegion);
+                if(region.isSpawnRegion())
+                {
+                    String adjacentWorld = worldConfig.getString("regions." + configRegion + ".adjacentworld.world");
+                    String adjacentRegion = worldConfig.getString("regions." + configRegion + ".adjacentworld.region");
+                    
+                    CapturableRegion adjacentWorldRegion = RegionUtils.getRegionFromWorldGuardRegion(adjacentWorld, adjacentRegion);
+                    
+                    region.setAdjacentWorldRegion(adjacentWorldRegion);
+                }
             }
         }
     }

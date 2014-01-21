@@ -17,8 +17,8 @@ public class FactionSelectScreen
         SpoutPlayer sPlayer = (SpoutPlayer) player;
         Screen screen = sPlayer.getMainScreen();
         
-        Color elderTyrants = new Color(ServerLogic.factions.get("elderTyrants").getFactionColor().getRed(),ServerLogic.factions.get("elderTyrants").getFactionColor().getGreen(),ServerLogic.factions.get("elderTyrants").getFactionColor().getBlue());
-        Color relkanaForces = new Color(ServerLogic.factions.get("relkanaForces").getFactionColor().getRed(),ServerLogic.factions.get("relkanaForces").getFactionColor().getGreen(),ServerLogic.factions.get("relkanaForces").getFactionColor().getBlue());
+        Color elderTyrants = new Color(ServerLogic.factions.get("elderTyrants").getFactionColor().getColor().getRed(),ServerLogic.factions.get("elderTyrants").getFactionColor().getColor().getGreen(),ServerLogic.factions.get("elderTyrants").getFactionColor().getColor().getBlue());
+        Color relkanaForces = new Color(ServerLogic.factions.get("relkanaForces").getFactionColor().getColor().getRed(),ServerLogic.factions.get("relkanaForces").getFactionColor().getColor().getGreen(),ServerLogic.factions.get("relkanaForces").getFactionColor().getColor().getBlue());
         //Color theReturned = new Color(ServerLogic.factions.get("theReturned").getFactionColor().getRed(),ServerLogic.factions.get("elderTyrants").getFactionColor().getGreen(),ServerLogic.factions.get("elderTyrants").getFactionColor().getBlue());
         
         Button faction1 = (Button) new GenericButton("The Elder Tyrants").setColor(elderTyrants).setTooltip("");

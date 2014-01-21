@@ -111,10 +111,16 @@ public class Config
                     {
                         // Not Here: DisplayName, Spawnpoint, Base Influence
                         // Retrieve Data from regions.
+                        Faction owner = region.getOwner();
                         Faction influenceOwner = region.getInfluenceOwner();
+                        if(influenceOwner != null)
+                        {
+                            influenceOwner = owner;
+                        }
+                        
+                        String configOwner = owner.getId();
                         String configInfluenceOwner = influenceOwner.getId();
                         int configInfluence = region.getInfluenceMap().get(influenceOwner).intValue();
-                        String configOwner = region.getOwner().getId();
                         
                         String configId = region.getRegionId();
                         

@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import com.featherminecraft.RegionControl.Faction;
@@ -27,6 +28,7 @@ public class CapturableRegion
     private String regionId;
     private Faction owner;
     private List<CapturableRegion> adjacentRegions;
+    private CapturableRegion adjacentWorldRegion;
     private boolean isBeingCaptured;
     private boolean isSpawnRegion;
     private List<BlockState> blocksDestroyed = new ArrayList<BlockState>();
@@ -148,25 +150,26 @@ public class CapturableRegion
         return adjacentRegions;
     }
     
+    public CapturableRegion getAdjacentWorldRegion()
+    {
+        return adjacentWorldRegion;
+    }
+    
     public Float getBaseInfluence()
     {
         return baseInfluence;
     }
-
+    
     public List<BlockState> getBlocksDestroyed()
     {
         return blocksDestroyed;
     }
-
+    
     public List<BlockState> getBlocksPlaced()
     {
         return blocksPlaced;
     }
-    public RegionScoreboard getRegionScoreboard()
-    {
-        return regionScoreboard;
-    }
-
+    
     /*
      * Region Info Begin
      */
@@ -185,6 +188,11 @@ public class CapturableRegion
         return displayName;
     }
     
+    public Float getInfluence()
+    {
+        return influenceMap.get(influenceOwner);
+    }
+    
     public InfluenceManager getInfluenceManager()
     {
         return influenceManager;
@@ -193,11 +201,6 @@ public class CapturableRegion
     public Map<Faction, Float> getInfluenceMap()
     {
         return influenceMap;
-    }
-    
-    public Float getInfluence()
-    {
-        return influenceMap.get(influenceOwner);
     }
     
     public Faction getInfluenceOwner()
@@ -240,6 +243,16 @@ public class CapturableRegion
         return regionId;
     }
     
+    public RegionScoreboard getRegionScoreboard()
+    {
+        return regionScoreboard;
+    }
+    
+    public int getSecondsToCapture()
+    {
+        return secondsToCapture;
+    }
+    
     /*
      * Region Info End
      */
@@ -247,11 +260,6 @@ public class CapturableRegion
     /*
      * Region Objects Begin
      */
-    
-    public int getSecondsToCapture()
-    {
-        return secondsToCapture;
-    }
     
     public SpawnPoint getSpawnPoint()
     {
@@ -263,10 +271,6 @@ public class CapturableRegion
         return world;
     }
     
-    /*
-     * Region Objects End
-     */
-    
     public boolean isBeingCaptured()
     {
         if(isSpawnRegion())
@@ -277,7 +281,7 @@ public class CapturableRegion
     }
     
     /*
-     * Influence Manager Begin
+     * Region Objects End
      */
     
     public boolean isSpawnRegion()
@@ -285,9 +289,18 @@ public class CapturableRegion
         return isSpawnRegion;
     }
     
+    /*
+     * Influence Manager Begin
+     */
+    
     public void setAdjacentRegions(List<CapturableRegion> adjacentRegions)
     {
         this.adjacentRegions = adjacentRegions;
+    }
+    
+    public void setAdjacentWorldRegion(CapturableRegion adjacentWorldRegion)
+    {
+        this.adjacentWorldRegion = adjacentWorldRegion;
     }
     
     public void setBaseInfluence(Float baseInfluence)

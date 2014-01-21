@@ -51,14 +51,13 @@ public class PlayerUtils
      */
     public static List<SpawnPoint> getAvailableSpawnPoints(Player player)
     {
-        Map<String, CapturableRegion> capturableregions = ServerLogic.capturableRegions;
         List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
         
-        for(Entry<String, CapturableRegion> capturableregion : capturableregions.entrySet())
+        for(CapturableRegion capturableregion : ServerLogic.capturableRegions.values())
         {
-            if(capturableregion.getValue().getOwner() == getPlayerFaction(player))
+            if(capturableregion.getOwner() == getPlayerFaction(player))
             {
-                availablespawnpoints.add(capturableregion.getValue().getSpawnPoint());
+                availablespawnpoints.add(capturableregion.getSpawnPoint());
             }
         }
         
@@ -83,7 +82,7 @@ public class PlayerUtils
         // checks.put("INVALID_CLASS", true); //TODO
         
         // No Connection Check
-        if(region.getOwner() == getPlayerFaction(player.getBukkitPlayer()) || region.isBeingCaptured())
+        if(region.getOwner() == player.getFaction() || region.isBeingCaptured())
         {
             checks.put(CannotCaptureReason.NO_CONNECTION, false);
         }
@@ -92,7 +91,7 @@ public class PlayerUtils
         {
             for(CapturableRegion adjacentregion : region.getAdjacentRegions())
             {
-                if(adjacentregion.getOwner() == getPlayerFaction(player.getBukkitPlayer()))
+                if(adjacentregion.getOwner() == player.getFaction())
                 {
                     checks.put(CannotCaptureReason.NO_CONNECTION, false);
                 }
@@ -104,11 +103,11 @@ public class PlayerUtils
         {
             for(CapturableRegion adjacentregion : region.getAdjacentRegions())
             {
-                if(adjacentregion.getOwner() == getPlayerFaction(player.getBukkitPlayer()) && adjacentregion.isSpawnRegion())
+                if(adjacentregion.getOwner() == player.getFaction() && adjacentregion.isSpawnRegion())
                 {
                     checks.put(CannotCaptureReason.CONNECTION_NOT_SECURE, false);
                 }
-                else if(adjacentregion.getOwner() == getPlayerFaction(player.getBukkitPlayer()) && adjacentregion.getInfluenceMap().get(adjacentregion.getInfluenceOwner()) >= adjacentregion.getBaseInfluence())
+                else if(adjacentregion.getOwner() == player.getFaction() && adjacentregion.getInfluenceOwner() != null && adjacentregion.getInfluenceMap().get(adjacentregion.getInfluenceOwner()) >= adjacentregion.getBaseInfluence())
                 {
                     checks.put(CannotCaptureReason.CONNECTION_NOT_SECURE, false);
                 }
@@ -159,7 +158,6 @@ public class PlayerUtils
         
         if(playerFaction == null)
         {
-            playerFaction = ServerLogic.factions.get("relkanaForces"); // For Test Clients TODO REMOVE!!
             // TODO set player to use default faction, or kick player (possibly a config option?)
         }
         

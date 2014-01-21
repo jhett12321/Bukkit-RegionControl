@@ -154,22 +154,6 @@ public class SpoutPlayerListener implements Listener
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onInfluenceRateChange(RegionInfluenceRateChangeEvent event)
-    {
-        CapturableRegion region = event.getRegion();
-        List<RCPlayer> affectedPlayers = region.getPlayers();
-        
-        for(RCPlayer player : affectedPlayers)
-        {
-            if(player.hasSpout())
-            {
-                SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
-                spoutClientLogic.updateInfluenceRate(event.getNewInfluenceRate());
-            }
-        }
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
     public void onInfluenceOwnerChange(InfluenceOwnerChangeEvent event)
     {
         CapturableRegion region = event.getRegion();
@@ -181,6 +165,22 @@ public class SpoutPlayerListener implements Listener
             {
                 SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
                 spoutClientLogic.updateInfluenceOwnerIcon();
+            }
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInfluenceRateChange(RegionInfluenceRateChangeEvent event)
+    {
+        CapturableRegion region = event.getRegion();
+        List<RCPlayer> affectedPlayers = region.getPlayers();
+        
+        for(RCPlayer player : affectedPlayers)
+        {
+            if(player.hasSpout())
+            {
+                SpoutClientLogic spoutClientLogic = player.getSpoutClientLogic();
+                spoutClientLogic.updateInfluenceRate(event.getNewInfluenceRate());
             }
         }
     }

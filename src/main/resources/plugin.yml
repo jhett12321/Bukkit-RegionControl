@@ -3,10 +3,13 @@ version: ${project.version}
 description: Utilises WorldGuard Regions to create a Capture-the-Region gamemode.
 author: Jhett12321
 website: http://featherminecraft.com
-
 main: com.featherminecraft.RegionControl.RegionControl
 depend: [WorldGuard, WorldEdit, Spout, Vault, ProtocolLib]
-
 commands:
-
+  regioncontrol:
+    description: Main RegionControl command. See /regioncontrol help for more.
+    usage: /<command> command [<option> ...]
 permissions:
+  regioncontrol.*:
+    default: op
+    description: Give players with op everything by default
