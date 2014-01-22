@@ -219,6 +219,10 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event)
     {
+        if(event.getPlayer().isInsideVehicle())
+        {
+            event.getPlayer().getVehicle().eject();
+        }
         // If a player is kicked for not being in a faction, they do not have an
         // RCPlayer object
         try

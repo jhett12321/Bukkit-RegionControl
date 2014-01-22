@@ -137,7 +137,7 @@ public class DynmapImpl
     {
         AreaMarker marker = territoryControlMarkers.get(region);
         
-        marker.setFillStyle(0.6, region.getOwner().getFactionColor().getColor().asRGB());
+        marker.setFillStyle(0.3, region.getOwner().getFactionColor().getColor().asRGB());
         updateRegionControlPoints(region);
     }
     
