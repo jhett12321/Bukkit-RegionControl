@@ -18,33 +18,45 @@ public class CommandHandler
         registerCommand(ReloadCommand.class);
         registerCommand(SetFactionCommand.class);
         registerCommand(SaveCommand.class);
+        registerCommand(EditModeCommand.class);
     }
     
-    public boolean handleCommand(CommandSender sender, String[] args)
+    public Command getCommand(String commandName)
     {
         Command command = null;
-        if(args == null)
+        if(commandName == null)
         {
-            command = commands.get("help");
+            commandName = "help";
         }
         else
         {
             for(Entry<String, Command> entry : commands.entrySet())
             {
-                if(args[0].matches(entry.getKey()))
+                if(commandName.matches(entry.getKey()))
                 {
                     command = entry.getValue();
                 }
             }
         }
-        
+        return command;
+    }
+    
+    public CommandInfo getCommandInfo(Command command)
+    {
+        CommandInfo info = command.getClass().getAnnotation(CommandInfo.class);
+        return info;
+    }
+    
+    public boolean handleCommand(CommandSender sender, String[] args)
+    {
+        Command command = getCommand(args[0]);
         if(command == null)
         {
             sender.sendMessage("Unknown RegionControl Command. Type RegionControl help for a list of commands.");
             return false;
         }
         
-        CommandInfo info = command.getClass().getAnnotation(CommandInfo.class);
+        CommandInfo info = getCommandInfo(command);
         
         if(sender.hasPermission(info.permission()))
         {

@@ -117,4 +117,9 @@ public final class RegionControl extends JavaPlugin
         
         pluginLoaded = true;
     }
+
+    public CommandHandler getCommandHandler()
+    {
+        return commandHandler;
+    }
 }

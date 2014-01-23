@@ -27,6 +27,7 @@ public class ServerLogic
     public static Map<String, RCPlayer> players = new HashMap<String, RCPlayer>();
     public static Map<String, Faction> factions = new HashMap<String, Faction>();
     public static Map<String, CapturableRegion> capturableRegions = new HashMap<String, CapturableRegion>();
+    public static boolean editMode = false;
     
     public static void init()
     {

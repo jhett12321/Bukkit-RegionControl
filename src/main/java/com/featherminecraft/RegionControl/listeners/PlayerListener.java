@@ -26,6 +26,7 @@ import com.featherminecraft.RegionControl.Config;
 import com.featherminecraft.RegionControl.DependencyManager;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
+import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
@@ -37,44 +38,70 @@ import com.featherminecraft.RegionControl.api.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.api.events.RegionDefendEvent;
 import com.featherminecraft.RegionControl.api.events.RegionInfluenceRateChangeEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+import com.featherminecraft.RegionControl.commands.Command;
+import com.featherminecraft.RegionControl.commands.CommandInfo;
 
 public class PlayerListener implements Listener
 {
     // Block removed from region. Needs to be added after region capture.
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event)
     {
         if(!event.isCancelled())
         {
-            for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
+            if(!ServerLogic.editMode)
             {
-                ProtectedRegion region = capturableRegion.getRegion();
-                if(region.contains(toVector(event.getBlock().getLocation())))
+                for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
                 {
-                    if(!capturableRegion.getBlocksPlaced().contains(event.getBlock().getState()))
+                    ProtectedRegion region = capturableRegion.getRegion();
+                    if(region.contains(toVector(event.getBlock().getLocation())))
                     {
-                        capturableRegion.getBlocksDestroyed().add(event.getBlock().getState());
+                        if(!capturableRegion.getBlocksPlaced().contains(event.getBlock().getState()))
+                        {
+                            capturableRegion.getBlocksDestroyed().add(event.getBlock().getState());
+                        }
                     }
+                }
+            }
+            else
+            {
+                Command editCommand = RegionControl.plugin.getCommandHandler().getCommand("editmode");
+                CommandInfo info = RegionControl.plugin.getCommandHandler().getCommandInfo(editCommand);
+                if(!event.getPlayer().hasPermission(info.permission()))
+                {
+                    event.setCancelled(true);
                 }
             }
         }
     }
     
     // Block added to region. Needs to be removed after region capture.
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event)
     {
         if(!event.isCancelled())
         {
-            for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
+            if(!ServerLogic.editMode)
             {
-                ProtectedRegion region = capturableRegion.getRegion();
-                if(region.contains(toVector(event.getBlock().getLocation())))
+                for(CapturableRegion capturableRegion : ServerLogic.capturableRegions.values())
                 {
-                    if(!capturableRegion.getBlocksDestroyed().contains(event.getBlockPlaced().getState()))
+                    ProtectedRegion region = capturableRegion.getRegion();
+                    if(region.contains(toVector(event.getBlock().getLocation())))
                     {
-                        capturableRegion.getBlocksPlaced().add(event.getBlockPlaced().getState());
+                        if(!capturableRegion.getBlocksDestroyed().contains(event.getBlockPlaced().getState()))
+                        {
+                            capturableRegion.getBlocksPlaced().add(event.getBlockPlaced().getState());
+                        }
                     }
+                }
+            }
+            else
+            {
+                Command editCommand = RegionControl.plugin.getCommandHandler().getCommand("editmode");
+                CommandInfo info = RegionControl.plugin.getCommandHandler().getCommandInfo(editCommand);
+                if(!event.getPlayer().hasPermission(info.permission()))
+                {
+                    event.setCancelled(true);
                 }
             }
         }
