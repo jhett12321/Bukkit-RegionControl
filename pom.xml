@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.featherminecraft</groupId>
 	<artifactId>RegionControl</artifactId>
-	<version>0.9-D9</version>
+	<version>0.9-D10</version>
 	<name>RegionControl</name>
 	<properties>
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
@@ -21,6 +21,17 @@
 		<dynmapVersion>1.9</dynmapVersion>
 	</properties>
 	<repositories>
+		<repository>
+			<id>featherminecraft-repo</id>
+			<name>Blackfeather Productions Repo</name>
+			<url>http://repo.featherminecraft.com/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
@@ -171,4 +182,19 @@
 		<system>Bamboo</system>
 		<url>https://blackfeatherproductions.com/bamboo</url>
 	</ciManagement>
+	<distributionManagement>
+		<!-- Publish versioned releases here -->
+		<repository>
+			<id>featherminecraft-repo</id>
+			<name>Releases</name>
+			<url>http://repo.featherminecraft.com/content/repositories/releases</url>
+		</repository>
+ 
+		<!-- Publish snapshots here -->
+		<snapshotRepository>
+			<id>featherminecraft-repo</id>
+			<name>Snapshots</name>
+			<url>http://repo.featherminecraft.com/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
