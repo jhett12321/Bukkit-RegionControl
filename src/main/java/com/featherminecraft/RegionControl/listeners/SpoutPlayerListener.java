@@ -203,7 +203,6 @@ public class SpoutPlayerListener implements Listener
     public void onPlayerDeath(PlayerDeathEvent event)
     {
         final SpoutPlayer splayer = (SpoutPlayer) event.getEntity();
-        new PlayerAPI();
         RCPlayer rcplayer = PlayerAPI.getRCPlayerFromBukkitPlayer(splayer);
         if(rcplayer.hasSpout())
         {

@@ -21,18 +21,14 @@ public class CaptureStatusChangeEvent extends Event
     }
     
     /**
-     * Returns true when the region is being captured.
-     * @return whether the region is being captured
-     */
-    public Boolean isBeingCaptured()
-    {
-        return isBeingCaptured;
-    }
-    
-    /**
      * Returns the list of event handlers for this event.
-     * @return the list of event handlers.
+     * 
+     * @return the list of event handlers
      */
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
     @Override
     public HandlerList getHandlers()
     {
@@ -41,10 +37,21 @@ public class CaptureStatusChangeEvent extends Event
     
     /**
      * Returns the CapturableRegion associated with this event.
+     * 
      * @return the CapturableRegion associated with this event.
      */
     public CapturableRegion getRegion()
     {
         return region;
+    }
+    
+    /**
+     * Returns true when the region is being captured.
+     * 
+     * @return whether the region is being captured
+     */
+    public Boolean isBeingCaptured()
+    {
+        return isBeingCaptured;
     }
 }

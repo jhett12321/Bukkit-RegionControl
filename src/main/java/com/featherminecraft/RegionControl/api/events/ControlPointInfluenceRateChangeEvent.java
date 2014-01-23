@@ -32,6 +32,7 @@ public class ControlPointInfluenceRateChangeEvent extends Event
     
     /**
      * Returns the new players on the ControlPoint.
+     * 
      * @return the new players
      */
     public List<RCPlayer> getAddedPlayers()
@@ -40,7 +41,8 @@ public class ControlPointInfluenceRateChangeEvent extends Event
     }
     
     /**
-     * Gets the ControlPoint associated with this event.
+     * Returns the ControlPoint associated with this event.
+     * 
      * @return the ControlPoint associated with this event.
      */
     public ControlPoint getControlPoint()
@@ -49,7 +51,8 @@ public class ControlPointInfluenceRateChangeEvent extends Event
     }
     
     /**
-     * Gets the existing players on the ControlPoint.
+     * Returns the existing players on the ControlPoint.
+     * 
      * @return the existing players
      */
     public List<RCPlayer> getCurrentPlayers()
@@ -59,8 +62,13 @@ public class ControlPointInfluenceRateChangeEvent extends Event
     
     /**
      * Returns the list of event handlers for this event.
+     * 
      * @return the list of event handlers
      */
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
     @Override
     public HandlerList getHandlers()
     {
@@ -69,6 +77,7 @@ public class ControlPointInfluenceRateChangeEvent extends Event
     
     /**
      * Returns the CapturableRegion associated with this event.
+     * 
      * @return the CapturableRegion associated with this event.
      */
     public CapturableRegion getRegion()
@@ -77,7 +86,8 @@ public class ControlPointInfluenceRateChangeEvent extends Event
     }
     
     /**
-     * Gets the players that are no-longer on the ControlPoint.
+     * Returns the players that are no-longer on the ControlPoint.
+     * 
      * @return the players no-longer on the ControlPoint.
      */
     public List<RCPlayer> getRemovedPlayers()

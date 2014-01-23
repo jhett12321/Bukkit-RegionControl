@@ -41,6 +41,10 @@ public class ControlPointCaptureEvent extends Event
      * 
      * @return the list of event handlers
      */
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
     @Override
     public HandlerList getHandlers()
     {
