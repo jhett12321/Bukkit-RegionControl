@@ -6,11 +6,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.featherminecraft.RegionControl.DependencyManager;
+import com.featherminecraft.RegionControl.api.events.ControlPointCaptureEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointDefendEvent;
+import com.featherminecraft.RegionControl.api.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.dynmap.DynmapImpl;
-import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
-import com.featherminecraft.RegionControl.events.ControlPointDefendEvent;
-import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
 
 public class DynmapListener implements Listener
 {
@@ -29,12 +29,12 @@ public class DynmapListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRegionCapture(RegionCaptureEvent event)
     {
-        DynmapImpl.updateRegion(event.getCapturableRegion());
-        for(CapturableRegion adjacentRegion : event.getCapturableRegion().getAdjacentRegions())
+        DynmapImpl.updateRegion(event.getRegion());
+        for(CapturableRegion adjacentRegion : event.getRegion().getAdjacentRegions())
         {
-            DynmapImpl.updateLatticeLink(event.getCapturableRegion(), adjacentRegion);
+            DynmapImpl.updateLatticeLink(event.getRegion(), adjacentRegion);
         }
         
-        DependencyManager.getDynmapAPI().sendBroadcastToWeb("Broadcast", ChatColor.YELLOW + event.getNewOwner().getDisplayName() + " have captured " + event.getCapturableRegion().getDisplayName() + "!");
+        DependencyManager.getDynmapAPI().sendBroadcastToWeb("Broadcast", ChatColor.YELLOW + event.getNewOwner().getDisplayName() + " have captured " + event.getRegion().getDisplayName() + "!");
     }
 }

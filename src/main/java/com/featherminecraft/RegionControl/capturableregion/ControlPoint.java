@@ -15,11 +15,11 @@ import org.bukkit.Material;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
-import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
-import com.featherminecraft.RegionControl.events.ControlPointDefendEvent;
-import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
-import com.featherminecraft.RegionControl.events.ControlPointPlayerInfluenceChangeEvent;
-import com.featherminecraft.RegionControl.utils.PlayerUtils;
+import com.featherminecraft.RegionControl.api.PlayerAPI;
+import com.featherminecraft.RegionControl.api.events.ControlPointCaptureEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointDefendEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointInfluenceRateChangeEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointNeutralizeEvent;
 
 @SuppressWarnings("deprecation")
 public class ControlPoint
@@ -173,12 +173,12 @@ public class ControlPoint
                     {
                         owner = influenceOwner;
                         capturing = false;
-                        Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(region, influenceOwner, this));
+                        Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(this, region, influenceOwner));
                     }
                     else
                     {
                         capturing = false;
-                        Bukkit.getServer().getPluginManager().callEvent(new ControlPointDefendEvent(region, influenceOwner, this));
+                        Bukkit.getServer().getPluginManager().callEvent(new ControlPointDefendEvent(this, region, influenceOwner));
                     }
                 }
                 
@@ -193,7 +193,7 @@ public class ControlPoint
         {
             capturing = true;
             location.getBlock().setTypeIdAndData(Material.WOOL.getId(), DyeColor.getByColor(Color.WHITE).getWoolData(), false);
-            Bukkit.getServer().getPluginManager().callEvent(new ControlPointNeutraliseEvent(region, influenceOwner, this));
+            Bukkit.getServer().getPluginManager().callEvent(new ControlPointNeutralizeEvent(this, region, influenceOwner));
         }
     }
     
@@ -244,7 +244,7 @@ public class ControlPoint
         }
         influenceOwner = owner;
         location.getBlock().setTypeIdAndData(Material.WOOL.getId(), owner.getFactionColor().getWoolColor().getWoolData(), false);
-        Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(region, influenceOwner, this));
+        Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(this, region, influenceOwner));
     }
     
     public void setRegion(CapturableRegion region)
@@ -293,7 +293,7 @@ public class ControlPoint
             {
                 influentialPlayers.add(player);
                 Faction playersFaction = player.getFaction();
-                if(PlayerUtils.canCapture(region, player))
+                if(PlayerAPI.canCapture(region, player))
                 {
                     factionInfluence.put(playersFaction, factionInfluence.get(playersFaction) + 1);
                 }
@@ -339,7 +339,7 @@ public class ControlPoint
                     }
                 }
                 
-                Bukkit.getServer().getPluginManager().callEvent(new ControlPointPlayerInfluenceChangeEvent(region, this, this.influentialPlayers, playersAdded, playersRemoved));
+                Bukkit.getServer().getPluginManager().callEvent(new ControlPointInfluenceRateChangeEvent(region, this, this.influentialPlayers, playersAdded, playersRemoved));
             }
         }
         

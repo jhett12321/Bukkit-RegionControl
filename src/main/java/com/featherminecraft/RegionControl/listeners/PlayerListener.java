@@ -27,17 +27,16 @@ import com.featherminecraft.RegionControl.DependencyManager;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
+import com.featherminecraft.RegionControl.api.PlayerAPI;
+import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointCaptureEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointDefendEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointNeutralizeEvent;
+import com.featherminecraft.RegionControl.api.events.InfluenceOwnerChangeEvent;
+import com.featherminecraft.RegionControl.api.events.RegionCaptureEvent;
+import com.featherminecraft.RegionControl.api.events.RegionDefendEvent;
+import com.featherminecraft.RegionControl.api.events.RegionInfluenceRateChangeEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
-import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
-import com.featherminecraft.RegionControl.events.ControlPointDefendEvent;
-import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
-import com.featherminecraft.RegionControl.events.InfluenceOwnerChangeEvent;
-import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
-import com.featherminecraft.RegionControl.events.RegionDefendEvent;
-import com.featherminecraft.RegionControl.events.RegionInfluenceRateChangeEvent;
-import com.featherminecraft.RegionControl.utils.PlayerUtils;
-import com.featherminecraft.RegionControl.utils.SpoutUtils;
 
 public class PlayerListener implements Listener
 {
@@ -84,7 +83,7 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event)
     {
-        if(!DependencyManager.isSpoutCraftAvailable() || !SpoutUtils.isSpoutPlayer(event.getPlayer()))
+        if(!DependencyManager.isSpoutCraftAvailable() || !event.getPlayer().hasSpout())
         {
             event.getPlayer().getBukkitPlayer().setScoreboard(event.getNewRegion().getRegionScoreboard().getScoreboard());
         }
@@ -103,7 +102,7 @@ public class PlayerListener implements Listener
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onControlPointNeutralise(ControlPointNeutraliseEvent event)
+    public void onControlPointNeutralise(ControlPointNeutralizeEvent event)
     {
         event.getRegion().getRegionScoreboard().updateControlPoints();
     }
@@ -115,20 +114,20 @@ public class PlayerListener implements Listener
         {
             return;
         }
-        Player playerdamager = null;
-        Player damagedplayer = null;
+        RCPlayer playerdamager = null;
+        RCPlayer damagedplayer = null;
         
         Entity damager = event.getDamager();
         Entity damagedentity = event.getEntity();
         
         if((damagedentity instanceof Player))
         {
-            damagedplayer = (Player) damagedentity;
+            damagedplayer = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) damagedentity);
         }
         
         if(damager instanceof Player)
         {
-            playerdamager = (Player) damager;
+            playerdamager = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) damager);
         }
         
         else if(damager instanceof Projectile)
@@ -137,15 +136,13 @@ public class PlayerListener implements Listener
             Entity entitydamager = projectile.getShooter();
             if(entitydamager instanceof Player && entitydamager != null)
             {
-                playerdamager = (Player) entitydamager;
+                playerdamager = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) entitydamager);
             }
         }
         
         if(playerdamager != null && damagedplayer != null)
         {
-            Faction damagerfaction = PlayerUtils.getPlayerFaction(playerdamager);
-            Faction damagedentityfaction = PlayerUtils.getPlayerFaction(damagedplayer);
-            if(damagerfaction == damagedentityfaction)
+            if(playerdamager.getFaction() == damagedplayer.getFaction())
             {
                 event.setCancelled(true);
             }
@@ -192,7 +189,7 @@ public class PlayerListener implements Listener
     {
         Player player = event.getPlayer();
         
-        Faction faction = PlayerUtils.getPlayerFaction(player);
+        Faction faction = PlayerAPI.getFactionFromGroup(DependencyManager.getPermission().getPrimaryGroup(player));
         if(faction == null)
         {
             // if(DependencyManager.isSpoutCraftAvailable())
@@ -227,7 +224,7 @@ public class PlayerListener implements Listener
         // RCPlayer object
         try
         {
-            RCPlayer player = PlayerUtils.getRCPlayerFromBukkitPlayer(event.getPlayer());
+            RCPlayer player = PlayerAPI.getRCPlayerFromBukkitPlayer(event.getPlayer());
             CapturableRegion currentRegion = player.getCurrentRegion();
             if(currentRegion != null)
             {
@@ -252,7 +249,7 @@ public class PlayerListener implements Listener
     public void onPlayerRespawn(PlayerRespawnEvent event)
     {
         Player player = event.getPlayer();
-        RCPlayer rcplayer = PlayerUtils.getRCPlayerFromBukkitPlayer(player);
+        RCPlayer rcplayer = PlayerAPI.getRCPlayerFromBukkitPlayer(player);
         Location respawnLocation = rcplayer.getRespawnLocation();
         if(respawnLocation != null)
         {
@@ -270,12 +267,12 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRegionCapture(RegionCaptureEvent event)
     {
-        event.getCapturableRegion().getRegionScoreboard().updateOwner();
+        event.getRegion().getRegionScoreboard().updateOwner();
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRegionDefend(RegionDefendEvent event)
     {
-        event.getCapturableRegion().getRegionScoreboard().updateOwner();
+        event.getRegion().getRegionScoreboard().updateOwner();
     }
 }

@@ -1,4 +1,4 @@
-package com.featherminecraft.RegionControl.utils;
+package com.featherminecraft.RegionControl.api;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 
 @SuppressWarnings("deprecation")
-public class PlayerUtils
+public class PlayerAPI
 {
     /**
      * Checks whether a player can capture a certain Region.
@@ -30,7 +30,7 @@ public class PlayerUtils
      *            - A CapturableRegion.
      * @param player
      *            - The Player to be checked
-     * @return Boolean whether a player can capture the Region
+     * @return a boolean whether a player can capture the provided region.
      */
     public static boolean canCapture(CapturableRegion region, RCPlayer player)
     {
@@ -49,13 +49,13 @@ public class PlayerUtils
      *            - The Player to check for available SpawnPoints.
      * @return The available SpawnPoints for the provided player.
      */
-    public static List<SpawnPoint> getAvailableSpawnPoints(Player player)
+    public static List<SpawnPoint> getAvailableSpawnPoints(RCPlayer player)
     {
         List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
         
         for(CapturableRegion capturableregion : ServerLogic.capturableRegions.values())
         {
-            if(capturableregion.getOwner() == getPlayerFaction(player))
+            if(capturableregion.getOwner() == player.getFaction())
             {
                 availablespawnpoints.add(capturableregion.getSpawnPoint());
             }
@@ -136,16 +136,27 @@ public class PlayerUtils
         return reasons;
     }
     
-    public static CapturableRegion getCurrentRegion(Player player)
+    /**
+     * Gets a players current region.
+     * 
+     * @param player
+     *            the RCPlayer to find the current region of.
+     * @return The CapturableRegion this player is currently located.
+     */
+    public static CapturableRegion getCurrentRegion(RCPlayer player)
     {
-        RCPlayer rcPlayer = ServerLogic.players.get(player.getName());
-        return rcPlayer.getCurrentRegion();
+        return player.getCurrentRegion();
     }
     
-    public static Faction getPlayerFaction(Player player)
+    /**
+     * Gets a Faction from a permissions group.
+     * 
+     * @param group
+     *            the name of the permission group
+     * @return The Faction object that represents this permission group, otherwise null.
+     */
+    public static Faction getFactionFromGroup(String group)
     {
-        String group = DependencyManager.getPermission().getPrimaryGroup(player);
-        
         Faction playerFaction = null;
         
         for(Entry<String, Faction> faction : ServerLogic.factions.entrySet())
@@ -156,20 +167,28 @@ public class PlayerUtils
             }
         }
         
-        if(playerFaction == null)
-        {
-            // TODO set player to use default faction, or kick player (possibly a config option?)
-        }
-        
         return playerFaction;
     }
     
+    /**
+     * Gets the equivalent RCPlayer object from a normal bukkit player.
+     * 
+     * @param player
+     *            A bukkit player
+     * @return A RCPlayer representing this bukkit player.
+     */
     public static RCPlayer getRCPlayerFromBukkitPlayer(Player player)
     {
         RCPlayer rcPlayer = ServerLogic.players.get(player.getName());
         return rcPlayer;
     }
     
+    /**
+     * Forcefully respawns the provided RCPlayer, at their current spawn point.
+     * 
+     * @param player
+     *            A RCPlayer
+     */
     public static void respawnPlayer(RCPlayer player)
     {
         PacketContainer respawn = null;

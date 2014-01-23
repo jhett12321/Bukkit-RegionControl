@@ -9,6 +9,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.commands.CommandHandler;
 import com.featherminecraft.RegionControl.dynmap.DynmapImpl;
@@ -17,7 +18,6 @@ import com.featherminecraft.RegionControl.listeners.PlayerListener;
 import com.featherminecraft.RegionControl.listeners.ServerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
-import com.featherminecraft.RegionControl.utils.PlayerUtils;
 
 public final class RegionControl extends JavaPlugin
 {
@@ -102,7 +102,7 @@ public final class RegionControl extends JavaPlugin
             // Server may have been reloaded, so setup all current online players.
             for(Player player : getServer().getOnlinePlayers())
             {
-                Faction faction = PlayerUtils.getPlayerFaction(player);
+                Faction faction = PlayerAPI.getFactionFromGroup(DependencyManager.getPermission().getPrimaryGroup(player));
                 CapturableRegion currentRegion = faction.getFactionSpawnRegion(player.getWorld());
                 
                 RCPlayer rcPlayer = new RCPlayer(player, faction, currentRegion);

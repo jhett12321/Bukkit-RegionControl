@@ -8,9 +8,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
-import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
 
 public class ClientRunnables extends BukkitRunnable
 {

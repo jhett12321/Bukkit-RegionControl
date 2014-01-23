@@ -9,11 +9,11 @@ import org.bukkit.Bukkit;
 
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.ServerLogic;
-import com.featherminecraft.RegionControl.events.InfluenceOwnerChangeEvent;
-import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
-import com.featherminecraft.RegionControl.events.RegionCaptureStatusChangeEvent;
-import com.featherminecraft.RegionControl.events.RegionDefendEvent;
-import com.featherminecraft.RegionControl.events.RegionInfluenceRateChangeEvent;
+import com.featherminecraft.RegionControl.api.events.CaptureStatusChangeEvent;
+import com.featherminecraft.RegionControl.api.events.InfluenceOwnerChangeEvent;
+import com.featherminecraft.RegionControl.api.events.RegionCaptureEvent;
+import com.featherminecraft.RegionControl.api.events.RegionDefendEvent;
+import com.featherminecraft.RegionControl.api.events.RegionInfluenceRateChangeEvent;
 
 public class InfluenceManager
 {
@@ -170,13 +170,13 @@ public class InfluenceManager
                     if(region.getOwner() == influenceOwner && influenceRate == 4F)
                     {
                         region.setBeingCaptured(false);
-                        Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureStatusChangeEvent(region, false));
+                        Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
                         Bukkit.getServer().getPluginManager().callEvent(new RegionDefendEvent(region, influenceOwner));
                     }
                     
                     else if(region.getOwner() != influenceOwner)
                     {
-                        Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureStatusChangeEvent(region, false));
+                        Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
                         Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureEvent(region, region.getOwner(), influenceOwner));
                     }
                 }
@@ -189,7 +189,7 @@ public class InfluenceManager
             
             else if(majorityController != null && influenceRate == 4F && region.getInfluenceMap().get(influenceOwner) + influenceRate >= region.getBaseInfluence() && region.getOwner() == influenceOwner && region.isBeingCaptured())
             {
-                Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureStatusChangeEvent(region, false));
+                Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
                 Bukkit.getServer().getPluginManager().callEvent(new RegionDefendEvent(region, influenceOwner));
             }
         }
@@ -198,7 +198,7 @@ public class InfluenceManager
         if((region.getInfluenceMap().get(influenceOwner) != region.getBaseInfluence() && !region.isBeingCaptured()) || (region.getInfluenceRate() < 4F && !region.isBeingCaptured()))
         {
             region.setBeingCaptured(true);
-            Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureStatusChangeEvent(region, true));
+            Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, true));
         }
         
         if(!region.getInfluenceRate().equals(oldInfluenceRate))

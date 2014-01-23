@@ -8,12 +8,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointCaptureEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointNeutralizeEvent;
+import com.featherminecraft.RegionControl.api.events.RegionCaptureEvent;
+import com.featherminecraft.RegionControl.api.events.RegionDefendEvent;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
-import com.featherminecraft.RegionControl.events.ChangeRegionEvent;
-import com.featherminecraft.RegionControl.events.ControlPointCaptureEvent;
-import com.featherminecraft.RegionControl.events.ControlPointNeutraliseEvent;
-import com.featherminecraft.RegionControl.events.RegionCaptureEvent;
-import com.featherminecraft.RegionControl.events.RegionDefendEvent;
 
 public class ServerListener implements Listener
 {
@@ -30,7 +30,7 @@ public class ServerListener implements Listener
     }
     
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onControlPointNeutralise(ControlPointNeutraliseEvent event)
+    public void onControlPointNeutralise(ControlPointNeutralizeEvent event)
     {
         
     }
@@ -38,23 +38,23 @@ public class ServerListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onRegionCapture(RegionCaptureEvent event)
     {
-        event.getCapturableRegion().setOwner(event.getNewOwner());
-        event.getCapturableRegion().setInfluenceRate(4F);
-        event.getCapturableRegion().setBeingCaptured(false);
-        Bukkit.getServer().broadcastMessage(ChatColor.YELLOW + event.getNewOwner().getDisplayName() + " have captured " + event.getCapturableRegion().getDisplayName() + "!");
+        event.getRegion().setOwner(event.getNewOwner());
+        event.getRegion().setInfluenceRate(4F);
+        event.getRegion().setBeingCaptured(false);
+        Bukkit.getServer().broadcastMessage(ChatColor.YELLOW + event.getNewOwner().getDisplayName() + " have captured " + event.getRegion().getDisplayName() + "!");
         
-        for(BlockState block : event.getCapturableRegion().getBlocksPlaced())
+        for(BlockState block : event.getRegion().getBlocksPlaced())
         {
             block.getBlock().setType(Material.AIR);
         }
-        for(BlockState block : event.getCapturableRegion().getBlocksDestroyed())
+        for(BlockState block : event.getRegion().getBlocksDestroyed())
         {
             block.update(true, false);
         }
-        event.getCapturableRegion().getBlocksPlaced().clear();
-        event.getCapturableRegion().getBlocksDestroyed().clear();
+        event.getRegion().getBlocksPlaced().clear();
+        event.getRegion().getBlocksDestroyed().clear();
         
-        for(ControlPoint controlPoint : event.getCapturableRegion().getControlPoints())
+        for(ControlPoint controlPoint : event.getRegion().getControlPoints())
         {
             controlPoint.setOwner(event.getNewOwner());
         }
@@ -63,7 +63,7 @@ public class ServerListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onRegionDefend(RegionDefendEvent event)
     {
-        event.getCapturableRegion().setBeingCaptured(false);
+        event.getRegion().setBeingCaptured(false);
     }
     
 }

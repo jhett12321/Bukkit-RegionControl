@@ -11,8 +11,8 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
+import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.utils.PlayerUtils;
 
 public class RespawnListModel extends AbstractListModel
 {
@@ -92,7 +92,7 @@ public class RespawnListModel extends AbstractListModel
             return;
         }
         
-        PlayerUtils.respawnPlayer(rcplayer);
+        PlayerAPI.respawnPlayer(rcplayer);
         splayer.getMainScreen().closePopup();
         rcplayer.getClientRunnable("spoutRespawnTooltip").cancel();
     }

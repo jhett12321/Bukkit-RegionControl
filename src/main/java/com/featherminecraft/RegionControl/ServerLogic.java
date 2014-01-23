@@ -16,10 +16,10 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import com.featherminecraft.RegionControl.api.RegionAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
-import com.featherminecraft.RegionControl.utils.RegionUtils;
 
 public class ServerLogic
 {
@@ -192,10 +192,10 @@ public class ServerLogic
                 List<CapturableRegion> adjacentregions = new ArrayList<CapturableRegion>();
                 for(String configAdjacentRegion : configAdjacentRegions)
                 {
-                    CapturableRegion adjacentRegion = RegionUtils.getRegionFromWorldGuardRegion(configWorld, configAdjacentRegion);
+                    CapturableRegion adjacentRegion = RegionAPI.getRegionFromWorldGuardRegion(configWorld, configAdjacentRegion);
                     adjacentregions.add(adjacentRegion);
                 }
-                RegionUtils.getRegionFromWorldGuardRegion(configWorld, configRegion).setAdjacentRegions(adjacentregions);
+                RegionAPI.getRegionFromWorldGuardRegion(configWorld, configRegion).setAdjacentRegions(adjacentregions);
             }
         }
         // World Lattice - Adjacent Worlds
@@ -215,13 +215,13 @@ public class ServerLogic
             
             for(String configRegion : configRegions)
             {
-                CapturableRegion region = RegionUtils.getRegionFromWorldGuardRegion(configWorld, configRegion);
+                CapturableRegion region = RegionAPI.getRegionFromWorldGuardRegion(configWorld, configRegion);
                 if(region.isSpawnRegion())
                 {
                     String adjacentWorld = worldConfig.getString("regions." + configRegion + ".adjacentworld.world");
                     String adjacentRegion = worldConfig.getString("regions." + configRegion + ".adjacentworld.region");
                     
-                    CapturableRegion adjacentWorldRegion = RegionUtils.getRegionFromWorldGuardRegion(adjacentWorld, adjacentRegion);
+                    CapturableRegion adjacentWorldRegion = RegionAPI.getRegionFromWorldGuardRegion(adjacentWorld, adjacentRegion);
                     
                     region.setAdjacentWorldRegion(adjacentWorldRegion);
                 }
@@ -240,7 +240,7 @@ public class ServerLogic
             
             for(Entry<String, Object> configWorld : regionWorlds.entrySet())
             {
-                CapturableRegion region = RegionUtils.getRegionFromWorldGuardRegion(configWorld.getKey(), configWorld.getValue().toString());
+                CapturableRegion region = RegionAPI.getRegionFromWorldGuardRegion(configWorld.getKey(), configWorld.getValue().toString());
                 World world = Bukkit.getWorld(configWorld.getKey());
                 spawnRegions.put(world, region);
                 faction.addFactionSpawnRegion(region);

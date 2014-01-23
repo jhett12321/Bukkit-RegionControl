@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.ServerLogic;
-import com.featherminecraft.RegionControl.utils.PlayerUtils;
+import com.featherminecraft.RegionControl.api.PlayerAPI;
 
 @CommandInfo(
         name = "setfaction",
@@ -57,7 +57,7 @@ public class SetFactionCommand implements Command
                 return false;
             }
             
-            PlayerUtils.getRCPlayerFromBukkitPlayer(player).setFaction(faction);
+            PlayerAPI.getRCPlayerFromBukkitPlayer(player).setFaction(faction);
             sender.sendMessage("Set " + player.getName() + "'s Faction to " + faction.getDisplayName());
             return true;
         }
