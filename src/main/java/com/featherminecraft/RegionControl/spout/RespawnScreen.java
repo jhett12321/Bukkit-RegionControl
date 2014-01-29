@@ -45,25 +45,25 @@ public class RespawnScreen
         respawnButton = (Button) new GenericButton("Respawn: Ancestria Southern NetherGate").setWidth(200).setHeight(20).setFixed(true).setPriority(RenderPriority.Lowest);
         
         // Get Any Regions that are owned, and adjacent to the player.
-        List<CapturableRegion> regions = new ArrayList<CapturableRegion>();
+        List<CapturableRegion> spawnableRegions = new ArrayList<CapturableRegion>();
         
-        List<CapturableRegion> adjacentregions = player.getCurrentRegion().getAdjacentRegions();
-        for(CapturableRegion region : adjacentregions)
+        List<CapturableRegion> regions = player.getCurrentRegion().getAdjacentRegions();
+        regions.add(player.getCurrentRegion());
+        for(CapturableRegion region : regions)
         {
             if(region.getOwner() == player.getFaction())
             {
-                regions.add(region);
+                spawnableRegions.add(region);
             }
         }
         
-        regions.add(player.getCurrentRegion());
-        if(!regions.contains(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld())))
+        if(!spawnableRegions.contains(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld())))
         {
-            regions.add(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()));
+            spawnableRegions.add(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()));
         }
         
         SortedMap<Integer, CapturableRegion> distances = new TreeMap<Integer, CapturableRegion>();
-        for(CapturableRegion region : regions)
+        for(CapturableRegion region : spawnableRegions)
         {
             Location playerLoc = player.getBukkitPlayer().getLocation();
             Location spawnLoc = region.getSpawnPoint().getLocation();

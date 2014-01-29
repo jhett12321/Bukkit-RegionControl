@@ -94,9 +94,9 @@ public class ControlPoint
         return identifier;
     }
     
-    public Map<Faction, Float> getInfluenceMap()
+    public Float getInfluence()
     {
-        return influenceMap;
+        return influenceMap.get(influenceOwner);
     }
     
     public Faction getInfluenceOwner()

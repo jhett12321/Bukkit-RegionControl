@@ -92,117 +92,117 @@ public class SpoutClientLogic
     
     // Region Info Background
     private Texture background = (Texture) new GenericTexture("background.png")
-                                                                               .setDrawAlphaChannel(true)
-                                                                               .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                               .setWidth(150).setHeight(40).setX(3).setY(-5)
-                                                                               .setPriority(RenderPriority.Highest);
+    .setDrawAlphaChannel(true)
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setWidth(150).setHeight(40).setX(3).setY(-5)
+    .setPriority(RenderPriority.Highest);
     
     // Region Info
     private Texture ownerIcon = (Texture) new GenericTexture("null.png")
-                                                                        .setDrawAlphaChannel(true)
-                                                                        .setMargin(-5, 6, 0, 0)
-                                                                        .setFixed(true)
-                                                                        .setWidth(16).setHeight(16);
+    .setDrawAlphaChannel(true)
+    .setMargin(-5, 6, 0, 0)
+    .setFixed(true)
+    .setWidth(16).setHeight(16);
     
     private Label regionName = (Label) new GenericLabel("A Region")
-                                                                   .setShadow(false).setResize(true)
-                                                                   .setFixed(true);
+    .setShadow(false).setResize(true)
+    .setFixed(true);
     
     private Container regionInfo = (Container) new GenericContainer(ownerIcon, regionName)
-                                                                                          .setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_LEFT)
-                                                                                          .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                                          .setWidth(145).setHeight(10).setX(10).setY(3);
+    .setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_LEFT)
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setWidth(145).setHeight(10).setX(10).setY(3);
     
     // Region Status (Enemies/Allies Detected)
     private Label alliesDetectedText = (Label) new GenericLabel("Allies Detected: ")
-                                                                                    .setShadow(false).setScale(0.5F).setResize(true)
-                                                                                    .setFixed(true);
+    .setShadow(false).setScale(0.5F).setResize(true)
+    .setFixed(true);
     
     private Label enemiesDetectedText = (Label) new GenericLabel("Enemies Detected: ")
-                                                                                      .setShadow(false).setScale(0.5F).setResize(true)
-                                                                                      .setFixed(true);
+    .setShadow(false).setScale(0.5F).setResize(true)
+    .setFixed(true);
     
     private Gradient alliesDetectedBar = (Gradient) new GenericGradient(new Color(0, 0, 255))
-                                                                                             .setFixed(true)
-                                                                                             .setWidth(65).setHeight(5)
-                                                                                             .setPriority(RenderPriority.High);
+    .setFixed(true)
+    .setWidth(65).setHeight(5)
+    .setPriority(RenderPriority.High);
     
     private Gradient enemiesDetectedBar = (Gradient) new GenericGradient(new Color(255, 0, 0))
-                                                                                              .setFixed(true)
-                                                                                              .setWidth(65).setHeight(5)
-                                                                                              .setPriority(RenderPriority.High);
+    .setFixed(true)
+    .setWidth(65).setHeight(5)
+    .setPriority(RenderPriority.High);
     
     private Container regionStatusContainer = (Container) new GenericContainer(alliesDetectedText, enemiesDetectedText)
-                                                                                                                       .setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER)
-                                                                                                                       .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                                                                       .setWidth(145).setHeight(12).setX(45).setY(18);
+    .setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER)
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setWidth(145).setHeight(12).setX(45).setY(18);
     
     private Container regionStatusBarContainer = (Container) new GenericContainer(alliesDetectedBar, enemiesDetectedBar)
-                                                                                                                        .setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER)
-                                                                                                                        .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                                                                        .setWidth(145).setHeight(12).setX(45).setY(17);
+    .setLayout(ContainerType.VERTICAL).setAlign(WidgetAnchor.CENTER_CENTER)
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setWidth(145).setHeight(12).setX(45).setY(17);
     
     // Control Points
     private ArrayList<Label> controlPointLabels = new ArrayList<Label>();
     private List<Widget> controlPointScreenElements = new ArrayList<Widget>();
     
     private Container controlPointsContainer = (Container) new GenericContainer()
-                                                                                 .setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_CENTER)
-                                                                                 .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                                 .setWidth(50).setHeight(10).setX(25).setY(25);
+    .setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_CENTER)
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setWidth(50).setHeight(10).setX(25).setY(25);
     
     // Control Point Capture Bar
     private Gradient controlPointCaptureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255))
-                                                                                                           .setAnchor(WidgetAnchor.TOP_CENTER)
-                                                                                                           .setWidth(150).setHeight(5).setX(-75).setY(32);
+    .setAnchor(WidgetAnchor.TOP_CENTER)
+    .setWidth(150).setHeight(5).setX(-75).setY(32);
     
     private Gradient controlPointCaptureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F))
-                                                                                                                 .setAnchor(WidgetAnchor.TOP_CENTER)
-                                                                                                                 .setWidth(154).setHeight(7).setX(-77).setY(31)
-                                                                                                                 .setPriority(RenderPriority.High);
+    .setAnchor(WidgetAnchor.TOP_CENTER)
+    .setWidth(154).setHeight(7).setX(-77).setY(31)
+    .setPriority(RenderPriority.High);
     
     // Cannot Capture Control Point Indicator
     private ArrayList<Label> reasonWidgetList = new ArrayList<Label>();
     
     // Influence Owner Icon
     private Texture influenceOwnerIcon = (Texture) new GenericTexture("null.png")
-                                                                                 .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                                 .setWidth(8).setHeight(8).setX(5).setY(40);
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setWidth(8).setHeight(8).setX(5).setY(40);
     
     // Capture Bar
     private Gradient captureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255))
-                                                                                               .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                                               .setWidth(100).setHeight(10).setX(23).setY(40)
-                                                                                               .setPriority(RenderPriority.High);
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setWidth(100).setHeight(10).setX(23).setY(40)
+    .setPriority(RenderPriority.High);
     
     private Gradient captureBarSpace = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F))
-                                                                                                .setFixed(true)
-                                                                                                .setWidth(0).setHeight(10)
-                                                                                                .setPriority(RenderPriority.Low);
+    .setFixed(true)
+    .setWidth(0).setHeight(10)
+    .setPriority(RenderPriority.Low);
     
     private Gradient captureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F))
-                                                                                                     .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                                                     .setWidth(104).setHeight(12).setX(21).setY(39)
-                                                                                                     .setPriority(RenderPriority.Highest);
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setWidth(104).setHeight(12).setX(21).setY(39)
+    .setPriority(RenderPriority.Highest);
     
     private Container captureBarSpaceContainer = (Container) new GenericContainer(captureBarSpace)
-                                                                                                  .setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_RIGHT)
-                                                                                                  .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                                                  .setHeight(10).setX(73).setY(40);
+    .setLayout(ContainerType.OVERLAY).setAlign(WidgetAnchor.CENTER_RIGHT)
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setHeight(10).setX(73).setY(40);
     
     // Timer
     private Label captureTimer = (Label) new GenericLabel("0:00")
-                                                                 .setResize(true)
-                                                                 .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                 .setPriority(RenderPriority.Lowest)
-                                                                 .setX(60).setY(41);
+    .setResize(true)
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setPriority(RenderPriority.Lowest)
+    .setX(60).setY(41);
     
     // Capture Bar Animation
     private Texture captureBarAnim = (Texture) new GenericTexture("null.png")
-                                                                             .setDrawAlphaChannel(true)
-                                                                             .setAnchor(WidgetAnchor.CENTER_LEFT)
-                                                                             .setHeight(10).setY(40)
-                                                                             .setPriority(RenderPriority.Normal).setVisible(false);
+    .setDrawAlphaChannel(true)
+    .setAnchor(WidgetAnchor.CENTER_LEFT)
+    .setHeight(10).setY(40)
+    .setPriority(RenderPriority.Normal).setVisible(false);
     
     public ControlPoint getControlPoint()
     {
@@ -295,9 +295,9 @@ public class SpoutClientLogic
                 spoutColor.setRed(red).setGreen(green).setBlue(blue);
             }
             controlPointLabels.add((Label) new GenericLabel(controlPoint.getIdentifier().toUpperCase())
-                                                                                                       .setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER)
-                                                                                                       .setFixed(true)
-                                                                                                       .setMargin(5));
+            .setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER)
+            .setFixed(true)
+            .setMargin(5));
         }
         
         for(Label controlPoint : controlPointLabels)
@@ -369,7 +369,7 @@ public class SpoutClientLogic
                     {
                         if(controlPoint.getInfluenceOwner() != null)
                         {
-                            float influence = controlPoint.getInfluenceMap().get(controlPoint.getInfluenceOwner());
+                            float influence = controlPoint.getInfluence();
                             float baseinfluence = controlPoint.getBaseInfluence();
                             
                             int barwidth = (int) (influence / baseinfluence * 150);
@@ -397,10 +397,10 @@ public class SpoutClientLogic
                                     for(String reason : PlayerAPI.getCannotCaptureReasons(region, rcPlayer))
                                     {
                                         Label reasonLabel = (Label) new GenericLabel(reason)
-                                                                                            .setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.TOP_CENTER)
-                                                                                            .setFixed(true)
-                                                                                            .setAnchor(WidgetAnchor.TOP_CENTER)
-                                                                                            .setY(y);
+                                        .setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.TOP_CENTER)
+                                        .setFixed(true)
+                                        .setAnchor(WidgetAnchor.TOP_CENTER)
+                                        .setY(y);
                                         
                                         reasonLabel.shiftXPos(reasonLabel.getWidth() / 2);
                                         y = y + 5;
@@ -515,7 +515,7 @@ public class SpoutClientLogic
                 element.setVisible(true);
             }
             
-            float influence = controlPoint.getInfluenceMap().get(controlPoint.getInfluenceOwner());
+            float influence = controlPoint.getInfluence();
             float baseinfluence = controlPoint.getBaseInfluence();
             
             int barwidth = (int) (influence / baseinfluence * 150);
@@ -535,10 +535,10 @@ public class SpoutClientLogic
                 for(String reason : PlayerAPI.getCannotCaptureReasons(region, rcPlayer))
                 {
                     Label reasonLabel = (Label) new GenericLabel(reason)
-                                                                        .setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.TOP_CENTER)
-                                                                        .setFixed(true)
-                                                                        .setAnchor(WidgetAnchor.TOP_CENTER)
-                                                                        .setY(y);
+                    .setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.TOP_CENTER)
+                    .setFixed(true)
+                    .setAnchor(WidgetAnchor.TOP_CENTER)
+                    .setY(y);
                     
                     reasonLabel.shiftXPos(reasonLabel.getWidth() / 2);
                     y = y + 5;
@@ -569,9 +569,9 @@ public class SpoutClientLogic
                     spoutColor.setRed(red).setGreen(green).setBlue(blue);
                 }
                 controlPointLabels.add((Label) new GenericLabel(controlPoint.getIdentifier().toUpperCase())
-                                                                                                           .setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER)
-                                                                                                           .setFixed(true)
-                                                                                                           .setMargin(5));
+                .setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER)
+                .setFixed(true)
+                .setMargin(5));
             }
             
             for(Label controlPointLabel : controlPointLabels)
@@ -630,9 +630,9 @@ public class SpoutClientLogic
                     spoutColor.setRed(red).setGreen(green).setBlue(blue);
                 }
                 controlPointLabels.add((Label) new GenericLabel(controlPoint.getIdentifier().toUpperCase())
-                                                                                                           .setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER)
-                                                                                                           .setFixed(true)
-                                                                                                           .setMargin(5));
+                .setTextColor(spoutColor).setScale(1.5F).setShadow(false).setResize(true).setAlign(WidgetAnchor.CENTER_CENTER)
+                .setFixed(true)
+                .setMargin(5));
             }
             
             for(Label controlPointLabel : controlPointLabels)

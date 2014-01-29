@@ -165,7 +165,7 @@ public class RegionScoreboard
         List<String> controlPointStrings = new ArrayList<String>();
         for(ControlPoint controlPoint : region.getControlPoints())
         {
-            if(controlPoint.getInfluenceMap().get(controlPoint.getInfluenceOwner()) == controlPoint.getBaseInfluence())
+            if(controlPoint.getInfluence() == controlPoint.getBaseInfluence())
             {
                 controlPointStrings.add(controlPoint.getOwner().getFactionColor().getChatColor() + controlPoint.getIdentifier().toUpperCase() + " ");
             }

@@ -135,7 +135,7 @@ public class Config
                         {
                             Faction controlPointInfluenceOwner = controlPoint.getInfluenceOwner();
                             String configControlPointInfluenceOwner = controlPointInfluenceOwner.getId();
-                            int configControlPointInfluence = controlPoint.getInfluenceMap().get(controlPointInfluenceOwner).intValue();
+                            int configControlPointInfluence = controlPoint.getInfluence().intValue();
                             String configControlPointId = controlPoint.getIdentifier();
                             String configControlPointOwner = controlPoint.getOwner().getId();
                             

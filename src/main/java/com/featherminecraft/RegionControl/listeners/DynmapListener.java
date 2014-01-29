@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import com.featherminecraft.RegionControl.DependencyManager;
 import com.featherminecraft.RegionControl.api.events.ControlPointCaptureEvent;
 import com.featherminecraft.RegionControl.api.events.ControlPointDefendEvent;
+import com.featherminecraft.RegionControl.api.events.ControlPointNeutralizeEvent;
 import com.featherminecraft.RegionControl.api.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.dynmap.DynmapImpl;
@@ -17,13 +18,19 @@ public class DynmapListener implements Listener
     @EventHandler
     public void onControlPointCapture(ControlPointCaptureEvent event)
     {
-        DynmapImpl.updateRegionControlPoints(event.getRegion());
+        DynmapImpl.onControlPointCapture(event.getControlPoint());
     }
     
     @EventHandler
     public void onControlPointDefend(ControlPointDefendEvent event)
     {
-        DynmapImpl.updateRegionControlPoints(event.getRegion());
+        DynmapImpl.onControlPointCapture(event.getControlPoint());
+    }
+    
+    @EventHandler
+    public void onControlPointNeutralize(ControlPointNeutralizeEvent event)
+    {
+        DynmapImpl.onControlPointNeutralize(event.getControlPoint());
     }
     
     @EventHandler(priority = EventPriority.MONITOR)

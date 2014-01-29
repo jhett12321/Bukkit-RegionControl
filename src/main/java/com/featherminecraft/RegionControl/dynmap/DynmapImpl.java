@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.World;
 
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
+import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.PolyLineMarker;
 
@@ -138,13 +140,32 @@ public class DynmapImpl
         AreaMarker marker = territoryControlMarkers.get(region);
         
         marker.setFillStyle(0.3, region.getOwner().getFactionColor().getColor().asRGB());
-        updateRegionControlPoints(region);
+        for(ControlPoint controlPoint : region.getControlPoints())
+        {
+            if(controlPoint.getInfluence() == controlPoint.getBaseInfluence())
+            {
+                onControlPointCapture(controlPoint);
+            }
+            else
+            {
+                onControlPointNeutralize(controlPoint);
+            }
+        }
     }
     
-    public static void updateRegionControlPoints(CapturableRegion region)
+    public static void onControlPointNeutralize(ControlPoint controlPoint)
     {
-        String desc = formatInfoWindow(region);
-        territoryControlMarkers.get(region).setDescription(desc);
+        Bukkit.getServer().broadcastMessage("Neutralise Event received.");
+        String desc = formatInfoWindow(controlPoint.getRegion());
+        territoryControlMarkers.get(controlPoint.getRegion()).setDescription(desc);
+        controlPointMarkers.get(controlPoint).setMarkerIcon(DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerIcon("down"));
+    }
+    
+    public static void onControlPointCapture(ControlPoint controlPoint)
+    {
+        String desc = formatInfoWindow(controlPoint.getRegion());
+        territoryControlMarkers.get(controlPoint.getRegion()).setDescription(desc);
+        controlPointMarkers.get(controlPoint).setMarkerIcon(DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerIcon(controlPoint.getOwner().getFactionColor().getControlPointIcon()));
     }
     
     /* Update region information */
@@ -176,9 +197,18 @@ public class DynmapImpl
         for(ControlPoint controlPoint : region.getControlPoints())
         {
             String controlpointdef = DEF_CONTROLPOINT.replace("%controlPointId%", controlPoint.getIdentifier().toUpperCase());
-            controlpointdef = controlpointdef.replace("%red%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getRed()).toString());
-            controlpointdef = controlpointdef.replace("%green%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getGreen()).toString());
-            controlpointdef = controlpointdef.replace("%blue%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getBlue()).toString());
+            if(controlPoint.getInfluence() == controlPoint.getBaseInfluence())
+            {
+                controlpointdef = controlpointdef.replace("%red%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getRed()).toString());
+                controlpointdef = controlpointdef.replace("%green%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getGreen()).toString());
+                controlpointdef = controlpointdef.replace("%blue%", ((Integer) controlPoint.getOwner().getFactionColor().getColor().getBlue()).toString());
+            }
+            else
+            {
+                controlpointdef = controlpointdef.replace("%red%", ((Integer) 180).toString());
+                controlpointdef = controlpointdef.replace("%green%", ((Integer) 180).toString());
+                controlpointdef = controlpointdef.replace("%blue%", ((Integer) 180).toString());
+            }
             infoDiv = infoDiv.replace("%ControlPointDefs%", controlpointdef + "%ControlPointDefs%");
         }
         
@@ -271,8 +301,17 @@ public class DynmapImpl
                 double y = controlPoint.getLocation().getY();
                 double z = controlPoint.getLocation().getZ();
                 
-                Marker marker = controlPointsMarkerSet.createMarker(id, controlPoint.getIdentifier().toUpperCase(), region.getWorld().getName(), x, y, z, DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerIcon("yellowflag"), false);
+                MarkerIcon markerIcon;
+                if(controlPoint.getInfluence() == controlPoint.getBaseInfluence())
+                {
+                    markerIcon = DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerIcon(controlPoint.getOwner().getFactionColor().getControlPointIcon());
+                }
+                else
+                {
+                    markerIcon = DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerIcon("down");
+                }
                 
+                Marker marker = controlPointsMarkerSet.createMarker(id, controlPoint.getIdentifier().toUpperCase(), region.getWorld().getName(), x, y, z, markerIcon, false);
                 controlPointMarkers.put(controlPoint, marker);
             }
         }
