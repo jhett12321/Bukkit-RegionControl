@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.World;
 
@@ -155,7 +154,6 @@ public class DynmapImpl
     
     public static void onControlPointNeutralize(ControlPoint controlPoint)
     {
-        Bukkit.getServer().broadcastMessage("Neutralise Event received.");
         String desc = formatInfoWindow(controlPoint.getRegion());
         territoryControlMarkers.get(controlPoint.getRegion()).setDescription(desc);
         controlPointMarkers.get(controlPoint).setMarkerIcon(DependencyManager.getDynmapAPI().getMarkerAPI().getMarkerIcon("down"));
