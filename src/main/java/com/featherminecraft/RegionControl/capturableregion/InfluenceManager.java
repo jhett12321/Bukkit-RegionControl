@@ -162,23 +162,28 @@ public class InfluenceManager
         
         else if(influenceOwner == majorityController)
         {
-            if(region.getInfluenceMap().get(influenceOwner) != region.getBaseInfluence() && majorityController != null && influenceRate != null && influenceRate != 0F)
+            if(region.isBeingCaptured() && majorityController != null && influenceRate != null && influenceRate != 0F)
             {
-                if(region.getInfluenceMap().get(influenceOwner) + influenceRate >= region.getBaseInfluence())
+                if(region.getInfluenceMap().get(influenceOwner) >= region.getBaseInfluence())
                 {
-                    region.getInfluenceMap().put(influenceOwner, region.getBaseInfluence());
                     if(region.getOwner() == influenceOwner && influenceRate == 4F)
                     {
-                        region.setBeingCaptured(false);
-                        Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
                         Bukkit.getServer().getPluginManager().callEvent(new RegionDefendEvent(region, influenceOwner));
+                        Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
+                        return;
                     }
                     
                     else if(region.getOwner() != influenceOwner)
                     {
-                        Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
                         Bukkit.getServer().getPluginManager().callEvent(new RegionCaptureEvent(region, region.getOwner(), influenceOwner));
+                        Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
+                        return;
                     }
+                }
+                
+                else if(region.getInfluenceMap().get(influenceOwner) + influenceRate >= region.getBaseInfluence())
+                {
+                    region.getInfluenceMap().put(influenceOwner, region.getBaseInfluence());
                 }
                 
                 else
@@ -186,18 +191,10 @@ public class InfluenceManager
                     region.getInfluenceMap().put(influenceOwner, region.getInfluenceMap().get(influenceOwner) + influenceRate);
                 }
             }
-            
-            else if(majorityController != null && influenceRate == 4F && region.getInfluenceMap().get(influenceOwner) + influenceRate >= region.getBaseInfluence() && region.getOwner() == influenceOwner && region.isBeingCaptured())
-            {
-                Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, false));
-                Bukkit.getServer().getPluginManager().callEvent(new RegionDefendEvent(region, influenceOwner));
-            }
         }
         
-        // Capture Status Change events run here.
-        if((region.getInfluenceMap().get(influenceOwner) != region.getBaseInfluence() && !region.isBeingCaptured()) || (region.getInfluenceRate() < 4F && !region.isBeingCaptured()))
+        if((region.getInfluenceMap().get(influenceOwner) < region.getBaseInfluence() && !region.isBeingCaptured()) || (region.getInfluenceRate() < 4F && !region.isBeingCaptured()))
         {
-            region.setBeingCaptured(true);
             Bukkit.getServer().getPluginManager().callEvent(new CaptureStatusChangeEvent(region, true));
         }
         

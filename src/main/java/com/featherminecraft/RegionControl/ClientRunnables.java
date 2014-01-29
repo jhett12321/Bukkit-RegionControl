@@ -19,16 +19,27 @@ public class ClientRunnables extends BukkitRunnable
     public ClientRunnables(RCPlayer player)
     {
         this.player = player;
-        SpawnPoint spawnPoint = player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()).getSpawnPoint();
         
-        if(spawnPoint == null)
+        SpawnPoint spawnPoint = player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()).getSpawnPoint();
+        if(spawnPoint != null)
         {
-            player.getBukkitPlayer().teleport(player.getBukkitPlayer().getWorld().getSpawnLocation());
+            player.setRespawnLocation(spawnPoint.getLocation());
         }
         else
         {
-            player.getBukkitPlayer().teleport(spawnPoint.getLocation());
+            player.setRespawnLocation(player.getBukkitPlayer().getWorld().getSpawnLocation());
         }
+        
+//        if(player.getBukkitPlayer().isDead())
+//        {
+//            PlayerAPI.respawnPlayer(player);
+//        }
+//        
+//        else
+//        {
+//            player.getBukkitPlayer().teleport(player.getRespawnLocation());
+//        }
+        player.getBukkitPlayer().teleport(player.getRespawnLocation());
     }
     
     @Override

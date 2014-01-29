@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.featherminecraft</groupId>
 	<artifactId>RegionControl</artifactId>
-	<version>0.9-B2</version>
+	<version>0.9-B3</version>
 	<name>RegionControl</name>
 	<properties>
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
@@ -179,6 +179,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
 				<configuration>
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>

@@ -19,7 +19,6 @@ public class SetFactionCommand implements Command
     @Override
     public boolean execute(CommandSender sender, String[] args)
     {
-        // Set Faction Command
         if((args.length == 2 || args.length == 3))
         {
             Faction faction = null;

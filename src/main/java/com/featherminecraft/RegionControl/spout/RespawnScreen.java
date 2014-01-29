@@ -29,11 +29,13 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
 public class RespawnScreen
 {
-    private RespawnListModel ListModel;
+    private RespawnListModel listModel;
     private GenericListView listWidget;
     List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
     private GenericPopup popup;
     private Button respawnButton;
+    private SortedMap<Integer, CapturableRegion> distances;
+    private Location playerLoc;
     
     public RespawnScreen(InGameHUD mainscreen, RCPlayer player)
     {
@@ -62,13 +64,12 @@ public class RespawnScreen
             spawnableRegions.add(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()));
         }
         
-        SortedMap<Integer, CapturableRegion> distances = new TreeMap<Integer, CapturableRegion>();
+        playerLoc = player.getBukkitPlayer().getLocation();
+        distances = new TreeMap<Integer, CapturableRegion>();
+        
         for(CapturableRegion region : spawnableRegions)
         {
-            Location playerLoc = player.getBukkitPlayer().getLocation();
-            Location spawnLoc = region.getSpawnPoint().getLocation();
-            Integer distance = ((Double) playerLoc.distance(spawnLoc)).intValue();
-            distances.put(distance, region);
+            addRegionToSpawnList(region);
         }
         
         List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
@@ -78,8 +79,8 @@ public class RespawnScreen
             respawnList.add(item);
         }
         
-        ListModel = new RespawnListModel(this, player, respawnList);
-        listWidget = new GenericListView(ListModel);
+        listModel = new RespawnListModel(this, player, respawnList);
+        listWidget = new GenericListView(listModel);
         listWidget.setWidth(200).setHeight(200).setFixed(true).setPriority(RenderPriority.Lowest);
         respawnContainer.addChildren(deploymentTitle, listWidget, respawnButton);
         
@@ -88,6 +89,34 @@ public class RespawnScreen
         popup.attachWidgets(RegionControl.plugin, respawnContainer, listWidget, deploymentTitle, respawnButton);
         
         mainscreen.attachPopupScreen(popup);
+    }
+    
+    public void addRegionToSpawnList(CapturableRegion region)
+    {
+        Location spawnLoc = region.getSpawnPoint().getLocation();
+        Integer distance = ((Double) playerLoc.distance(spawnLoc)).intValue();
+        distances.put(distance, region);
+    }
+    
+    public void removeRegionFromSpawnList(CapturableRegion region)
+    {
+        Location spawnLoc = region.getSpawnPoint().getLocation();
+        Integer distance = ((Double) playerLoc.distance(spawnLoc)).intValue();
+        distances.remove(distance);
+    }
+    
+    public void updateRegions()
+    {
+        listWidget.clear();
+        List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
+        for(Entry<Integer, CapturableRegion> listEntry : distances.entrySet())
+        {
+            ListWidgetItem item = new ListWidgetItem(listEntry.getKey().toString() + "m", listEntry.getValue().getDisplayName());
+            listWidget.addItem(item);
+            respawnList.add(item);
+        }
+        listModel.updateSpawnPoints(respawnList);
+        listModel.onSelected(0, false);
     }
     
     public GenericListView getListWidget()

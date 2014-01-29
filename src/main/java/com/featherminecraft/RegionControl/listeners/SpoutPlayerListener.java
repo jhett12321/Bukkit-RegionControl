@@ -33,8 +33,6 @@ import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 
 public class SpoutPlayerListener implements Listener
 {
-    private RespawnScreen respawnScreen;
-    
     @EventHandler(priority = EventPriority.MONITOR)
     public void onButtonClick(ButtonClickEvent event)
     {
@@ -191,10 +189,11 @@ public class SpoutPlayerListener implements Listener
         if(event.getKey().equals(Keyboard.KEY_ESCAPE))
         {
             SpoutPlayer splayer = event.getPlayer();
+            RCPlayer rcplayer = PlayerAPI.getRCPlayerFromBukkitPlayer(splayer);
             if(splayer.isDead())
             {
                 splayer.getMainScreen().closePopup();
-                splayer.getMainScreen().attachPopupScreen(respawnScreen.getPopup());
+                splayer.getMainScreen().attachPopupScreen(rcplayer.getSpoutClientLogic().getRespawnScreen().getPopup());
             }
         }
     }
@@ -207,7 +206,7 @@ public class SpoutPlayerListener implements Listener
         if(rcplayer.hasSpout())
         {
             InGameHUD mainscreen = splayer.getMainScreen();
-            respawnScreen = new RespawnScreen(mainscreen, rcplayer);
+            rcplayer.getSpoutClientLogic().setRespawnScreen(new RespawnScreen(mainscreen, rcplayer));
         }
         else
         {
@@ -225,6 +224,19 @@ public class SpoutPlayerListener implements Listener
             if(player.hasSpout())
             {
                 player.getSpoutClientLogic().updateRegion(event.getRegion());
+                if(player.getSpoutClientLogic().getRespawnScreen() != null)
+                {
+                    if(event.getNewOwner() == player.getFaction())
+                    {
+                        player.getSpoutClientLogic().getRespawnScreen().addRegionToSpawnList(event.getRegion());
+                        player.getSpoutClientLogic().getRespawnScreen().updateRegions();
+                    }
+                    else
+                    {
+                        player.getSpoutClientLogic().getRespawnScreen().removeRegionFromSpawnList(event.getRegion());
+                        player.getSpoutClientLogic().getRespawnScreen().updateRegions();
+                    }
+                }
             }
             // TODO Play Capture Sounds/Music
         }

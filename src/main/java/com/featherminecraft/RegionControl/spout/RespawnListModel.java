@@ -191,4 +191,9 @@ public class RespawnListModel extends AbstractListModel
             respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString + "\n" + alliesDetectedText + "\n" + enemiesDetectedText);
         }
     }
+    
+    public void updateSpawnPoints(List<ListWidgetItem> spawnPoints)
+    {
+        this.spawnPoints = spawnPoints;
+    }
 }

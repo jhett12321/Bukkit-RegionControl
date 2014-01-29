@@ -122,14 +122,17 @@ public class DynmapImpl
             id = adjacentRegion.getWorld().getName() + "_" + adjacentRegion.getRegionId() + "_" + region.getRegionId();
             marker = latticeLineMarkers.get(id);
             
-            if(region.getOwner() == adjacentRegion.getOwner())
+            if(marker != null)
             {
-                marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().getColor().asRGB());
-            }
-            
-            else
-            {
-                marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
+                if(region.getOwner() == adjacentRegion.getOwner())
+                {
+                    marker.setLineStyle(3, 1.0, region.getOwner().getFactionColor().getColor().asRGB());
+                }
+                
+                else
+                {
+                    marker.setLineStyle(3, 1.0, Color.YELLOW.asRGB());
+                }
             }
         }
     }

@@ -107,7 +107,7 @@ public class PlayerAPI
                 {
                     checks.put(CannotCaptureReason.CONNECTION_NOT_SECURE, false);
                 }
-                else if(adjacentregion.getOwner() == player.getFaction() && adjacentregion.getInfluenceOwner() != null && adjacentregion.getInfluenceMap().get(adjacentregion.getInfluenceOwner()) >= adjacentregion.getBaseInfluence())
+                else if(adjacentregion.getOwner() == player.getFaction() && !adjacentregion.isBeingCaptured())
                 {
                     checks.put(CannotCaptureReason.CONNECTION_NOT_SECURE, false);
                 }

@@ -19,6 +19,7 @@ public class CommandHandler
         registerCommand(SetFactionCommand.class);
         registerCommand(SaveCommand.class);
         registerCommand(EditModeCommand.class);
+        registerCommand(TeleportCommand.class);
     }
     
     public Command getCommand(String commandName)

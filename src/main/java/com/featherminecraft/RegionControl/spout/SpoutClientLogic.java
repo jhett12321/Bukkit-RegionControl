@@ -83,6 +83,7 @@ public class SpoutClientLogic
     private InGameHUD screen;
     private CapturableRegion region;
     private ControlPoint controlPoint;
+    private RespawnScreen respawnScreen;
     
     // GUI
     private List<Widget> screenElements = new ArrayList<Widget>();
@@ -167,7 +168,7 @@ public class SpoutClientLogic
     // Influence Owner Icon
     private Texture influenceOwnerIcon = (Texture) new GenericTexture("null.png")
     .setAnchor(WidgetAnchor.CENTER_LEFT)
-    .setWidth(8).setHeight(8).setX(5).setY(40);
+    .setWidth(12).setHeight(12).setX(6).setY(40);
     
     // Capture Bar
     private Gradient captureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255))
@@ -916,6 +917,13 @@ public class SpoutClientLogic
         {
             for(Widget element : screenCaptureElements)
             {
+                if(element instanceof Label)
+                {
+                    if(((Label) element).getText() == "0:00" || ((Label) element).getText() == "0:01")
+                    {
+                        continue;
+                    }
+                }
                 element.setVisible(true);
             }
             captureElementsHidden = false;
@@ -935,5 +943,15 @@ public class SpoutClientLogic
             }
             allElementsHidden = false;
         }
+    }
+
+    public void setRespawnScreen(RespawnScreen respawnScreen)
+    {
+        this.respawnScreen = respawnScreen;
+    }
+    
+    public RespawnScreen getRespawnScreen()
+    {
+        return respawnScreen;
     }
 }
