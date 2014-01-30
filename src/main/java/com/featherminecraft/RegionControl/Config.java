@@ -113,7 +113,7 @@ public class Config
                         // Retrieve Data from regions.
                         Faction owner = region.getOwner();
                         Faction influenceOwner = region.getInfluenceOwner();
-                        if(influenceOwner != null)
+                        if(influenceOwner == null)
                         {
                             influenceOwner = owner;
                         }

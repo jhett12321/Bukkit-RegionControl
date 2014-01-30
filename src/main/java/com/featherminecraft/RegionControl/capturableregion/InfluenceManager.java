@@ -54,6 +54,31 @@ public class InfluenceManager
             {
                 effectiveControlPointCount -= 1F;
             }
+            
+            // Alternate System: All factions against the current influence owner contribute to the influence loss.
+            // e.g. 1 Held by the influence owner, 1 by an attacker, and 1 by another attacker -> 2 ControlPoints against.
+//            if(region.getInfluenceOwner() == region.getMajorityController())
+//            {
+//                if(controlPoint.getOwner() == region.getMajorityController() && !controlPoint.isCapturing())
+//                {
+//                    effectiveControlPointCount += 1F;
+//                }
+//                else if(controlPoint.getOwner() != region.getMajorityController() && !controlPoint.isCapturing())
+//                {
+//                    effectiveControlPointCount -= 1F;
+//                }
+//            }
+//            else if(region.getInfluenceOwner() != region.getMajorityController())
+//            {
+//                if(controlPoint.getOwner() != region.getInfluenceOwner() && !controlPoint.isCapturing())
+//                {
+//                    effectiveControlPointCount += 1F;
+//                }
+//                else if(controlPoint.getOwner() == region.getInfluenceOwner() && !controlPoint.isCapturing())
+//                {
+//                    effectiveControlPointCount -= 1F;
+//                }
+//            }
         }
         
         float percentageOwned = effectiveControlPointCount / ((Integer) controlPoints.size()).floatValue();
