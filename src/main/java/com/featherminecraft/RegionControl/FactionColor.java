@@ -4,6 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 
+import com.featherminecraft.RegionControl.data.Config;
+
 public class FactionColor
 {
     private DyeColor woolColor;
@@ -13,7 +15,7 @@ public class FactionColor
     private String factionIcon;
     private String controlPointIcon;
     
-    public FactionColor(Faction faction, String factionColor)
+    FactionColor(Faction faction, String factionColor)
     {
         boolean spoutEnabled = DependencyManager.isSpoutCraftAvailable();
         
@@ -109,7 +111,7 @@ public class FactionColor
     {
         return controlPointIcon;
     }
-
+    
     public DyeColor getWoolColor()
     {
         return woolColor;
@@ -117,6 +119,16 @@ public class FactionColor
     
     private enum Colors
     {
-        RED,BLUE,GREEN,ORANGE,MAGENTA,PINK,PURPLE,YELLOW,GRAY,BLACK,WHITE
+        RED,
+        BLUE,
+        GREEN,
+        ORANGE,
+        MAGENTA,
+        PINK,
+        PURPLE,
+        YELLOW,
+        GRAY,
+        BLACK,
+        WHITE
     }
 }

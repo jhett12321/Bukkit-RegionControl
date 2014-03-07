@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
         usage = "/regioncontrol help",
         desc = "Provides a list of RegionControl commands.",
         permission = "regioncontrol.help")
-public class HelpCommand implements Command
+class HelpCommand implements Command
 {
     @Override
     public boolean execute(CommandSender sender, String[] args)

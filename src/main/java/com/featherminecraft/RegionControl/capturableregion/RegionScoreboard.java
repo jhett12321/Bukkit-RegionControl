@@ -30,7 +30,7 @@ public class RegionScoreboard
     private Score timer;
     private Score timerTitle;
     
-    public RegionScoreboard(CapturableRegion region)
+    RegionScoreboard(CapturableRegion region)
     {
         this.region = region;
         
@@ -99,7 +99,7 @@ public class RegionScoreboard
         return scoreBoard;
     }
     
-    public void Runnable()
+    protected void Runnable()
     {
         if(region.isBeingCaptured())
         {

@@ -28,6 +28,7 @@ public class InfluenceOwnerChangeEvent extends Event
     {
         return handlers;
     }
+    
     @Override
     public HandlerList getHandlers()
     {

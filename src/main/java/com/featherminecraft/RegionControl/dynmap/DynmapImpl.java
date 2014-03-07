@@ -171,7 +171,7 @@ public class DynmapImpl
     
     /* Update region information */
     @Deprecated
-    public static void updateRegions()
+    private static void updateRegions()
     {
         Map<CapturableRegion, AreaMarker> newmap = new HashMap<CapturableRegion, AreaMarker>(); /* Build new map */
         

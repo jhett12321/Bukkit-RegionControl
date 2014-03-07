@@ -15,7 +15,7 @@ public class Faction
     private String id;
     private FactionColor factionColor;
     
-    public Faction(String id, String displayName, String permissionGroup, String color)
+    Faction(String id, String displayName, String permissionGroup, String color)
     {
         this.id = id;
         this.displayName = displayName;
@@ -24,7 +24,7 @@ public class Faction
         factionColor = new FactionColor(this, color);
     }
     
-    public void addFactionSpawnRegion(CapturableRegion spawnRegion)
+    protected void addFactionSpawnRegion(CapturableRegion spawnRegion)
     {
         this.spawnRegion.put(spawnRegion.getWorld(), spawnRegion);
     }

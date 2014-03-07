@@ -129,7 +129,7 @@ public class ControlPoint
         return capturing;
     }
     
-    public void Runnable()
+    protected void Runnable()
     {
         Faction majorityPopulation = CalculateMajorityPopulation();
         this.majorityPopulation = majorityPopulation;

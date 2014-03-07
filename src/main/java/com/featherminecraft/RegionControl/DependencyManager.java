@@ -11,13 +11,15 @@ import net.milkbowl.vault.permission.Permission;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
+import com.featherminecraft.RegionControl.data.Config;
+
 import com.herocraftonline.heroes.Heroes;
 
 public final class DependencyManager
 {
-    public static boolean areDependenciesAvailable()
+    protected static boolean areDependenciesAvailable()
     {
-        return isWorldGuardAvailable() && isVaultAvailable() && isProtocolLibAvailable();
+        return(isPluginAvailable(RegionControl.plugin.getServer().getPluginManager().getPlugin("Vault")) && isPluginAvailable(RegionControl.plugin.getServer().getPluginManager().getPlugin("WorldGuard")) && isPluginAvailable(RegionControl.plugin.getServer().getPluginManager().getPlugin("ProtocolLib")));
     }
     
     public static DynmapAPI getDynmapAPI()
@@ -47,22 +49,12 @@ public final class DependencyManager
     
     public static ProtocolManager getProtocolManager()
     {
-        if(isProtocolLibAvailable())
-        {
-            return ProtocolLibrary.getProtocolManager();
-        }
-        
-        return null;
+        return ProtocolLibrary.getProtocolManager();
     }
     
     public static WorldGuardPlugin getWorldGuard()
     {
-        if(isWorldGuardAvailable())
-        {
-            return (WorldGuardPlugin) RegionControl.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-        }
-        
-        return null;
+        return (WorldGuardPlugin) RegionControl.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
     }
     
     public static boolean isDynmapAvailable()
@@ -75,24 +67,9 @@ public final class DependencyManager
         return isOptionalPluginAvailable(RegionControl.plugin.getServer().getPluginManager().getPlugin("Heroes"), "hooks.heroes.enabled");
     }
     
-    public static boolean isProtocolLibAvailable()
-    {
-        return isPluginAvailable(RegionControl.plugin.getServer().getPluginManager().getPlugin("ProtocolLib"));
-    }
-    
     public static boolean isSpoutCraftAvailable()
     {
         return isOptionalPluginAvailable(RegionControl.plugin.getServer().getPluginManager().getPlugin("Spout"), "hooks.spout.enabled");
-    }
-    
-    public static boolean isVaultAvailable()
-    {
-        return isPluginAvailable(RegionControl.plugin.getServer().getPluginManager().getPlugin("Vault"));
-    }
-    
-    public static boolean isWorldGuardAvailable()
-    {
-        return isPluginAvailable(RegionControl.plugin.getServer().getPluginManager().getPlugin("WorldGuard"));
     }
     
     private static boolean isOptionalPluginAvailable(Plugin plugin, String mainConfigPath)

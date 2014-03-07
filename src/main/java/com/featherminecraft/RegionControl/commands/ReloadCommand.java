@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
         usage = "/regioncontrol reload",
         desc = "Reloads the RegionControl config files.",
         permission = "regioncontrol.reload")
-public class ReloadCommand implements Command
+class ReloadCommand implements Command
 {
     @Override
     public boolean execute(CommandSender sender, String[] args)

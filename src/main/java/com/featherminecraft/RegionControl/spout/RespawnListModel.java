@@ -14,7 +14,7 @@ import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
-public class RespawnListModel extends AbstractListModel
+class RespawnListModel extends AbstractListModel
 {
     private SpoutPlayer splayer;
     private List<ListWidgetItem> spawnPoints;
@@ -22,7 +22,7 @@ public class RespawnListModel extends AbstractListModel
     private RespawnScreen respawnScreen;
     private ListWidgetItem item;
     
-    public RespawnListModel(RespawnScreen respawnScreen, RCPlayer rcplayer, List<ListWidgetItem> spawnPoints)
+    RespawnListModel(RespawnScreen respawnScreen, RCPlayer rcplayer, List<ListWidgetItem> spawnPoints)
     {
         this.respawnScreen = respawnScreen;
         this.rcplayer = rcplayer;
@@ -97,7 +97,7 @@ public class RespawnListModel extends AbstractListModel
         rcplayer.getClientRunnable("spoutRespawnTooltip").cancel();
     }
     
-    public void updateTooltip()
+    private void updateTooltip()
     {
         String displayName = item.getText();
         

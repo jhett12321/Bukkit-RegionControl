@@ -69,6 +69,7 @@ public class ControlPointInfluenceRateChangeEvent extends Event
     {
         return handlers;
     }
+    
     @Override
     public HandlerList getHandlers()
     {

@@ -12,16 +12,18 @@ import org.bukkit.scheduler.BukkitTask;
 import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.commands.CommandHandler;
+import com.featherminecraft.RegionControl.data.Config;
+import com.featherminecraft.RegionControl.data.Data;
 import com.featherminecraft.RegionControl.dynmap.DynmapImpl;
 import com.featherminecraft.RegionControl.listeners.DynmapListener;
 import com.featherminecraft.RegionControl.listeners.PlayerListener;
+import com.featherminecraft.RegionControl.listeners.RegionListener;
 import com.featherminecraft.RegionControl.listeners.ServerListener;
 import com.featherminecraft.RegionControl.listeners.SpoutPlayerListener;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 
 public final class RegionControl extends JavaPlugin
 {
-    public static Config config = new Config();
     public static RegionControl plugin;
     private static boolean pluginLoaded = false;
     private CommandHandler commandHandler;
@@ -39,6 +41,7 @@ public final class RegionControl extends JavaPlugin
         if(pluginLoaded)
         {
             Config.saveAll(true);
+            Data.processQueue();
             for(RCPlayer player : ServerLogic.players.values())
             {
                 for(BukkitTask runnable : player.getClientRunnables().values())
@@ -79,11 +82,13 @@ public final class RegionControl extends JavaPlugin
         
         Config.reloadFactionConfig();
         Config.reloadRegionConfigs();
+        Data.init();
         
         ServerLogic.init();
         
         pluginManager.registerEvents(new PlayerListener(), this);
         pluginManager.registerEvents(new ServerListener(), this);
+        pluginManager.registerEvents(new RegionListener(), this);
         
         if(DependencyManager.isSpoutCraftAvailable())
         {
@@ -117,7 +122,7 @@ public final class RegionControl extends JavaPlugin
         
         pluginLoaded = true;
     }
-
+    
     public CommandHandler getCommandHandler()
     {
         return commandHandler;

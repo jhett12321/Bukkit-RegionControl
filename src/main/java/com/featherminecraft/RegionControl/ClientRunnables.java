@@ -12,11 +12,11 @@ import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 
-public class ClientRunnables extends BukkitRunnable
+class ClientRunnables extends BukkitRunnable
 {
     private RCPlayer player;
     
-    public ClientRunnables(RCPlayer player)
+    ClientRunnables(RCPlayer player)
     {
         this.player = player;
         
@@ -30,20 +30,25 @@ public class ClientRunnables extends BukkitRunnable
             player.setRespawnLocation(player.getBukkitPlayer().getWorld().getSpawnLocation());
         }
         
-//        if(player.getBukkitPlayer().isDead())
-//        {
-//            PlayerAPI.respawnPlayer(player);
-//        }
-//        
-//        else
-//        {
-//            player.getBukkitPlayer().teleport(player.getRespawnLocation());
-//        }
+        // if(player.getBukkitPlayer().isDead())
+        // {
+        // PlayerAPI.respawnPlayer(player);
+        // }
+        //
+        // else
+        // {
+        // player.getBukkitPlayer().teleport(player.getRespawnLocation());
+        // }
         player.getBukkitPlayer().teleport(player.getRespawnLocation());
     }
     
     @Override
     public void run()
+    {
+        CalculateCurrentRegion();
+    }
+    
+    private void CalculateCurrentRegion()
     {
         CapturableRegion currentRegion = player.getCurrentRegion();
         CapturableRegion newRegion = null;

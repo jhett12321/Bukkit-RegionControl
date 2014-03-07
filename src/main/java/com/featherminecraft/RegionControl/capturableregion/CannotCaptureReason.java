@@ -17,5 +17,5 @@ public class CannotCaptureReason
     /**
      * "Cannot capture Control Point: You are an Invalid Class"
      */
-    public static final String INVALID_CLASS = "Cannot capture Control Point: You are an Invalid Class";
+    // public static final String INVALID_CLASS = "Cannot capture Control Point: You are an Invalid Class";
 }

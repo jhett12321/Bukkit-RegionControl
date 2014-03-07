@@ -20,6 +20,8 @@ import com.featherminecraft.RegionControl.api.RegionAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
+import com.featherminecraft.RegionControl.data.Config;
+import com.featherminecraft.RegionControl.data.Data;
 
 public class ServerLogic
 {
@@ -29,7 +31,7 @@ public class ServerLogic
     public static Map<String, CapturableRegion> capturableRegions = new HashMap<String, CapturableRegion>();
     public static boolean editMode = false;
     
-    public static void init()
+    protected static void init()
     {
         // Faction Setup
         setupFactions();
@@ -46,6 +48,7 @@ public class ServerLogic
             public void run()
             {
                 Config.saveAll(false);
+                Data.processQueue();
             }
             
         }.runTaskTimer(RegionControl.plugin, 1200, 1200);
@@ -248,30 +251,4 @@ public class ServerLogic
             }
         }
     }
-    
-    // WIP - TODO for commands.
-    /*
-     * public static void createRegion(String worldGuardId, String worldId, String regionDisplayName, Float baseInfluence,Float influence, Faction influenceOwner, List<ControlPoint> controlPoints,
-     * String ownerId, List<String> adjacentRegionIds, Location spawnPointLocation,Boolean isSpawnRegion)
-     * {
-     * // Region Setup
-     * Faction owner = factions.get(ownerId);
-     * World world = Bukkit.getWorld(worldId); // World
-     * ProtectedRegion worldGuardRegion = Utils.getWorldGuard().getRegionManager(world).getRegion(worldGuardId); // Region
-     * SpawnPoint spawnPoint = new SpawnPoint(spawnPointLocation);
-     * CapturableRegion capturableregion = new CapturableRegion(regionDisplayName, worldGuardId, owner, worldGuardRegion, world, controlPoints, spawnPoint, baseInfluence, influence, influenceOwner,
-     * isSpawnRegion);
-     * capturableRegions.put(worldId + "_" + worldGuardId, capturableregion);
-     * List<CapturableRegion> adjacentregions = new ArrayList<CapturableRegion>();
-     * // Adjacent Region Setup
-     * for(String adjacentRegionId : adjacentRegionIds)
-     * {
-     * CapturableRegion adjacentRegion = capturableRegions.get(worldId + "_" + adjacentRegionId);
-     * adjacentregions.add(adjacentRegion);
-     * adjacentRegion.getAdjacentRegions().add(capturableregion);
-     * }
-     * capturableRegions.get(worldId + "_" + worldId).setAdjacentRegions(adjacentregions);
-     * }
-     */
-    
 }

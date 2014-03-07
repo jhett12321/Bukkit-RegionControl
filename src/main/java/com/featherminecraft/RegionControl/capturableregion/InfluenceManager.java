@@ -15,16 +15,16 @@ import com.featherminecraft.RegionControl.api.events.RegionCaptureEvent;
 import com.featherminecraft.RegionControl.api.events.RegionDefendEvent;
 import com.featherminecraft.RegionControl.api.events.RegionInfluenceRateChangeEvent;
 
-public class InfluenceManager
+class InfluenceManager
 {
     private CapturableRegion region;
     
-    public InfluenceManager(CapturableRegion cregion)
+    InfluenceManager(CapturableRegion cregion)
     {
         region = cregion;
     }
     
-    public Faction CalculateInfluenceOwner()
+    private Faction CalculateInfluenceOwner()
     {
         Map<Faction, Float> influenceMap = region.getInfluenceMap();
         Faction influenceOwner = null;
@@ -40,7 +40,7 @@ public class InfluenceManager
         return influenceOwner;
     }
     
-    public Float CalculateInfluenceRate()
+    private Float CalculateInfluenceRate()
     {
         List<ControlPoint> controlPoints = region.getControlPoints();
         float effectiveControlPointCount = 0F;
@@ -57,28 +57,28 @@ public class InfluenceManager
             
             // Alternate System: All factions against the current influence owner contribute to the influence loss.
             // e.g. 1 Held by the influence owner, 1 by an attacker, and 1 by another attacker -> 2 ControlPoints against.
-//            if(region.getInfluenceOwner() == region.getMajorityController())
-//            {
-//                if(controlPoint.getOwner() == region.getMajorityController() && !controlPoint.isCapturing())
-//                {
-//                    effectiveControlPointCount += 1F;
-//                }
-//                else if(controlPoint.getOwner() != region.getMajorityController() && !controlPoint.isCapturing())
-//                {
-//                    effectiveControlPointCount -= 1F;
-//                }
-//            }
-//            else if(region.getInfluenceOwner() != region.getMajorityController())
-//            {
-//                if(controlPoint.getOwner() != region.getInfluenceOwner() && !controlPoint.isCapturing())
-//                {
-//                    effectiveControlPointCount += 1F;
-//                }
-//                else if(controlPoint.getOwner() == region.getInfluenceOwner() && !controlPoint.isCapturing())
-//                {
-//                    effectiveControlPointCount -= 1F;
-//                }
-//            }
+            // if(region.getInfluenceOwner() == region.getMajorityController())
+            // {
+            // if(controlPoint.getOwner() == region.getMajorityController() && !controlPoint.isCapturing())
+            // {
+            // effectiveControlPointCount += 1F;
+            // }
+            // else if(controlPoint.getOwner() != region.getMajorityController() && !controlPoint.isCapturing())
+            // {
+            // effectiveControlPointCount -= 1F;
+            // }
+            // }
+            // else if(region.getInfluenceOwner() != region.getMajorityController())
+            // {
+            // if(controlPoint.getOwner() != region.getInfluenceOwner() && !controlPoint.isCapturing())
+            // {
+            // effectiveControlPointCount += 1F;
+            // }
+            // else if(controlPoint.getOwner() == region.getInfluenceOwner() && !controlPoint.isCapturing())
+            // {
+            // effectiveControlPointCount -= 1F;
+            // }
+            // }
         }
         
         float percentageOwned = effectiveControlPointCount / ((Integer) controlPoints.size()).floatValue();
@@ -109,7 +109,7 @@ public class InfluenceManager
         return influenceRate;
     }
     
-    public Faction CalculateMajorityController()
+    private Faction CalculateMajorityController()
     {
         List<ControlPoint> controlPoints = region.getControlPoints();
         Map<Faction, Float> ownedControlPoints = new HashMap<Faction, Float>();

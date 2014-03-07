@@ -1,4 +1,4 @@
-package com.featherminecraft.RegionControl;
+package com.featherminecraft.RegionControl.data;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,6 +17,9 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.featherminecraft.RegionControl.Faction;
+import com.featherminecraft.RegionControl.RegionControl;
+import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
@@ -203,7 +206,7 @@ public class Config
         }
     }
     
-    protected static void reloadFactionConfig()
+    public static void reloadFactionConfig()
     {
         if(factionConfigFile == null)
         {
@@ -218,7 +221,7 @@ public class Config
         }
     }
     
-    protected static void reloadMainConfig()
+    private static void reloadMainConfig()
     {
         if(mainConfigFile == null)
         {
@@ -233,7 +236,7 @@ public class Config
         }
     }
     
-    protected static void reloadRegionConfigs()
+    public static void reloadRegionConfigs()
     {
         if(regionConfigs == null || regionData == null || regionConfigFiles == null || regionDataFiles == null)
         {

@@ -38,6 +38,7 @@ public class RegionCaptureEvent extends Event
     {
         return handlers;
     }
+    
     @Override
     public HandlerList getHandlers()
     {

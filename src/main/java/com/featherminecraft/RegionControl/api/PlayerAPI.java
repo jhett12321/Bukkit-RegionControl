@@ -18,7 +18,6 @@ import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.capturableregion.CannotCaptureReason;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 
 @SuppressWarnings("deprecation")
 public class PlayerAPI
@@ -49,19 +48,26 @@ public class PlayerAPI
      *            - The Player to check for available SpawnPoints.
      * @return The available SpawnPoints for the provided player.
      */
-    public static List<SpawnPoint> getAvailableSpawnPoints(RCPlayer player)
+    public static List<CapturableRegion> getAvailableSpawnPoints(RCPlayer player)
     {
-        List<SpawnPoint> availablespawnpoints = new ArrayList<SpawnPoint>();
+        List<CapturableRegion> spawnableRegions = new ArrayList<CapturableRegion>();
         
-        for(CapturableRegion capturableregion : ServerLogic.capturableRegions.values())
+        List<CapturableRegion> regions = player.getCurrentRegion().getAdjacentRegions();
+        regions.add(player.getCurrentRegion());
+        for(CapturableRegion region : regions)
         {
-            if(capturableregion.getOwner() == player.getFaction())
+            if(region.getOwner() == player.getFaction())
             {
-                availablespawnpoints.add(capturableregion.getSpawnPoint());
+                spawnableRegions.add(region);
             }
         }
         
-        return availablespawnpoints;
+        if(!spawnableRegions.contains(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld())))
+        {
+            spawnableRegions.add(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()));
+        }
+        
+        return spawnableRegions;
     }
     
     /**
@@ -134,18 +140,6 @@ public class PlayerAPI
         }
         
         return reasons;
-    }
-    
-    /**
-     * Gets a players current region.
-     * 
-     * @param player
-     *            the RCPlayer to find the current region of.
-     * @return The CapturableRegion this player is currently located.
-     */
-    public static CapturableRegion getCurrentRegion(RCPlayer player)
-    {
-        return player.getCurrentRegion();
     }
     
     /**

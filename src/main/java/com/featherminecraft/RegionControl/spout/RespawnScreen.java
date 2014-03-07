@@ -25,16 +25,16 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
+import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
 public class RespawnScreen
 {
     private RespawnListModel listModel;
     private GenericListView listWidget;
-    List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
     private GenericPopup popup;
     private Button respawnButton;
-    private SortedMap<Integer, CapturableRegion> distances;
+    private SortedMap<Double, CapturableRegion> distances;
     private Location playerLoc;
     
     public RespawnScreen(InGameHUD mainscreen, RCPlayer player)
@@ -47,25 +47,10 @@ public class RespawnScreen
         respawnButton = (Button) new GenericButton("Respawn: Ancestria Southern NetherGate").setWidth(200).setHeight(20).setFixed(true).setPriority(RenderPriority.Lowest);
         
         // Get Any Regions that are owned, and adjacent to the player.
-        List<CapturableRegion> spawnableRegions = new ArrayList<CapturableRegion>();
-        
-        List<CapturableRegion> regions = player.getCurrentRegion().getAdjacentRegions();
-        regions.add(player.getCurrentRegion());
-        for(CapturableRegion region : regions)
-        {
-            if(region.getOwner() == player.getFaction())
-            {
-                spawnableRegions.add(region);
-            }
-        }
-        
-        if(!spawnableRegions.contains(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld())))
-        {
-            spawnableRegions.add(player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()));
-        }
+        List<CapturableRegion> spawnableRegions = PlayerAPI.getAvailableSpawnPoints(player);
         
         playerLoc = player.getBukkitPlayer().getLocation();
-        distances = new TreeMap<Integer, CapturableRegion>();
+        distances = new TreeMap<Double, CapturableRegion>();
         
         for(CapturableRegion region : spawnableRegions)
         {
@@ -73,7 +58,7 @@ public class RespawnScreen
         }
         
         List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
-        for(Entry<Integer, CapturableRegion> listEntry : distances.entrySet())
+        for(Entry<Double, CapturableRegion> listEntry : distances.entrySet())
         {
             ListWidgetItem item = new ListWidgetItem(listEntry.getKey().toString() + "m", listEntry.getValue().getDisplayName());
             respawnList.add(item);
@@ -94,7 +79,7 @@ public class RespawnScreen
     public void addRegionToSpawnList(CapturableRegion region)
     {
         Location spawnLoc = region.getSpawnPoint().getLocation();
-        Integer distance = ((Double) playerLoc.distance(spawnLoc)).intValue();
+        Double distance = playerLoc.distance(spawnLoc);
         distances.put(distance, region);
     }
     
@@ -109,7 +94,7 @@ public class RespawnScreen
     {
         listWidget.clear();
         List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
-        for(Entry<Integer, CapturableRegion> listEntry : distances.entrySet())
+        for(Entry<Double, CapturableRegion> listEntry : distances.entrySet())
         {
             ListWidgetItem item = new ListWidgetItem(listEntry.getKey().toString() + "m", listEntry.getValue().getDisplayName());
             listWidget.addItem(item);

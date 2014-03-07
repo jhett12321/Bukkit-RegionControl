@@ -2,12 +2,16 @@ package com.featherminecraft.RegionControl.listeners;
 
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -15,6 +19,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -22,7 +27,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import com.featherminecraft.RegionControl.Config;
 import com.featherminecraft.RegionControl.DependencyManager;
 import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
@@ -30,16 +34,11 @@ import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
-import com.featherminecraft.RegionControl.api.events.ControlPointCaptureEvent;
-import com.featherminecraft.RegionControl.api.events.ControlPointDefendEvent;
-import com.featherminecraft.RegionControl.api.events.ControlPointNeutralizeEvent;
-import com.featherminecraft.RegionControl.api.events.InfluenceOwnerChangeEvent;
-import com.featherminecraft.RegionControl.api.events.RegionCaptureEvent;
-import com.featherminecraft.RegionControl.api.events.RegionDefendEvent;
-import com.featherminecraft.RegionControl.api.events.RegionInfluenceRateChangeEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.commands.Command;
 import com.featherminecraft.RegionControl.commands.CommandInfo;
+import com.featherminecraft.RegionControl.data.Config;
+import com.featherminecraft.RegionControl.data.Data;
 
 public class PlayerListener implements Listener
 {
@@ -62,6 +61,7 @@ public class PlayerListener implements Listener
                         }
                     }
                 }
+                PlayerAPI.getRCPlayerFromBukkitPlayer(event.getPlayer()).addDestroyedBlock();
             }
             else
             {
@@ -94,6 +94,7 @@ public class PlayerListener implements Listener
                         }
                     }
                 }
+                PlayerAPI.getRCPlayerFromBukkitPlayer(event.getPlayer()).addPlacedBlock();
             }
             else
             {
@@ -116,64 +117,94 @@ public class PlayerListener implements Listener
         }
     }
     
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onControlPointCapture(ControlPointCaptureEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateControlPoints();
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onControlPointDefend(ControlPointDefendEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateControlPoints();
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onControlPointNeutralise(ControlPointNeutralizeEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateControlPoints();
-    }
-    
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDamage(EntityDamageByEntityEvent event)
     {
-        if(Config.getMainConfig().getBoolean("players.enableFriendlyDamage"))
-        {
-            return;
-        }
         RCPlayer playerdamager = null;
         RCPlayer damagedplayer = null;
         
-        Entity damager = event.getDamager();
-        Entity damagedentity = event.getEntity();
-        
-        if((damagedentity instanceof Player))
+        if(!Config.getMainConfig().getBoolean("players.enableFriendlyDamage"))
         {
-            damagedplayer = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) damagedentity);
-        }
-        
-        if(damager instanceof Player)
-        {
-            playerdamager = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) damager);
-        }
-        
-        else if(damager instanceof Projectile)
-        {
-            Projectile projectile = (Projectile) damager;
-            Entity entitydamager = projectile.getShooter();
-            if(entitydamager instanceof Player && entitydamager != null)
+            Entity damager = event.getDamager();
+            Entity damagedentity = event.getEntity();
+            
+            if((damagedentity instanceof Player))
             {
-                playerdamager = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) entitydamager);
+                damagedplayer = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) damagedentity);
+            }
+            
+            if(damager instanceof Player)
+            {
+                playerdamager = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) damager);
+            }
+            
+            else if(damager instanceof Projectile)
+            {
+                Projectile projectile = (Projectile) damager;
+                Entity entitydamager = projectile.getShooter();
+                if(entitydamager instanceof Player && entitydamager != null)
+                {
+                    playerdamager = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) entitydamager);
+                }
+            }
+            
+            if(playerdamager != null && damagedplayer != null)
+            {
+                if(playerdamager.getFaction() == damagedplayer.getFaction())
+                {
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
         
         if(playerdamager != null && damagedplayer != null)
         {
-            if(playerdamager.getFaction() == damagedplayer.getFaction())
+            if(damagedplayer.getDamageSources().containsKey(playerdamager))
             {
-                event.setCancelled(true);
+                damagedplayer.getDamageSources().put(playerdamager, damagedplayer.getDamageSources().get(playerdamager) + event.getDamage());
+            }
+            else
+            {
+                damagedplayer.getDamageSources().put(playerdamager, event.getDamage());
             }
         }
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerDeath(PlayerDeathEvent event)
+    {
+        RCPlayer deadPlayer = PlayerAPI.getRCPlayerFromBukkitPlayer(event.getEntity());
+        RCPlayer killer = PlayerAPI.getRCPlayerFromBukkitPlayer(event.getEntity().getKiller());
+        
+        Map<RCPlayer, Double> damageSources = null;
+        if(killer == null)
+        {
+            damageSources = deadPlayer.getDamageSources();
+            if(damageSources != null && deadPlayer.getDamageSources().size() > 0)
+            {
+                while(damageSources.entrySet().iterator().next() != null)
+                {
+                    killer = damageSources.entrySet().iterator().next().getKey();
+                }
+            }
+        }
+        
+        if(killer != null)
+        {
+            killer.addKill();
+            if(damageSources != null)
+            {
+                damageSources.remove(killer);
+                for(RCPlayer player : damageSources.keySet())
+                {
+                    player.addAssist();
+                }
+            }
+        }
+        
+        deadPlayer.addDeath();
+        deadPlayer.getDamageSources().clear();
     }
     
     // Explosion. Blocks need to be added after region capture.
@@ -187,28 +218,28 @@ public class PlayerListener implements Listener
                 ProtectedRegion region = capturableRegion.getRegion();
                 for(Block block : event.blockList())
                 {
-                    if(region.contains(toVector(block.getLocation())))
+                    if(block.getType() != Material.AIR)
                     {
-                        if(!capturableRegion.getBlocksPlaced().contains(block.getState()))
+                        if(region.contains(toVector(block.getLocation())))
                         {
-                            capturableRegion.getBlocksDestroyed().add(block.getState());
+                            if(!capturableRegion.getBlocksPlaced().contains(block.getState()))
+                            {
+                                capturableRegion.getBlocksDestroyed().add(block.getState());
+                            }
+                        }
+                        if(event.getEntity() instanceof TNTPrimed)
+                        {
+                            TNTPrimed tntBlock = (TNTPrimed) event.getEntity();
+                            if(tntBlock.getSource() != null && tntBlock.getSource() instanceof Player)
+                            {
+                                Player sourcePlayer = (Player) tntBlock.getSource();
+                                PlayerAPI.getRCPlayerFromBukkitPlayer(sourcePlayer).addDestroyedBlock();
+                            }
                         }
                     }
                 }
             }
         }
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onInfluenceOwnerChange(InfluenceOwnerChangeEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateInfluenceRate();
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onInfluenceRateChange(RegionInfluenceRateChangeEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateInfluenceRate();
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -270,6 +301,8 @@ public class PlayerListener implements Listener
         {
             return;
         }
+        
+        Data.processQueue();
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -289,17 +322,5 @@ public class PlayerListener implements Listener
         }
         
         rcplayer.setRespawnLocation(null);
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onRegionCapture(RegionCaptureEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateOwner();
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onRegionDefend(RegionDefendEvent event)
-    {
-        event.getRegion().getRegionScoreboard().updateOwner();
     }
 }

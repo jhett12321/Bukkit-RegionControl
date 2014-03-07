@@ -45,6 +45,7 @@ public class ControlPointDefendEvent extends Event
     {
         return handlers;
     }
+    
     @Override
     public HandlerList getHandlers()
     {

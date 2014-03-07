@@ -2,16 +2,16 @@ package com.featherminecraft.RegionControl.capturableregion;
 
 import com.featherminecraft.RegionControl.Faction;
 
-public class CaptureTimer
+class CaptureTimer
 {
     private CapturableRegion region;
     
-    public CaptureTimer(CapturableRegion cregion)
+    CaptureTimer(CapturableRegion cregion)
     {
         region = cregion;
     }
     
-    public void Runnable()
+    protected void Runnable()
     {
         if(region.getInfluenceOwner() != null)
         {

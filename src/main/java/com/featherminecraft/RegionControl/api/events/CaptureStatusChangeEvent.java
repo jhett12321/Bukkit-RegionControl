@@ -29,6 +29,7 @@ public class CaptureStatusChangeEvent extends Event
     {
         return handlers;
     }
+    
     @Override
     public HandlerList getHandlers()
     {

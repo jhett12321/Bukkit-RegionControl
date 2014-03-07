@@ -14,7 +14,7 @@ import com.featherminecraft.RegionControl.api.PlayerAPI;
         usage = "/regioncontrol setfaction [Player] <Faction>",
         desc = "Sets the provided players faction if provided, otherwise sets the senders faction.",
         permission = "regioncontrol.setfaction")
-public class SetFactionCommand implements Command
+class SetFactionCommand implements Command
 {
     @Override
     public boolean execute(CommandSender sender, String[] args)

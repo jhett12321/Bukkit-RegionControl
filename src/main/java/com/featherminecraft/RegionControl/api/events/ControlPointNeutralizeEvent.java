@@ -43,6 +43,7 @@ public class ControlPointNeutralizeEvent extends Event
     {
         return handlers;
     }
+    
     @Override
     public HandlerList getHandlers()
     {

@@ -31,6 +31,7 @@ public class RegionInfluenceRateChangeEvent extends Event
     {
         return handlers;
     }
+    
     @Override
     public HandlerList getHandlers()
     {
