@@ -48,6 +48,15 @@ public class Data
         }
     }
     
+    public static void addItemToQueue(Table table, Object lookupValue, String column, Object newValue)
+    {
+        String query = table.toString() + "_" + lookupValue.toString() + "_" + column;
+        if(!databaseQueue.containsKey(query))
+        {
+            databaseQueue.put(query,new QueueItem(table, lookupValue, column, newValue));
+        }
+    }
+    
     public static void processQueue()
     {
         try

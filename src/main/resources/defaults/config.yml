@@ -1,10 +1,16 @@
 players:
   enableFriendlyDamage: true
+regions:
+
+  #Capture Mode defines how the ownership of ControlPoints affects the influence rate.
+  #   0 (Default) - Influence Rate is determined by majority controller minus the 2nd majority controller
+  #   1 - Influence Rate is determined by majority controller minus all other factions control.
+  captureMode: 0
 hooks:
   spout: 
-    enabled: false
+    enabled: true
   dynmap:
-    enabled: false
+    enabled: true
   heroes:
     enabled: false
     baseExperience:

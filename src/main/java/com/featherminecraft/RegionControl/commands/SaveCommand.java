@@ -10,7 +10,7 @@ import com.featherminecraft.RegionControl.data.Data;
         usage = "/regioncontrol save",
         desc = "Saves all loaded regions and data",
         permission = "regioncontrol.save")
-class SaveCommand implements Command
+public class SaveCommand implements Command
 {
     @Override
     public boolean execute(CommandSender sender, String[] args)

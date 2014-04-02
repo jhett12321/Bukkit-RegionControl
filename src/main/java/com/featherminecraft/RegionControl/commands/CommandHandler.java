@@ -14,11 +14,11 @@ public class CommandHandler
     public CommandHandler()
     {
         commands = new LinkedHashMap<String, Command>();
+        registerCommand(EditModeCommand.class);
         registerCommand(HelpCommand.class);
         registerCommand(ReloadCommand.class);
-        registerCommand(SetFactionCommand.class);
         registerCommand(SaveCommand.class);
-        registerCommand(EditModeCommand.class);
+        registerCommand(SetFactionCommand.class);
         registerCommand(TeleportCommand.class);
     }
     

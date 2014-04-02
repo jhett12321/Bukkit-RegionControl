@@ -12,7 +12,7 @@ import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 
-class ClientRunnables extends BukkitRunnable
+public class ClientRunnables extends BukkitRunnable
 {
     private RCPlayer player;
     

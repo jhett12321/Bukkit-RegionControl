@@ -13,7 +13,7 @@ import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
         usage = "/regioncontrol teleport [player] [world] <regionId>",
         desc = "Teleports the sender (or player if provided) to the regions spawnroom.",
         permission = "regioncontrol.tp")
-class TeleportCommand implements Command
+public class TeleportCommand implements Command
 {
     @Override
     public boolean execute(CommandSender sender, String[] args)

@@ -10,7 +10,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.data.Data;
-import com.featherminecraft.RegionControl.data.QueueItem;
 import com.featherminecraft.RegionControl.data.Table;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 
@@ -316,21 +315,21 @@ public class RCPlayer
     {
         this.sessionKills ++ ;
         this.kills ++ ;
-        new QueueItem(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "kills", getKills());
+        Data.addItemToQueue(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "kills", getKills());
     }
     
     public void addDeath()
     {
         this.sessionDeaths ++ ;
         this.deaths ++ ;
-        new QueueItem(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "deaths", getDeaths());
+        Data.addItemToQueue(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "deaths", getDeaths());
     }
     
     public void addAssist()
     {
         this.sessionAssists ++ ;
         this.assists ++ ;
-        new QueueItem(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "assists", getAssists());
+        Data.addItemToQueue(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "assists", getAssists());
     }
     
     public void addExperience(int experience)
@@ -343,28 +342,28 @@ public class RCPlayer
     {
         this.sessionRegionCaptures ++ ;
         this.regionCaptures ++ ;
-        new QueueItem(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "region_captures", getRegionCaptures());
+        Data.addItemToQueue(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "region_captures", getRegionCaptures());
     }
     
     public void addRegionDefend()
     {
         this.sessionRegionDefends ++ ;
         this.regionDefends ++ ;
-        new QueueItem(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "region_defends", getRegionDefends());
+        Data.addItemToQueue(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "region_defends", getRegionDefends());
     }
     
     public void addDestroyedBlock()
     {
         this.sessionBlocksDestroyed ++ ;
         this.blocksDestroyed ++ ;
-        new QueueItem(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "blocks_destroyed", getBlocksDestroyed());
+        Data.addItemToQueue(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "blocks_destroyed", getBlocksDestroyed());
     }
     
     public void addPlacedBlock()
     {
         this.sessionBlocksPlaced ++ ;
         this.blocksPlaced ++ ;
-        new QueueItem(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "blocks_placed", getBlocksPlaced());
+        Data.addItemToQueue(Table.regioncontrol_characters, getBukkitPlayer().getName().toLowerCase(), "blocks_placed", getBlocksPlaced());
     }
     
     public Map<RCPlayer, Double> getDamageSources()

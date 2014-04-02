@@ -63,11 +63,11 @@ public class RegionScoreboard
             {
                 if(region.getInfluenceOwner() == region.getMajorityController())
                 {
-                    influenceRateString = region.getMajorityController().getFactionColor().getChatColor() + "+" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
+                    influenceRateString = region.getMajorityController().getFactionColor().getChatColor() + "+" + Integer.valueOf((int) region.getInfluenceRate()).toString() + "/sec";
                 }
                 else
                 {
-                    influenceRateString = region.getMajorityController().getFactionColor().getChatColor() + "-" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
+                    influenceRateString = region.getMajorityController().getFactionColor().getChatColor() + "-" + Integer.valueOf((int) region.getInfluenceRate()).toString() + "/sec";
                 }
                 
                 influenceRate = objective.getScore(Bukkit.getOfflinePlayer(influenceRateString));
@@ -200,11 +200,11 @@ public class RegionScoreboard
             influenceRateString = "";
             if(region.getInfluenceOwner() == region.getMajorityController())
             {
-                influenceRateString = region.getInfluenceOwner().getFactionColor().getChatColor() + "+" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
+                influenceRateString = region.getInfluenceOwner().getFactionColor().getChatColor() + "+" + Integer.valueOf((int) region.getInfluenceRate()).toString() + "/sec";
             }
             else
             {
-                influenceRateString = region.getInfluenceOwner().getFactionColor().getChatColor() + "-" + Integer.valueOf(region.getInfluenceRate().intValue()).toString() + "/sec";
+                influenceRateString = region.getInfluenceOwner().getFactionColor().getChatColor() + "-" + Integer.valueOf((int) region.getInfluenceRate()).toString() + "/sec";
             }
             
             influenceRate = objective.getScore(Bukkit.getOfflinePlayer(influenceRateString));

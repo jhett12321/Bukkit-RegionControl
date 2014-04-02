@@ -1,1 +1,13 @@
-regions: []
+regions:
+    __global__:
+        displayname: Example Region
+        baseinfluence: 3000
+        adjacentregions: []
+        adjacentworld:
+          world: world_nether
+          region: __global__
+        spawnRegion: true
+        spawnpoint:
+            x: 0
+            y: 70
+            z: 0

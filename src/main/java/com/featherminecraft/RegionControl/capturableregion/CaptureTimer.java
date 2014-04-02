@@ -2,7 +2,7 @@ package com.featherminecraft.RegionControl.capturableregion;
 
 import com.featherminecraft.RegionControl.Faction;
 
-class CaptureTimer
+public class CaptureTimer
 {
     private CapturableRegion region;
     

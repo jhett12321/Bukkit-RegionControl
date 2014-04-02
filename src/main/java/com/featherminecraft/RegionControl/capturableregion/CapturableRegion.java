@@ -208,7 +208,7 @@ public class CapturableRegion
         return influenceOwner;
     }
     
-    public Float getInfluenceRate()
+    public float getInfluenceRate()
     {
         return influenceRate;
     }

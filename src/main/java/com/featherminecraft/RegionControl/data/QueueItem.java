@@ -15,9 +15,6 @@ public class QueueItem
         this.lookupValue = lookupValue;
         this.column = column;
         this.newValue = newValue;
-        
-        String query = table.toString() + "_" + lookupValue.toString() + "_" + column;
-        Data.getDatabaseQueue().put(query, this);
     }
     
     public Table getTable()

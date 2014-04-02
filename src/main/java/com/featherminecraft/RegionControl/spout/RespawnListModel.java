@@ -14,7 +14,7 @@ import com.featherminecraft.RegionControl.ServerLogic;
 import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 
-class RespawnListModel extends AbstractListModel
+public class RespawnListModel extends AbstractListModel
 {
     private SpoutPlayer splayer;
     private List<ListWidgetItem> spawnPoints;

@@ -10,7 +10,7 @@ import com.featherminecraft.RegionControl.ServerLogic;
         usage = "/regioncontrol editmode",
         desc = "Enables edit mode, allowing you to modify the world terrain, without it being reset.",
         permission = "regioncontrol.editmode")
-class EditModeCommand implements Command
+public class EditModeCommand implements Command
 {
     @Override
     public boolean execute(CommandSender sender, String[] args)

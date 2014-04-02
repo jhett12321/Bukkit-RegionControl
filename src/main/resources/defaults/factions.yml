@@ -1,1 +1,9 @@
-factions: []
+factions:
+    default:
+        displayname: Default Faction
+        permissiongroup: default
+        default: true
+        defaultspawn:
+            world: __global__
+        color: red
+        factionIcon: faction.png

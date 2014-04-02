@@ -172,6 +172,13 @@ public class Config
         }
     }
     
+    public static void ReloadAll()
+    {
+        reloadFactionConfig();
+        reloadMainConfig();
+        reloadRegionConfigs();
+    }
+    
     private static void copy(InputStream in, File file)
     {
         try
