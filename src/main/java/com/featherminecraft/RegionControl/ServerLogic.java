@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -250,5 +251,24 @@ public class ServerLogic
                 faction.addFactionSpawnRegion(region);
             }
         }
+    }
+    
+    protected static void updateVisibility(RCPlayer rcPlayer)
+    {
+        if(!rcPlayer.isVisible())
+        {
+            for(Player player : Bukkit.getServer().getOnlinePlayers())
+            {
+                player.hidePlayer(rcPlayer.getBukkitPlayer());
+            }
+        }
+        else
+        {
+            for(Player player : Bukkit.getServer().getOnlinePlayers())
+            {
+                player.showPlayer(rcPlayer.getBukkitPlayer());
+            }
+        }
+
     }
 }

@@ -23,6 +23,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+//import org.bukkit.projectiles.ProjectileSource; //TODO 1.7
 import org.bukkit.scheduler.BukkitTask;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -139,12 +140,14 @@ public class PlayerListener implements Listener
             }
             
             else if(damager instanceof Projectile)
-            {
+            { 
                 Projectile projectile = (Projectile) damager;
-                Entity entitydamager = projectile.getShooter();
-                if(entitydamager instanceof Player && entitydamager != null)
+                Entity projectileSource = projectile.getShooter();
+                //ProjectileSource projectileSource = projectile.getShooter(); //TODO 1.7
+                
+                if(projectileSource instanceof Player && projectileSource != null)
                 {
-                    playerdamager = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) entitydamager);
+                    playerdamager = PlayerAPI.getRCPlayerFromBukkitPlayer((Player) projectileSource);
                 }
             }
             
@@ -176,6 +179,8 @@ public class PlayerListener implements Listener
     {
         RCPlayer deadPlayer = PlayerAPI.getRCPlayerFromBukkitPlayer(event.getEntity());
         RCPlayer killer = PlayerAPI.getRCPlayerFromBukkitPlayer(event.getEntity().getKiller());
+        
+        deadPlayer.hidePlayer();
         
         Map<RCPlayer, Double> damageSources = null;
         if(killer == null)
@@ -247,6 +252,7 @@ public class PlayerListener implements Listener
     {
         Player player = event.getPlayer();
         
+        //Player Faction
         Faction faction = PlayerAPI.getFactionFromGroup(DependencyManager.getPermission().getPrimaryGroup(player));
         if(faction == null)
         {
@@ -266,9 +272,12 @@ public class PlayerListener implements Listener
         CapturableRegion currentRegion = faction.getFactionSpawnRegion(player.getWorld());
         
         RCPlayer rcPlayer = new RCPlayer(player, faction, currentRegion);
-        
         ServerLogic.players.put(player.getName(), rcPlayer);
+        
+        rcPlayer.hidePlayer();
         currentRegion.getPlayers().add(rcPlayer);
+        
+        event.getPlayer().setScoreboard(currentRegion.getRegionScoreboard().getScoreboard()); //This gets unset if player has Spout.
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -294,6 +303,7 @@ public class PlayerListener implements Listener
             {
                 runnable.cancel();
             }
+            //ServerLogic.players.remove(event.getPlayer().getUniqueId()); //TODO 1.7
             ServerLogic.players.remove(event.getPlayer().getName());
             
         }
@@ -319,6 +329,11 @@ public class PlayerListener implements Listener
         else
         {
             event.setRespawnLocation(rcplayer.getFaction().getFactionSpawnRegion(player.getWorld()).getSpawnPoint().getLocation());
+        }
+        
+        if(!rcplayer.isVisible())
+        {
+            rcplayer.showPlayer();
         }
         
         rcplayer.setRespawnLocation(null);

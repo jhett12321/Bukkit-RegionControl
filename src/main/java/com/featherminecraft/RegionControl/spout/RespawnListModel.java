@@ -92,7 +92,16 @@ public class RespawnListModel extends AbstractListModel
             return;
         }
         
-        PlayerAPI.respawnPlayer(rcplayer);
+        if(rcplayer.getBukkitPlayer().isDead())
+        {
+            PlayerAPI.respawnPlayer(rcplayer);
+        }
+        else
+        {
+            rcplayer.getBukkitPlayer().teleport(rcplayer.getRespawnLocation());
+        }
+        rcplayer.showPlayer();
+        
         splayer.getMainScreen().closePopup();
         rcplayer.getClientRunnable("spoutRespawnTooltip").cancel();
     }

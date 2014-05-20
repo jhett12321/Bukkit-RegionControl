@@ -20,6 +20,7 @@ public class RCPlayer
     private Faction faction;
     private Boolean hasSpout = false;
     private Location respawnLocation;
+    private Boolean visible = true;
     
     // Player Classes/Runnables
     private SpoutClientLogic spoutClientLogic;
@@ -80,6 +81,23 @@ public class RCPlayer
     public Faction getFaction()
     {
         return faction;
+    }
+    
+    public void hidePlayer()
+    {
+        this.visible = false;
+        ServerLogic.updateVisibility(this);
+    }
+    
+    public void showPlayer()
+    {
+        this.visible = true;
+        ServerLogic.updateVisibility(this);
+    }
+    
+    public Boolean isVisible()
+    {
+        return visible;
     }
     
     public Location getRespawnLocation()

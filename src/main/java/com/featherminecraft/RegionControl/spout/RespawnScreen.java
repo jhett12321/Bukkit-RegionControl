@@ -34,7 +34,7 @@ public class RespawnScreen
     private GenericListView listWidget;
     private GenericPopup popup;
     private Button respawnButton;
-    private SortedMap<Double, CapturableRegion> distances;
+    private SortedMap<Integer, CapturableRegion> distances;
     private Location playerLoc;
     
     public RespawnScreen(InGameHUD mainscreen, RCPlayer player)
@@ -50,7 +50,7 @@ public class RespawnScreen
         List<CapturableRegion> spawnableRegions = PlayerAPI.getAvailableSpawnPoints(player);
         
         playerLoc = player.getBukkitPlayer().getLocation();
-        distances = new TreeMap<Double, CapturableRegion>();
+        distances = new TreeMap<Integer, CapturableRegion>();
         
         for(CapturableRegion region : spawnableRegions)
         {
@@ -58,7 +58,7 @@ public class RespawnScreen
         }
         
         List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
-        for(Entry<Double, CapturableRegion> listEntry : distances.entrySet())
+        for(Entry<Integer, CapturableRegion> listEntry : distances.entrySet())
         {
             ListWidgetItem item = new ListWidgetItem(listEntry.getKey().toString() + "m", listEntry.getValue().getDisplayName());
             respawnList.add(item);
@@ -79,7 +79,7 @@ public class RespawnScreen
     public void addRegionToSpawnList(CapturableRegion region)
     {
         Location spawnLoc = region.getSpawnPoint().getLocation();
-        Double distance = playerLoc.distance(spawnLoc);
+        Integer distance = (int) Math.round(playerLoc.distance(spawnLoc));
         distances.put(distance, region);
     }
     
@@ -94,7 +94,7 @@ public class RespawnScreen
     {
         listWidget.clear();
         List<ListWidgetItem> respawnList = new ArrayList<ListWidgetItem>();
-        for(Entry<Double, CapturableRegion> listEntry : distances.entrySet())
+        for(Entry<Integer, CapturableRegion> listEntry : distances.entrySet())
         {
             ListWidgetItem item = new ListWidgetItem(listEntry.getKey().toString() + "m", listEntry.getValue().getDisplayName());
             listWidget.addItem(item);

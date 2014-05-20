@@ -2,6 +2,7 @@ package com.featherminecraft.RegionControl.listeners;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,9 +31,17 @@ public class SpoutPlayerListener implements Listener
         RCPlayer player = PlayerAPI.getRCPlayerFromBukkitPlayer(event.getPlayer());
         if(event.getButton().getText().contains("Redeploy:"))
         {
-            PlayerAPI.respawnPlayer(player);
+            if(player.getBukkitPlayer().isDead())
+            {
+                PlayerAPI.respawnPlayer(player);
+            }
+            else
+            {
+                player.getBukkitPlayer().teleport(player.getRespawnLocation());
+            }
             event.getPlayer().getMainScreen().closePopup();
             player.getClientRunnable("spoutRespawnTooltip").cancel();
+            player.showPlayer();
         }
     }
     
@@ -82,7 +91,8 @@ public class SpoutPlayerListener implements Listener
         {
             SpoutPlayer splayer = event.getPlayer();
             RCPlayer rcplayer = PlayerAPI.getRCPlayerFromBukkitPlayer(splayer);
-            if(splayer.isDead())
+            
+            if(splayer.isDead() || !rcplayer.isVisible())
             {
                 splayer.getMainScreen().closePopup();
                 splayer.getMainScreen().attachPopupScreen(rcplayer.getSpoutClientLogic().getRespawnScreen().getPopup());
@@ -116,6 +126,14 @@ public class SpoutPlayerListener implements Listener
         
         rcPlayer.setSpoutClientLogic(new SpoutClientLogic());
         rcPlayer.getSpoutClientLogic().setupClientElements(rcPlayer);
+        
+        if(rcPlayer.getBukkitPlayer().getScoreboard() != Bukkit.getServer().getScoreboardManager().getMainScoreboard())
+        {
+            rcPlayer.getBukkitPlayer().setScoreboard(Bukkit.getServer().getScoreboardManager().getMainScoreboard());
+        }
+        
+        InGameHUD mainscreen = splayer.getMainScreen();
+        rcPlayer.getSpoutClientLogic().setRespawnScreen(new RespawnScreen(mainscreen, rcPlayer));
     }
     
     @EventHandler(priority = EventPriority.MONITOR)

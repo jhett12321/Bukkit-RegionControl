@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.featherminecraft</groupId>
 	<artifactId>RegionControl</artifactId>
-	<version>1.0-D2</version>
+	<version>1.0-D3</version>
 	<name>RegionControl</name>
 	<properties>
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
@@ -72,6 +72,10 @@
 		<repository>
 			<id>dynmap-repo</id>
 			<url>http://repo.mikeprimm.com/</url>
+		</repository>
+		<repository>
+			<id>confuser-repo</id>
+			<url>http://ci.frostcast.net/plugin/repository/everything</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -144,6 +148,12 @@
 			<groupId>org.dynmap</groupId>
 			<artifactId>dynmap</artifactId>
 			<version>${dynmapVersion}</version>
+		</dependency>
+		<!-- Bar API -->
+		<dependency>
+			<groupId>me.confuser</groupId>
+			<artifactId>BarAPI</artifactId>
+			<version>3.1</version>
 		</dependency>
 	</dependencies>
 	<build>
