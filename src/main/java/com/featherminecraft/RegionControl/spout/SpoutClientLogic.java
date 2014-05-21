@@ -32,7 +32,6 @@ import com.featherminecraft.RegionControl.Faction;
 import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.RegionControl;
 import com.featherminecraft.RegionControl.ServerLogic;
-import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
 import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 
@@ -82,7 +81,6 @@ public class SpoutClientLogic
     private SpoutPlayer sPlayer;
     private InGameHUD screen;
     private CapturableRegion region;
-    private ControlPoint controlPoint;
     private RespawnScreen respawnScreen;
     
     // GUI
@@ -145,25 +143,11 @@ public class SpoutClientLogic
     
     // Control Points
     private ArrayList<Label> controlPointLabels = new ArrayList<Label>();
-    private List<Widget> controlPointScreenElements = new ArrayList<Widget>();
     
     private Container controlPointsContainer = (Container) new GenericContainer()
                                                                                  .setLayout(ContainerType.HORIZONTAL).setAlign(WidgetAnchor.CENTER_CENTER)
                                                                                  .setAnchor(WidgetAnchor.CENTER_LEFT)
                                                                                  .setWidth(50).setHeight(10).setX(25).setY(25);
-    
-    // Control Point Capture Bar
-    private Gradient controlPointCaptureBar = (Gradient) new GenericGradient(new Color(255, 255, 255, 255))
-                                                                                                           .setAnchor(WidgetAnchor.TOP_CENTER)
-                                                                                                           .setWidth(150).setHeight(5).setX(-75).setY(32);
-    
-    private Gradient controlPointCaptureBarBackground = (Gradient) new GenericGradient(new Color(0F, 0F, 0F, 1F))
-                                                                                                                 .setAnchor(WidgetAnchor.TOP_CENTER)
-                                                                                                                 .setWidth(154).setHeight(7).setX(-77).setY(31)
-                                                                                                                 .setPriority(RenderPriority.High);
-    
-    // Cannot Capture Control Point Indicator
-    private ArrayList<Label> reasonWidgetList = new ArrayList<Label>();
     
     // Influence Owner Icon
     private Texture influenceOwnerIcon = (Texture) new GenericTexture("null.png")
@@ -204,37 +188,6 @@ public class SpoutClientLogic
                                                                              .setAnchor(WidgetAnchor.CENTER_LEFT)
                                                                              .setHeight(10).setY(40)
                                                                              .setPriority(RenderPriority.Normal).setVisible(false);
-    
-    public ControlPoint getControlPoint()
-    {
-        return controlPoint;
-    }
-    
-    public void hideControlPointCaptureBar()
-    {
-        if(controlPointCaptureBar.isVisible())
-        {
-            for(Widget element : controlPointScreenElements)
-            {
-                element.setVisible(false);
-            }
-            
-            if(reasonWidgetList != null && reasonWidgetList.size() > 0)
-            {
-                for(Label widget : reasonWidgetList)
-                {
-                    screen.removeWidget(widget);
-                }
-                
-                reasonWidgetList = new ArrayList<Label>();
-            }
-        }
-    }
-    
-    public void setControlPoint(ControlPoint controlPoint)
-    {
-        this.controlPoint = controlPoint;
-    }
     
     public void setRegionCaptureStatus(Boolean captureStatus)
     {
@@ -307,12 +260,6 @@ public class SpoutClientLogic
             screenElements.add(controlPoint);
         }
         
-        // ControlPoint Capture Bar
-        controlPointScreenElements.add(controlPointCaptureBar);
-        
-        // ControlPoint Capture Bar Background
-        controlPointScreenElements.add(controlPointCaptureBarBackground);
-        
         // Influence Owner Icon
         screenElements.add(influenceOwnerIcon);
         screenCaptureElements.add(influenceOwnerIcon);
@@ -340,14 +287,12 @@ public class SpoutClientLogic
         updateRegion(region);
         
         screen.attachWidgets(RegionControl.plugin, regionInfo, regionStatusContainer, regionStatusBarContainer, controlPointsContainer, captureBarSpaceContainer);
-        screen.attachWidgets(RegionControl.plugin, background, ownerIcon, regionName, alliesDetectedText, alliesDetectedBar, enemiesDetectedText, enemiesDetectedBar, controlPointCaptureBar, controlPointCaptureBarBackground, influenceOwnerIcon, captureBarBackground, captureBar, captureBarSpace, captureTimer, captureBarAnim);
+        screen.attachWidgets(RegionControl.plugin, background, ownerIcon, regionName, alliesDetectedText, alliesDetectedBar, enemiesDetectedText, enemiesDetectedBar, influenceOwnerIcon, captureBarBackground, captureBar, captureBarSpace, captureTimer, captureBarAnim);
         
         for(Label controlPoint : controlPointLabels)
         {
             screen.attachWidget(RegionControl.plugin, controlPoint);
         }
-        
-        hideControlPointCaptureBar();
         
         CapturableRegion currentRegion = rPlayer.getCurrentRegion();
         List<RCPlayer> playerList = currentRegion.getPlayers();
@@ -366,57 +311,6 @@ public class SpoutClientLogic
             {
                 if(region != null)
                 {
-                    if(controlPointCaptureBar.isVisible() && controlPoint != null)
-                    {
-                        if(controlPoint.getInfluenceOwner() != null)
-                        {
-                            float influence = controlPoint.getInfluence();
-                            float baseinfluence = controlPoint.getBaseInfluence();
-                            
-                            int barwidth = (int) (influence / baseinfluence * 150);
-                            controlPointCaptureBar.setWidth(barwidth);
-                            
-                            Integer red = controlPoint.getInfluenceOwner().getFactionColor().getColor().getRed();
-                            Integer green = controlPoint.getInfluenceOwner().getFactionColor().getColor().getGreen();
-                            Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getColor().getBlue();
-                            
-                            Color spoutColor = new Color(red, green, blue);
-                            controlPointCaptureBar.setColor(spoutColor);
-                            
-                            if(reasonWidgetList.size() != PlayerAPI.getCannotCaptureReasons(region, rcPlayer).size())
-                            {
-                                for(Label widget : reasonWidgetList)
-                                {
-                                    screen.removeWidget(widget);
-                                }
-                                
-                                reasonWidgetList = new ArrayList<Label>();
-                                
-                                if(!PlayerAPI.canCapture(region, rcPlayer))
-                                {
-                                    int y = 40;
-                                    for(String reason : PlayerAPI.getCannotCaptureReasons(region, rcPlayer))
-                                    {
-                                        Label reasonLabel = (Label) new GenericLabel(reason)
-                                                                                            .setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.TOP_CENTER)
-                                                                                            .setFixed(true)
-                                                                                            .setAnchor(WidgetAnchor.TOP_CENTER)
-                                                                                            .setY(y);
-                                        
-                                        reasonLabel.shiftXPos(reasonLabel.getWidth() / 2);
-                                        y = y + 5;
-                                        reasonWidgetList.add(reasonLabel);
-                                    }
-                                    
-                                    for(Label widget : reasonWidgetList)
-                                    {
-                                        screen.attachWidget(RegionControl.plugin, widget);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
                     if(region.isBeingCaptured() && region.getInfluenceOwner() != null)
                     {
                         Integer seconds = region.getSecondsToCapture();
@@ -505,53 +399,6 @@ public class SpoutClientLogic
         }.runTaskTimer(RegionControl.plugin, 10, 10);
         
         rPlayer.getClientRunnables().put("spoutClientLogic", runnable);
-    }
-    
-    public void showControlPointCaptureBar()
-    {
-        if(!controlPointCaptureBar.isVisible())
-        {
-            for(Widget element : controlPointScreenElements)
-            {
-                element.setVisible(true);
-            }
-            
-            float influence = controlPoint.getInfluence();
-            float baseinfluence = controlPoint.getBaseInfluence();
-            
-            int barwidth = (int) (influence / baseinfluence * 150);
-            controlPointCaptureBar.setWidth(barwidth);
-            
-            Integer red = controlPoint.getInfluenceOwner().getFactionColor().getColor().getRed();
-            Integer green = controlPoint.getInfluenceOwner().getFactionColor().getColor().getGreen();
-            Integer blue = controlPoint.getInfluenceOwner().getFactionColor().getColor().getBlue();
-            
-            Color spoutColor = new Color(red, green, blue);
-            controlPointCaptureBar.setColor(spoutColor);
-            
-            if(!PlayerAPI.canCapture(region, rcPlayer))
-            {
-                reasonWidgetList = new ArrayList<Label>();
-                int y = 40;
-                for(String reason : PlayerAPI.getCannotCaptureReasons(region, rcPlayer))
-                {
-                    Label reasonLabel = (Label) new GenericLabel(reason)
-                                                                        .setScale(0.5F).setTextColor(new Color(255, 0, 0)).setShadow(false).setResize(true).setAlign(WidgetAnchor.TOP_CENTER)
-                                                                        .setFixed(true)
-                                                                        .setAnchor(WidgetAnchor.TOP_CENTER)
-                                                                        .setY(y);
-                    
-                    reasonLabel.shiftXPos(reasonLabel.getWidth() / 2);
-                    y = y + 5;
-                    reasonWidgetList.add(reasonLabel);
-                }
-                
-                for(Label widget : reasonWidgetList)
-                {
-                    screen.attachWidget(RegionControl.plugin, widget);
-                }
-            }
-        }
     }
     
     public void updateControlPoints(CapturableRegion region)

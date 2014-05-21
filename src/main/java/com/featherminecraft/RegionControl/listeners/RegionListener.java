@@ -14,6 +14,7 @@ import com.featherminecraft.RegionControl.api.events.ControlPointInfluenceRateCh
 import com.featherminecraft.RegionControl.api.events.ControlPointNeutralizeEvent;
 import com.featherminecraft.RegionControl.api.events.InfluenceOwnerChangeEvent;
 import com.featherminecraft.RegionControl.api.events.RegionInfluenceRateChangeEvent;
+import com.featherminecraft.RegionControl.capturableregion.ControlPoint;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 
 public class RegionListener implements Listener
@@ -121,25 +122,19 @@ public class RegionListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onControlPointPlayerInfluenceChange(ControlPointInfluenceRateChangeEvent event)
     {
+        ControlPoint controlPoint = event.getControlPoint();
+        
         List<RCPlayer> addedPlayers = event.getAddedPlayers();
         List<RCPlayer> removedPlayers = event.getRemovedPlayers();
         
         for(RCPlayer player : addedPlayers)
         {
-            if(player.hasSpout())
-            {
-                player.getSpoutClientLogic().setControlPoint(event.getControlPoint());
-                player.getSpoutClientLogic().showControlPointCaptureBar();
-            }
+            player.getUi().setControlPoint(controlPoint);
         }
         
         for(RCPlayer player : removedPlayers)
         {
-            if(player.hasSpout())
-            {
-                player.getSpoutClientLogic().setControlPoint(null);
-                player.getSpoutClientLogic().hideControlPointCaptureBar();
-            }
+            player.getUi().setControlPoint(null);
         }
     }
 }

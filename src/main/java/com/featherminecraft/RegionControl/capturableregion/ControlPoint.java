@@ -37,7 +37,7 @@ public class ControlPoint
     private Faction influenceOwner;
     private Faction majorityPopulation;
     private Float baseInfluence;
-    private Float captureRate;
+    private float captureRate;
     
     // Public Variables
     private Faction owner;
@@ -96,7 +96,14 @@ public class ControlPoint
     
     public Float getInfluence()
     {
-        return influenceMap.get(influenceOwner);
+        if(influenceOwner != null)
+        {
+            return influenceMap.get(influenceOwner);
+        }
+        else
+        {
+            return 0F;
+        }
     }
     
     public Faction getInfluenceOwner()
@@ -136,17 +143,14 @@ public class ControlPoint
         Faction influenceOwner = CalculateInfluenceOwner();
         this.influenceOwner = influenceOwner;
         
-        if(influenceOwner == null)
+        if(majorityPopulation != null && captureRate != 0F)
         {
-            if(majorityPopulation != null && captureRate != null && captureRate != 0F)
+            if(influenceOwner == null)
             {
                 influenceMap.put(majorityPopulation, captureRate);
             }
-        }
-        
-        else if(influenceOwner != majorityPopulation)
-        {
-            if(majorityPopulation != null && captureRate != null && captureRate != 0F)
+            
+            else if(influenceOwner != majorityPopulation)
             {
                 if(influenceMap.get(influenceOwner) - captureRate <= 0F)
                 {
@@ -158,33 +162,33 @@ public class ControlPoint
                     influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) - captureRate);
                 }
             }
-        }
-        
-        else if(influenceOwner == majorityPopulation)
-        {
-            if(majorityPopulation != null && captureRate != null && captureRate != 0F && influenceMap.get(influenceOwner) != baseInfluence)
+            
+            else if(influenceOwner == majorityPopulation)
             {
-                if(influenceMap.get(influenceOwner) + captureRate >= baseInfluence)
+                if(influenceMap.get(influenceOwner) != baseInfluence)
                 {
-                    influenceMap.put(majorityPopulation, baseInfluence);
-                    location.getBlock().setTypeIdAndData(Material.WOOL.getId(), influenceOwner.getFactionColor().getWoolColor().getWoolData(), false);
-                    
-                    if(owner != influenceOwner)
+                    if(influenceMap.get(influenceOwner) + captureRate >= baseInfluence)
                     {
-                        owner = influenceOwner;
-                        capturing = false;
-                        Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(this, region, influenceOwner));
+                        influenceMap.put(majorityPopulation, baseInfluence);
+                        location.getBlock().setTypeIdAndData(Material.WOOL.getId(), influenceOwner.getFactionColor().getWoolColor().getWoolData(), false);
+                        
+                        if(owner != influenceOwner)
+                        {
+                            owner = influenceOwner;
+                            capturing = false;
+                            Bukkit.getServer().getPluginManager().callEvent(new ControlPointCaptureEvent(this, region, influenceOwner));
+                        }
+                        else
+                        {
+                            capturing = false;
+                            Bukkit.getServer().getPluginManager().callEvent(new ControlPointDefendEvent(this, region, influenceOwner));
+                        }
                     }
+                    
                     else
                     {
-                        capturing = false;
-                        Bukkit.getServer().getPluginManager().callEvent(new ControlPointDefendEvent(this, region, influenceOwner));
+                        influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) + captureRate);
                     }
-                }
-                
-                else
-                {
-                    influenceMap.put(influenceOwner, influenceMap.get(influenceOwner) + captureRate);
                 }
             }
         }

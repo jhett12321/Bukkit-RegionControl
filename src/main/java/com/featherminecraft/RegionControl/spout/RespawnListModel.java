@@ -196,8 +196,8 @@ public class RespawnListModel extends AbstractListModel
         }
         else
         {
-            respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString + "\n" + alliesDetectedText + "\n" + enemiesDetectedText);
-            respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + "Capture in: " + minutes.toString() + ":" + secondsString + "\n" + alliesDetectedText + "\n" + enemiesDetectedText);
+            respawnScreen.getListWidget().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + "Region Lost in: " + minutes.toString() + ":" + secondsString + "\n" + alliesDetectedText + "\n" + enemiesDetectedText);
+            respawnScreen.getRedeployButton().setTooltip("§l§n" + regionSelected.getDisplayName() + "§r\n" + "Region Lost in: " + minutes.toString() + ":" + secondsString + "\n" + alliesDetectedText + "\n" + enemiesDetectedText);
         }
     }
     

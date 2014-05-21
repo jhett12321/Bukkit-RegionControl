@@ -190,7 +190,14 @@ public class CapturableRegion
     
     public Float getInfluence()
     {
-        return influenceMap.get(influenceOwner);
+        if(influenceOwner != null)
+        {
+            return influenceMap.get(influenceOwner);
+        }
+        else
+        {
+            return 0F;
+        }
     }
     
     public InfluenceManager getInfluenceManager()

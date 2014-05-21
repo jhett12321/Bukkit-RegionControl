@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.featherminecraft</groupId>
 	<artifactId>RegionControl</artifactId>
-	<version>1.0-D3</version>
+	<version>1.0-D4</version>
 	<name>RegionControl</name>
 	<properties>
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>

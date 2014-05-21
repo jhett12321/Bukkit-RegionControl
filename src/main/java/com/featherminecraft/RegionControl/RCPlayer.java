@@ -18,6 +18,7 @@ public class RCPlayer
     private String playerName;
     private CapturableRegion currentRegion;
     private Faction faction;
+    private UI ui;
     private Boolean hasSpout = false;
     private Location respawnLocation;
     private Boolean visible = true;
@@ -53,11 +54,17 @@ public class RCPlayer
         playerName = player.getName();
         this.faction = faction;
         this.currentRegion = currentRegion;
+        this.ui = new UI(this);
         
         clientRunnables.put("regionWatcher", new ClientRunnables(this).runTaskTimer(RegionControl.plugin, 10, 10));
         Data.getPlayerStats(this);
     }
     
+    public UI getUi()
+    {
+        return ui;
+    }
+
     public Player getBukkitPlayer()
     {
         return Bukkit.getPlayer(playerName);
