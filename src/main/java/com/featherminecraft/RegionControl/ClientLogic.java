@@ -4,51 +4,35 @@ import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
-import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 
-public class ClientRunnables extends BukkitRunnable
+public class ClientLogic
 {
-    private RCPlayer player;
-    
-    ClientRunnables(RCPlayer player)
+    public static void init()
     {
-        this.player = player;
-        
-        SpawnPoint spawnPoint = player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()).getSpawnPoint();
-        if(spawnPoint != null)
+        BukkitTask runnable = new BukkitRunnable()
         {
-            player.setRespawnLocation(spawnPoint.getLocation());
-        }
-        else
-        {
-            player.setRespawnLocation(player.getBukkitPlayer().getWorld().getSpawnLocation());
-        }
+            @Override
+            public void run()
+            {
+                for(RCPlayer player : ServerLogic.players.values())
+                {
+                    CalculateCurrentRegion(player);
+                }
+            }
+            
+        }.runTaskTimer(RegionControl.plugin, 10, 10);
         
-        // if(player.getBukkitPlayer().isDead())
-        // {
-        // PlayerAPI.respawnPlayer(player);
-        // }
-        //
-        // else
-        // {
-        // player.getBukkitPlayer().teleport(player.getRespawnLocation());
-        // }
-        player.getBukkitPlayer().teleport(player.getRespawnLocation());
+        ServerLogic.addServerRunnable(runnable);
     }
     
-    @Override
-    public void run()
-    {
-        CalculateCurrentRegion();
-    }
-    
-    private void CalculateCurrentRegion()
+    private static void CalculateCurrentRegion(RCPlayer player)
     {
         CapturableRegion currentRegion = player.getCurrentRegion();
         CapturableRegion newRegion = null;

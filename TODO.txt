@@ -1,0 +1,23 @@
+FSN Specific:
+	Faction Traits
+		Elder Tyrants (“Heroes”)
+			Benefits:
+				Warrior of the Light: +10% Melee damage during daytime.
+		Isuren Forces
+			Benefits:
+				Pact with the Darkness: Hostile creatures are passive.
+				Screams of the Deep: +10% Damage in the Nether.
+		The Returned
+			Benefits:
+
+	Class Traits
+	Chat Channels (Local,Region,Yell,Faction)
+
+Public Build:
+	New Features:
+	Holding regions provide x resources (Mekka Valley -> Cobblestone, Ishura Highlands -> Weapons, Mekka Lake -> Water)
+	Spout - Major Cleanup:
+	  GUI Updates should be done in the following order:
+	  Update position/data/content -> Set Visible
+	  The runnable should only be modifying the capture bars and the control point timer.
+	  Method changes? Runnable links to update methods, events link to update methods. No "Toggle elements" needed.

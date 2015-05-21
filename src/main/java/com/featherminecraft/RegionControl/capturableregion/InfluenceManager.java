@@ -44,6 +44,11 @@ public class InfluenceManager
     
     private float CalculateInfluenceRate(Faction majorityController)
     {
+        if(majorityController == null)
+        {
+            return 0F;
+        }
+        
         float baseControlPointCount = ownedControlPoints.remove(majorityController);
         float controlPointCountPenalty = 0;
         for(Entry<Faction,Float> ownedPoints : ownedControlPoints.entrySet())

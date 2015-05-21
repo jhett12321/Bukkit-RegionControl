@@ -20,6 +20,7 @@ import com.featherminecraft.RegionControl.RCPlayer;
 import com.featherminecraft.RegionControl.api.PlayerAPI;
 import com.featherminecraft.RegionControl.api.events.ChangeRegionEvent;
 import com.featherminecraft.RegionControl.capturableregion.CapturableRegion;
+import com.featherminecraft.RegionControl.capturableregion.SpawnPoint;
 import com.featherminecraft.RegionControl.spout.RespawnScreen;
 import com.featherminecraft.RegionControl.spout.SpoutClientLogic;
 
@@ -39,6 +40,7 @@ public class SpoutPlayerListener implements Listener
             {
                 player.getBukkitPlayer().teleport(player.getRespawnLocation());
             }
+            
             event.getPlayer().getMainScreen().closePopup();
             player.getClientRunnable("spoutRespawnTooltip").cancel();
             player.showPlayer();
@@ -139,14 +141,38 @@ public class SpoutPlayerListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onSpoutCraftFailedEvent(SpoutcraftFailedEvent event)
     {
-        RCPlayer rcPlayer = PlayerAPI.getRCPlayerFromBukkitPlayer(event.getPlayer().getPlayer());
-        CapturableRegion currentRegion = rcPlayer.getCurrentRegion();
-        List<RCPlayer> playerList = currentRegion.getPlayers();
-        for(RCPlayer rPlayer : playerList)
+        SpoutPlayer splayer = event.getPlayer();
+        RCPlayer player = PlayerAPI.getRCPlayerFromBukkitPlayer(splayer.getPlayer());
+        
+        //Respawn Player
+        SpawnPoint spawnPoint = player.getFaction().getFactionSpawnRegion(player.getBukkitPlayer().getWorld()).getSpawnPoint();
+        if(spawnPoint != null)
         {
-            if(rPlayer.hasSpout())
+            player.setRespawnLocation(spawnPoint.getLocation());
+        }
+        else
+        {
+            player.setRespawnLocation(player.getBukkitPlayer().getWorld().getSpawnLocation());
+        }
+        
+         if(player.getBukkitPlayer().isDead())
+         {
+             PlayerAPI.respawnPlayer(player);
+         }
+        
+         else
+         {
+             player.getBukkitPlayer().teleport(player.getRespawnLocation());
+         }
+        
+        //Update Player Count
+        CapturableRegion currentRegion = player.getCurrentRegion();
+        List<RCPlayer> playerList = currentRegion.getPlayers();
+        for(RCPlayer rcPlayer : playerList)
+        {
+            if(rcPlayer.hasSpout())
             {
-                rPlayer.getSpoutClientLogic().updatePlayersDetected();
+                rcPlayer.getSpoutClientLogic().updatePlayersDetected();
             }
         }
     }

@@ -14,9 +14,11 @@ import org.getspout.spoutapi.gui.Container;
 import org.getspout.spoutapi.gui.ContainerType;
 import org.getspout.spoutapi.gui.GenericButton;
 import org.getspout.spoutapi.gui.GenericContainer;
+import org.getspout.spoutapi.gui.GenericGradient;
 import org.getspout.spoutapi.gui.GenericLabel;
 import org.getspout.spoutapi.gui.GenericListView;
 import org.getspout.spoutapi.gui.GenericPopup;
+import org.getspout.spoutapi.gui.Gradient;
 import org.getspout.spoutapi.gui.InGameHUD;
 import org.getspout.spoutapi.gui.Label;
 import org.getspout.spoutapi.gui.ListWidgetItem;
@@ -39,6 +41,9 @@ public class RespawnScreen
     
     public RespawnScreen(InGameHUD mainscreen, RCPlayer player)
     {
+        //Background
+        Gradient background = (Gradient) new GenericGradient().setColor(new Color(0F, 0F, 0F, 1F)).setWidth(mainscreen.getWidth()).setHeight(mainscreen.getHeight()).setPriority(RenderPriority.Highest);
+        
         // Container
         Container respawnContainer = (Container) new GenericContainer().setLayout(ContainerType.VERTICAL).setAnchor(WidgetAnchor.TOP_LEFT).setX(5).setY(40);
         
@@ -71,7 +76,7 @@ public class RespawnScreen
         
         popup = new GenericPopup();
         
-        popup.attachWidgets(RegionControl.plugin, respawnContainer, listWidget, deploymentTitle, respawnButton);
+        popup.attachWidgets(RegionControl.plugin, background, respawnContainer, listWidget, deploymentTitle, respawnButton);
         
         mainscreen.attachPopupScreen(popup);
     }

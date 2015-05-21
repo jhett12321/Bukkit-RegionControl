@@ -26,7 +26,8 @@ import com.featherminecraft.RegionControl.data.Data;
 
 public class ServerLogic
 {
-    public static Map<String, BukkitTask> serverRunnables = new HashMap<String, BukkitTask>();
+    private static List<BukkitTask> serverRunnables = new ArrayList<BukkitTask>();
+
     public static Map<String, RCPlayer> players = new HashMap<String, RCPlayer>();
     public static Map<String, Faction> factions = new HashMap<String, Faction>();
     public static Map<String, CapturableRegion> capturableRegions = new HashMap<String, CapturableRegion>();
@@ -54,7 +55,7 @@ public class ServerLogic
             
         }.runTaskTimer(RegionControl.plugin, 1200, 1200);
         
-        serverRunnables.put("saveTask", runnable);
+        addServerRunnable(runnable);
     }
     
     private static void setupFactions()
@@ -269,6 +270,15 @@ public class ServerLogic
                 player.showPlayer(rcPlayer.getBukkitPlayer());
             }
         }
-
+    }
+    
+    protected static List<BukkitTask> getServerRunnables()
+    {
+        return serverRunnables;
+    }
+    
+    public static void addServerRunnable(BukkitTask task)
+    {
+        serverRunnables.add(task);
     }
 }

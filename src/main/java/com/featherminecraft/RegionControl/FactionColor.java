@@ -40,9 +40,9 @@ public class FactionColor
                 controlPointIcon = "greenflag";
                 break;
             case BLUE :
-                woolColor = DyeColor.BLUE;
+                woolColor = DyeColor.LIGHT_BLUE;
                 color = Color.BLUE;
-                chatColor = ChatColor.DARK_BLUE;
+                chatColor = ChatColor.BLUE;
                 controlPointIcon = "blueflag";
                 break;
             case ORANGE :

@@ -112,7 +112,7 @@ public class PlayerListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeRegion(ChangeRegionEvent event)
     {
-        if(!DependencyManager.isSpoutCraftAvailable() || !event.getPlayer().hasSpout())
+        if(!event.getPlayer().hasSpout())
         {
             event.getPlayer().getBukkitPlayer().setScoreboard(event.getNewRegion().getRegionScoreboard().getScoreboard());
         }

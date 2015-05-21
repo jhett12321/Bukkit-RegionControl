@@ -56,7 +56,6 @@ public class RCPlayer
         this.currentRegion = currentRegion;
         this.ui = new UI(this);
         
-        clientRunnables.put("regionWatcher", new ClientRunnables(this).runTaskTimer(RegionControl.plugin, 10, 10));
         Data.getPlayerStats(this);
     }
     

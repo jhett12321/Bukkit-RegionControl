@@ -135,7 +135,7 @@ public class CapturableRegion
                 }
             }.runTaskTimer(RegionControl.plugin, 20, 20);
             
-            ServerLogic.serverRunnables.put(world + "_" + regionId, runnable);
+            ServerLogic.addServerRunnable(runnable);
         }
         
         else

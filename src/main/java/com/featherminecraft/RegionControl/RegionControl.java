@@ -50,7 +50,7 @@ public final class RegionControl extends JavaPlugin
                 }
             }
             
-            for(BukkitTask runnable : ServerLogic.serverRunnables.values())
+            for(BukkitTask runnable : ServerLogic.getServerRunnables())
             {
                 runnable.cancel();
             }
@@ -67,6 +67,8 @@ public final class RegionControl extends JavaPlugin
                 }
             }
         }
+        
+        RegionControl.plugin = null;
     }
     
     @Override
@@ -119,6 +121,9 @@ public final class RegionControl extends JavaPlugin
         
         // Register Command Handler
         commandHandler = new CommandHandler();
+        
+        //Load Client Manager
+        ClientLogic.init();
         
         pluginLoaded = true;
     }
